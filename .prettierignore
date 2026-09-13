@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+.agents
+.specify
+specs
+playwright-report
+test-results
