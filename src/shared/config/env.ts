@@ -8,7 +8,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_APP_NAME: z.string().min(1),
   NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER: z
     .string()
-    .regex(/^\d{10,15}$/, 'Debe ser un numero en formato internacional, solo digitos'),
+    .regex(/^\d{10}$/, 'Debe ser un numero en formato internacional, solo digitos'),
 });
 
 function loadEnv() {
