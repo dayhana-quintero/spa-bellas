@@ -61,8 +61,8 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 
 ### Implementation for User Story 1
 
-- [ ] T021 [P] [US1] Crear entidades y repositorios de servicio, categoria y configuracion de disponibilidad en `src/domain/services/` y `src/domain/availability/`
-- [ ] T022 [P] [US1] Implementar la generacion de horarios exactos disponibles, excluyendo citas activas, holds, bloqueos y no laborables, en `src/domain/availability/generate-available-slots.ts`
+- [x] T021 [P] [US1] Crear entidades y repositorios de servicio, categoria y configuracion de disponibilidad en `src/domain/services/` y `src/domain/availability/`
+- [x] T022 [P] [US1] Implementar la generacion de horarios exactos disponibles, excluyendo citas activas, holds, bloqueos y no laborables, en `src/domain/availability/generate-available-slots.ts`
 - [ ] T023 [US1] Implementar reglas de creacion de cliente, solicitud pendiente, consentimiento y hold temporal en `src/domain/appointments/create-appointment-request.ts`
 - [ ] T024 [US1] Implementar consultas publicas del catalogo y horarios disponibles en `src/domain/services/public-catalog.ts` y `src/domain/availability/availability-service.ts`
 - [ ] T025 [US1] Construir la navegacion publica por categorias y detalle de servicio en `src/app/public/services/`
@@ -83,19 +83,19 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 
 ### Tests for User Story 2
 
-- [ ] T030 [P] [US2] Cubrir transiciones validas e invalidas, expiracion de holds y auditoria de cambios en `tests/unit/appointments/appointment-state-machine.test.ts`
-- [ ] T031 [P] [US2] Cubrir mensaje base, consentimiento, telefono invalido y registro manual cuando falla WhatsApp en `tests/unit/whatsapp/whatsapp-confirmation.test.ts`
+- [x] T030 [P] [US2] Cubrir transiciones validas e invalidas, expiracion de holds y auditoria de cambios en `tests/unit/appointments/appointment-state-machine.test.ts`
+- [x] T031 [P] [US2] Cubrir mensaje base, consentimiento, telefono invalido y registro manual cuando falla WhatsApp en `tests/unit/whatsapp/whatsapp-confirmation.test.ts`
 - [ ] T032 [P] [US2] Cubrir autorizacion administrativa y aislamiento de datos publicos en `tests/integration/admin/admin-access.test.ts`
 - [ ] T033 [P] [US2] Cubrir lista de pendientes, detalle, confirmacion, cancelacion y solicitud de reprogramacion en `tests/e2e/admin-pending-appointments.spec.ts`
 - [ ] T034 [P] [US2] Verificar accesibilidad del tablero, dialogo de WhatsApp y controles de estado en `tests/accessibility/admin-appointments.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T035 [P] [US2] Implementar la maquina de estados, transiciones permitidas y registro inmutable de historial en `src/domain/appointments/appointment-state-machine.ts`
-- [ ] T036 [P] [US2] Implementar expiracion de solicitudes pendientes y liberacion de holds en `src/domain/appointments/expire-pending-appointments.ts`
-- [ ] T037 [US2] Implementar servicio administrativo de consulta y actualizacion de citas en `src/domain/appointments/admin-appointment-service.ts`
-- [ ] T038 [US2] Implementar contrato de preparacion de mensajes, resultado de comunicacion y fallback manual en `src/integrations/whatsapp/whatsapp-confirmation.ts`
-- [ ] T039 [US2] Implementar adaptador aislado para abrir WhatsApp sin exponer secretos y registrar resultado en `src/integrations/whatsapp/whatsapp-adapter.ts`
+- [x] T035 [P] [US2] Implementar la maquina de estados, transiciones permitidas y registro inmutable de historial en `src/domain/appointments/appointment-state-machine.ts`
+- [x] T036 [P] [US2] Implementar expiracion de solicitudes pendientes y liberacion de holds en `src/domain/appointments/expire-pending-appointments.ts`
+- [x] T037 [US2] Implementar servicio administrativo de consulta y actualizacion de citas en `src/domain/appointments/admin-appointment-service.ts`
+- [x] T038 [US2] Implementar contrato de preparacion de mensajes, resultado de comunicacion y fallback manual en `src/integrations/whatsapp/whatsapp-confirmation.ts`
+- [x] T039 [US2] Implementar adaptador aislado para abrir WhatsApp sin exponer secretos y registrar resultado en `src/integrations/whatsapp/whatsapp-adapter.ts`
 - [ ] T040 [US2] Construir lista administrativa de citas pendientes con estado de hold, datos de contacto minimizados y acciones disponibles en `src/app/admin/appointments/pending/`
 - [ ] T041 [US2] Construir detalle administrativo de cita con historial de estados, notas y accion de WhatsApp en `src/app/admin/appointments/detail/`
 - [ ] T042 [US2] Construir controles de cambio de estado y formulario de resultado manual en `src/app/admin/appointments/status-controls/`

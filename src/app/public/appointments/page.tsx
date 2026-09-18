@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { createAppointmentRequest } from "../../../domain/appointments/create-appointment-request";
-import { generateAvailableSlots } from "../../../domain/availability/generate-available-slots";
-import { getPublicServices } from "../../../domain/services/public-service-catalog";
+import { getAvailableSlotsForDate } from "../../../domain/availability/availability-service";
+import { getPublicCatalog } from "../../../domain/services/public-catalog";
 
 type DayKey =
   | "lunes"
@@ -15,7 +15,7 @@ type DayKey =
   | "sabado"
   | "domingo";
 
-const services = getPublicServices();
+const services = getPublicCatalog();
 const dayKeyValues = ["jueves"] as const;
 
 const baseAvailability: {
@@ -57,7 +57,7 @@ export default function PublicAppointmentsPage() {
   }, [selectedServiceId]);
 
   const slots = useMemo(() => {
-    return generateAvailableSlots({
+    return getAvailableSlotsForDate({
       date,
       serviceDurationMinutes: 60,
       availability: baseAvailability,
@@ -163,8 +163,11 @@ export default function PublicAppointmentsPage() {
         </form>
       ) : null}
 
-      {message ? <p>Solicitud pendiente</p> : null}
-      {message ? <p>{message}</p> : null}
+      {message ? (
+        <p aria-live="polite" role="status">
+          {message}
+        </p>
+      ) : null}
     </main>
   );
 }

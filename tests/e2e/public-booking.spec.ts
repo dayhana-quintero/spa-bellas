@@ -16,7 +16,7 @@ test("el cliente puede consultar servicios, elegir un horario y registrar una so
 
   await page.getByRole("button", { name: /enviar solicitud/i }).click();
 
-  await expect(
-    page.getByText(/Solicitud pendiente para Ana García el 2026-09-24 a las 10:30/i),
-  ).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText(
+    "Solicitud pendiente para Ana García el 2026-09-24 a las 10:30.",
+  );
 });
