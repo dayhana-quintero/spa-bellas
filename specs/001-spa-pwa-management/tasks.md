@@ -34,10 +34,10 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 - [x] T007 Definir tipos y esquemas compartidos para clientes, servicios, citas, configuracion de disponibilidad, bloqueos, usuarios administradores, mensajes WhatsApp e insumos en `src/shared/types/`
 - [x] T008 [P] Implementar validacion de datos de entrada, normalizacion de telefono y mensajes de error seguros en `src/shared/validation/`
 - [x] T009 [P] Implementar manejo de errores, estados de carga, estados vacios y registro estructurado sin datos sensibles en `src/shared/errors/` y `src/shared/logging/`
-- [ ] T010 Implementar autenticacion y autorizacion del unico rol administrador en `src/shared/auth/` y proteger las rutas de `src/app/admin/`
-- [ ] T011 Implementar interfaces de repositorio y adaptador de persistencia para las entidades del modelo en `src/storage/`
-- [ ] T012 Implementar acceso atomico para crear solicitudes y retener horarios, evitando doble reserva concurrente, en `src/storage/appointments/`
-- [ ] T013 [P] Crear componentes UI compartidos accesibles para formularios, alertas, tablas, dialogos, botones, navegacion y foco visible en `src/shared/ui/`
+- [x] T010 Implementar autenticacion y autorizacion del unico rol administrador en `src/shared/auth/` y proteger las rutas de `src/app/admin/`
+- [x] T011 Implementar interfaces de repositorio y adaptador de persistencia para las entidades del modelo en `src/storage/`
+- [x] T012 Implementar acceso atomico para crear solicitudes y retener horarios, evitando doble reserva concurrente, en `src/storage/appointments/`
+- [x] T013 [P] Crear componentes UI compartidos accesibles para formularios, alertas, tablas, dialogos, botones, navegacion y foco visible en `src/shared/ui/`
 - [ ] T014 [P] Configurar pruebas de accesibilidad, viewport movil/escritorio y utilidades de datos de prueba en `tests/accessibility/`, `tests/e2e/fixtures/` y `tests/helpers/`
 - [ ] T015 Implementar el shell de navegacion separado para area publica y area administrativa en `src/app/` con rutas protegidas y estados de acceso denegado
 
