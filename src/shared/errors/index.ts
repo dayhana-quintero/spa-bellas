@@ -1,9 +1,9 @@
 // Representa los estados de carga, éxito, vacío y error para cualquier vista o flujo de datos.
 export type LoadingState<T> =
   | { status: 'loading'; data?: T; message?: string }
-  | { status: 'success'; data: T }
+  | { status: 'success'; data: T; message?: string }
   | { status: 'empty'; data?: T; message: string }
-  | { status: 'error'; error: AppError };
+  | { status: 'error'; data?: T; error: AppError; message?: string };
 
 // Error de dominio con código, estado HTTP y mensaje seguro para no filtrar datos sensibles.
 export class AppError extends Error {

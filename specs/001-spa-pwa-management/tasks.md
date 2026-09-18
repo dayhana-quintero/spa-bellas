@@ -38,8 +38,8 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 - [x] T011 Implementar interfaces de repositorio y adaptador de persistencia para las entidades del modelo en `src/storage/`
 - [x] T012 Implementar acceso atomico para crear solicitudes y retener horarios, evitando doble reserva concurrente, en `src/storage/appointments/`
 - [x] T013 [P] Crear componentes UI compartidos accesibles para formularios, alertas, tablas, dialogos, botones, navegacion y foco visible en `src/shared/ui/`
-- [ ] T014 [P] Configurar pruebas de accesibilidad, viewport movil/escritorio y utilidades de datos de prueba en `tests/accessibility/`, `tests/e2e/fixtures/` y `tests/helpers/`
-- [ ] T015 Implementar el shell de navegacion separado para area publica y area administrativa en `src/app/` con rutas protegidas y estados de acceso denegado
+- [x] T014 [P] Configurar pruebas de accesibilidad, viewport movil/escritorio y utilidades de datos de prueba en `tests/accessibility/`, `tests/e2e/fixtures/` y `tests/helpers/`
+- [x] T015 Implementar el shell de navegacion separado para area publica y area administrativa en `src/app/` con rutas protegidas y estados de acceso denegado
 
 **Checkpoint**: La base de la aplicacion, persistencia, autorizacion, validacion y componentes accesibles estan listas.
 

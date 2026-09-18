@@ -4,6 +4,10 @@ test("la página principal carga correctamente", async ({ page }) => {
   await page.goto("/");
 
   await expect(
-    page.getByText("To get started, edit the page.tsx file."),
+    page.getByRole("heading", {
+      name: /cuidado de spa pensado para tu bienestar/i,
+      level: 1,
+    }),
   ).toBeVisible();
+  await expect(page.getByRole("navigation", { name: /navegación principal/i })).toBeVisible();
 });
