@@ -53,11 +53,11 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 
 ### Tests for User Story 1
 
-- [ ] T016 [P] [US1] Cubrir reglas de generacion de horarios por apertura, cierre, dias de atencion, duracion, buffer, citas, bloqueos, festivos, capacidad y fecha en `tests/unit/availability/availability-generator.test.ts`
-- [ ] T017 [P] [US1] Cubrir validacion de telefono, campos obligatorios, notas opcionales y consentimiento de contacto en `tests/unit/appointments/appointment-request-validation.test.ts`
-- [ ] T018 [P] [US1] Cubrir creacion pendiente, retencion temporal y rechazo de doble solicitud para el mismo horario en `tests/integration/appointments/appointment-request.test.ts`
-- [ ] T019 [P] [US1] Cubrir el flujo publico completo, ausencia de horarios y conservacion de datos tras errores en `tests/e2e/public-booking.spec.ts`
-- [ ] T020 [P] [US1] Verificar teclado, foco, etiquetas, contraste y mensajes de error del catalogo y formulario publico en `tests/accessibility/public-booking.spec.ts`
+- [x] T016 [P] [US1] Cubrir reglas de generacion de horarios por apertura, cierre, dias de atencion, duracion, buffer, citas, bloqueos, festivos, capacidad y fecha en `tests/unit/availability/availability-generator.test.ts`
+- [x] T017 [P] [US1] Cubrir validacion de telefono, campos obligatorios, notas opcionales y consentimiento de contacto en `tests/unit/appointments/appointment-request-validation.test.ts`
+- [x] T018 [P] [US1] Cubrir creacion pendiente, retencion temporal y rechazo de doble solicitud para el mismo horario en `tests/integration/appointments/appointment-request.test.ts`
+- [x] T019 [P] [US1] Cubrir el flujo publico completo, ausencia de horarios y conservacion de datos tras errores en `tests/e2e/public-booking.spec.ts`
+- [x] T020 [P] [US1] Verificar teclado, foco, etiquetas, contraste y mensajes de error del catalogo y formulario publico en `tests/accessibility/public-booking.spec.ts`
 
 ### Implementation for User Story 1
 
