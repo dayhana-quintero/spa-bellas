@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 
 import { getPublicServices } from '../../../src/domain/services/public-service-catalog';
-import { clearServices, listServices } from '../../../src/storage/services';
+import { clearServices, saveService } from '../../../src/storage/services';
 
 describe('public service catalog', () => {
   beforeEach(() => {
@@ -36,7 +36,9 @@ describe('public service catalog', () => {
       isBookable: false,
     };
 
-    listServices().push(active, hidden, archived);
+    saveService(active);
+    saveService(hidden);
+    saveService(archived);
 
     expect(getPublicServices()).toEqual([active]);
   });

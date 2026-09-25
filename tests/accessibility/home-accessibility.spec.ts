@@ -1,11 +1,11 @@
-import { expect, test } from "../e2e/fixtures/viewport";
+﻿import { expect, test } from "../e2e/fixtures/viewport";
 
 test.describe("accesibilidad de la landing principal", () => {
-  test("expone navegación y contenido principal en escritorio", async ({ desktopPage }) => {
+  test("expone navegacion y contenido principal en escritorio", async ({ desktopPage }) => {
     await desktopPage.goto("/");
 
     await expect(
-      desktopPage.getByRole("navigation", { name: /navegación principal/i }),
+      desktopPage.getByRole("navigation", { name: /navegacion principal/i }),
     ).toBeVisible();
     await expect(desktopPage.getByRole("main")).toBeVisible();
     await expect(
@@ -19,7 +19,7 @@ test.describe("accesibilidad de la landing principal", () => {
     ).toBeVisible();
   });
 
-  test("mantiene una estructura legible en móvil", async ({ mobilePage }) => {
+  test("mantiene una estructura legible en movil", async ({ mobilePage }) => {
     await mobilePage.goto("/");
 
     await expect(mobilePage.getByRole("heading", { level: 1 })).toBeVisible();

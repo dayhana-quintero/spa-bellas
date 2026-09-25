@@ -10,6 +10,7 @@ export const supplyMovementSchema = z.object({
   reason: z.string().min(3, 'reason must be at least 3 characters'),
   adminId: z.string().uuid(),
   createdAt: z.coerce.date(),
+  allowsNegativeStock: z.boolean().optional(),
 });
 
 export type SupplyMovement = z.infer<typeof supplyMovementSchema>;

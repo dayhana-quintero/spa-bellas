@@ -6,9 +6,13 @@ export type AdminSession = {
   role: 'admin';
 };
 
+export type AdminSessionInput = Partial<Omit<AdminSession, 'role'>> & {
+  role?: string;
+};
+
 // Crea una sesión de administrador con valores por defecto seguros.
 export function createAdminSession(
-  session: Partial<AdminSession> = {},
+  session: AdminSessionInput = {},
 ): AdminSession {
   return {
     id: session.id ?? '',
@@ -19,7 +23,7 @@ export function createAdminSession(
 }
 
 // Verifica si la sesión actual pertenece a un administrador activo.
-export function isAdminActive(session?: Partial<AdminSession> | null): boolean {
+export function isAdminActive(session?: AdminSessionInput | null): boolean {
   if (!session) {
     return false;
   }
@@ -28,13 +32,13 @@ export function isAdminActive(session?: Partial<AdminSession> | null): boolean {
 }
 
 // Permite decidir de forma centralizada si el usuario puede entrar al área administrativa.
-export function canAccessAdminArea(session?: Partial<AdminSession> | null): boolean {
+export function canAccessAdminArea(session?: AdminSessionInput | null): boolean {
   return isAdminActive(session);
 }
 
 // Retorna la sesión validada o null si el usuario no tiene permisos de administrador.
 export function requireAdminSession(
-  session?: Partial<AdminSession> | null,
+  session?: AdminSessionInput | null,
 ): AdminSession | null {
   if (!canAccessAdminArea(session)) {
     return null;

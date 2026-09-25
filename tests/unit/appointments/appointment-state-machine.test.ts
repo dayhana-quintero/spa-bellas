@@ -68,7 +68,8 @@ describe('appointment state machine', () => {
 
     const updated = expirePendingAppointments({ appointments: expired, now });
 
-    expect(updated).toHaveLength(1);
+    expect(updated).toHaveLength(2);
     expect(updated[0]?.status).toBe('vencida');
+    expect(updated[1]?.status).toBe('confirmada');
   });
 });

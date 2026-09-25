@@ -28,7 +28,7 @@ export function prepareConfirmationMessage(input: PrepareConfirmationInput) {
   const contactPhone = normalizePhone(input.phone);
 
   if (!contactPhone || contactPhone.length < 10) {
-    throw new Error('El teléfono del cliente no es válido para confirmar por WhatsApp.');
+    throw new Error('El telefono del cliente no es valido para confirmar por WhatsApp.');
   }
 
   const scheduledText = new Intl.DateTimeFormat('es-ES', {

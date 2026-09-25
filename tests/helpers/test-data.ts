@@ -26,7 +26,7 @@ export type AppointmentSeed = {
 
 export const createClient = (overrides: Partial<ClientSeed> = {}): ClientSeed => ({
   id: "client-001",
-  name: "Ana García",
+  name: "Ana Garcia",
   phone: "+52 555 123 4567",
   email: "ana.garcia@example.com",
   consent: true,
@@ -36,7 +36,7 @@ export const createClient = (overrides: Partial<ClientSeed> = {}): ClientSeed =>
 export const createService = (overrides: Partial<ServiceSeed> = {}): ServiceSeed => ({
   id: "service-001",
   name: "Masaje relajante",
-  category: "Relajación",
+  category: "Relajacion",
   durationMinutes: 60,
   price: 850,
   active: true,
@@ -60,7 +60,7 @@ export const createAppointmentRequest = (overrides: Record<string, unknown> = {}
   client: createClient(),
   date: "2026-09-24",
   slot: "10:30",
-  notes: "Necesito una sesión relajante.",
+  notes: "Necesito una sesion relajante.",
   consent: true,
   ...overrides,
 });

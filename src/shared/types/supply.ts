@@ -5,7 +5,7 @@ export const supplySchema = z.object({
   name: z.string().min(2, 'name must be at least 2 characters'),
   category: z.string().optional(),
   unit: z.string().min(1, 'unit is required'),
-  quantityAvailable: z.number().min(0),
+  quantityAvailable: z.number(),
   minimumThreshold: z.number().min(0),
   isActive: z.boolean(),
 });

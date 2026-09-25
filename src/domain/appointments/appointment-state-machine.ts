@@ -5,13 +5,13 @@ export type AppointmentStatus = Appointment['status'];
 
 const allowedTransitions: Record<AppointmentStatus, AppointmentStatus[]> = {
   pendiente: ['confirmada', 'cancelada', 'vencida'],
-  confirmada: ['completada', 'cancelada', 'reprogramacion solicitada', 'vencida'],
+  confirmada: ['completada', 'no asistio', 'cancelada', 'reprogramacion solicitada'],
   cancelada: [],
   vencida: [],
   completada: [],
   'no asistio': [],
   'reprogramacion solicitada': ['reprogramada', 'cancelada'],
-  reprogramada: [],
+  reprogramada: ['confirmada'],
 };
 
 export function canTransitionStatus(from: AppointmentStatus, to: AppointmentStatus): boolean {
