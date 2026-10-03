@@ -1,7 +1,3 @@
-import { randomUUID } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
-
 import type { Appointment } from '@/shared/types/appointment';
 import type { AppointmentStatusRecord } from '@/shared/types/appointment-status';
 import type { Cliente } from '@/shared/types/client';
@@ -29,12 +25,65 @@ type SpaData = {
   availability: AvailabilitySettings;
 };
 
-const dataPath = join(process.cwd(), 'data', 'spa-data.json');
 const categories = ['unas', 'alisados', 'tratamientos capilares', 'limpieza facial', 'diseno de cejas'];
+const DATA_KEY = 'spa-data';
+
+function getNodeRuntime(): {
+  fs: typeof import('node:fs');
+  path: typeof import('node:path');
+  crypto: typeof import('node:crypto');
+} | null {
+  if (typeof window !== 'undefined') {
+    return null;
+  }
+
+  try {
+    const fs = require('node:fs') as typeof import('node:fs');
+    const path = require('node:path') as typeof import('node:path');
+    const crypto = require('node:crypto') as typeof import('node:crypto');
+    return { fs, path, crypto };
+  } catch {
+    return null;
+  }
+}
+
+function getBrowserStorage(): Storage | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+function randomId(): string {
+  const runtime = getNodeRuntime();
+  if (runtime?.crypto?.randomUUID) {
+    return runtime.crypto.randomUUID();
+  }
+
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  return `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function getDataFilePath(): string | null {
+  const runtime = getNodeRuntime();
+  if (!runtime || typeof process === 'undefined' || !process.cwd) {
+    return null;
+  }
+
+  return runtime.path.join(process.cwd(), 'data', 'spa-data.json');
+}
 
 function seedService(category: string, name: string, duration: number): Service {
   return {
-    id: randomUUID(),
+    id: randomId(),
     category,
     name,
     description: `Servicio profesional de ${name.toLowerCase()} para el cuidado y bienestar de cada cliente.`,
@@ -85,13 +134,41 @@ function hydrate(data: SpaData): SpaData {
 }
 
 function read(): SpaData {
-  if (!existsSync(dataPath)) return defaultData();
-  try { return hydrate(JSON.parse(readFileSync(dataPath, 'utf8')) as SpaData); } catch { return defaultData(); }
+  const browserStorage = getBrowserStorage();
+  if (browserStorage) {
+    try {
+      const raw = browserStorage.getItem(DATA_KEY);
+      return raw ? hydrate(JSON.parse(raw) as SpaData) : defaultData();
+    } catch {
+      return defaultData();
+    }
+  }
+
+  const dataPath = getDataFilePath();
+  const runtime = getNodeRuntime();
+  if (!runtime || !dataPath) {
+    return defaultData();
+  }
+
+  if (!runtime.fs.existsSync(dataPath)) return defaultData();
+  try { return hydrate(JSON.parse(runtime.fs.readFileSync(dataPath, 'utf8')) as SpaData); } catch { return defaultData(); }
 }
 
 function write(data: SpaData): void {
-  mkdirSync(join(process.cwd(), 'data'), { recursive: true });
-  writeFileSync(dataPath, JSON.stringify(data, null, 2));
+  const browserStorage = getBrowserStorage();
+  if (browserStorage) {
+    browserStorage.setItem(DATA_KEY, JSON.stringify(data, null, 2));
+    return;
+  }
+
+  const runtime = getNodeRuntime();
+  const dataPath = getDataFilePath();
+  if (!runtime || !dataPath) {
+    return;
+  }
+
+  runtime.fs.mkdirSync(runtime.path.dirname(dataPath), { recursive: true });
+  runtime.fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
 }
 
 export function withSpaData<T>(operation: (data: SpaData) => T): T {
@@ -102,5 +179,5 @@ export function withSpaData<T>(operation: (data: SpaData) => T): T {
 }
 
 export function readSpaData(): SpaData { return read(); }
-export function createId(): string { return randomUUID(); }
+export function createId(): string { return randomId(); }
 export { categories };

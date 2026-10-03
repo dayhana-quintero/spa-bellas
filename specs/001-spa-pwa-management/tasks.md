@@ -63,13 +63,13 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 
 - [x] T021 [P] [US1] Crear entidades y repositorios de servicio, categoria y configuracion de disponibilidad en `src/domain/services/` y `src/domain/availability/`
 - [x] T022 [P] [US1] Implementar la generacion de horarios exactos disponibles, excluyendo citas activas, holds, bloqueos y no laborables, en `src/domain/availability/generate-available-slots.ts`
-- [ ] T023 [US1] Implementar reglas de creacion de cliente, solicitud pendiente, consentimiento y hold temporal en `src/domain/appointments/create-appointment-request.ts`
-- [ ] T024 [US1] Implementar consultas publicas del catalogo y horarios disponibles en `src/domain/services/public-catalog.ts` y `src/domain/availability/availability-service.ts`
-- [ ] T025 [US1] Construir la navegacion publica por categorias y detalle de servicio en `src/app/public/services/`
-- [ ] T026 [US1] Construir el selector de fecha y horarios generados, incluyendo estados sin disponibilidad y sin entrada libre de hora, en `src/app/public/appointments/slot-picker.tsx`
-- [ ] T027 [US1] Construir el formulario publico de solicitud con conservacion de datos, validacion accionable y expectativa de contacto por WhatsApp en `src/app/public/appointments/appointment-request-form.tsx`
-- [ ] T028 [US1] Construir la confirmacion visible de solicitud pendiente y resumen de datos no sensibles en `src/app/public/appointments/appointment-request-confirmation.tsx`
-- [ ] T029 [US1] Conectar catalogo, selector, formulario y persistencia mediante el flujo publico en `src/app/public/appointments/appointment-request-flow.tsx`
+- [x] T023 [US1] Implementar reglas de creacion de cliente, solicitud pendiente, consentimiento y hold temporal en `src/domain/appointments/create-appointment-request.ts`
+- [x] T024 [US1] Implementar consultas publicas del catalogo y horarios disponibles en `src/domain/services/public-catalog.ts` y `src/domain/availability/availability-service.ts`
+- [x] T025 [US1] Construir la navegacion publica por categorias y detalle de servicio en `src/app/public/services/`
+- [x] T026 [US1] Construir el selector de fecha y horarios generados, incluyendo estados sin disponibilidad y sin entrada libre de hora, en `src/app/public/appointments/slot-picker.tsx`
+- [x] T027 [US1] Construir el formulario publico de solicitud con conservacion de datos, validacion accionable y expectativa de contacto por WhatsApp en `src/app/public/appointments/appointment-request-form.tsx`
+- [x] T028 [US1] Construir la confirmacion visible de solicitud pendiente y resumen de datos no sensibles en `src/app/public/appointments/appointment-request-confirmation.tsx`
+- [x] T029 [US1] Conectar catalogo, selector, formulario y persistencia mediante el flujo publico en `src/app/public/appointments/appointment-request-flow.tsx`
 
 **Checkpoint**: La historia P1 de cliente es demostrable y testeable sin depender de las pantallas administrativas.
 
@@ -85,9 +85,9 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 
 - [x] T030 [P] [US2] Cubrir transiciones validas e invalidas, expiracion de holds y auditoria de cambios en `tests/unit/appointments/appointment-state-machine.test.ts`
 - [x] T031 [P] [US2] Cubrir mensaje base, consentimiento, telefono invalido y registro manual cuando falla WhatsApp en `tests/unit/whatsapp/whatsapp-confirmation.test.ts`
-- [ ] T032 [P] [US2] Cubrir autorizacion administrativa y aislamiento de datos publicos en `tests/integration/admin/admin-access.test.ts`
-- [ ] T033 [P] [US2] Cubrir lista de pendientes, detalle, confirmacion, cancelacion y solicitud de reprogramacion en `tests/e2e/admin-pending-appointments.spec.ts`
-- [ ] T034 [P] [US2] Verificar accesibilidad del tablero, dialogo de WhatsApp y controles de estado en `tests/accessibility/admin-appointments.spec.ts`
+- [x] T032 [P] [US2] Cubrir autorizacion administrativa y aislamiento de datos publicos en `tests/integration/admin/admin-access.test.ts`
+- [x] T033 [P] [US2] Cubrir lista de pendientes, detalle, confirmacion, cancelacion y solicitud de reprogramacion en `tests/e2e/admin-pending-appointments.spec.ts`
+- [x] T034 [P] [US2] Verificar accesibilidad del tablero, dialogo de WhatsApp y controles de estado en `tests/accessibility/admin-appointments.spec.ts`
 
 ### Implementation for User Story 2
 
@@ -96,10 +96,10 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 - [x] T037 [US2] Implementar servicio administrativo de consulta y actualizacion de citas en `src/domain/appointments/admin-appointment-service.ts`
 - [x] T038 [US2] Implementar contrato de preparacion de mensajes, resultado de comunicacion y fallback manual en `src/integrations/whatsapp/whatsapp-confirmation.ts`
 - [x] T039 [US2] Implementar adaptador aislado para abrir WhatsApp sin exponer secretos y registrar resultado en `src/integrations/whatsapp/whatsapp-adapter.ts`
-- [ ] T040 [US2] Construir lista administrativa de citas pendientes con estado de hold, datos de contacto minimizados y acciones disponibles en `src/app/admin/appointments/pending/`
-- [ ] T041 [US2] Construir detalle administrativo de cita con historial de estados, notas y accion de WhatsApp en `src/app/admin/appointments/detail/`
-- [ ] T042 [US2] Construir controles de cambio de estado y formulario de resultado manual en `src/app/admin/appointments/status-controls/`
-- [ ] T043 [US2] Ejecutar y conectar la tarea de expiracion de holds con la consulta de disponibilidad en `src/domain/appointments/appointment-expiration-job.ts`
+- [x] T040 [US2] Construir lista administrativa de citas pendientes con estado de hold, datos de contacto minimizados y acciones disponibles en `src/app/admin/appointments/pending-page.tsx`
+- [x] T041 [US2] Construir detalle administrativo de cita con historial de estados, notas y accion de WhatsApp en `src/app/admin/appointments/detail-page.tsx`
+- [x] T042 [US2] Construir controles de cambio de estado y formulario de resultado manual en `src/app/admin/appointments/status-controls.tsx`
+- [x] T043 [US2] Ejecutar y conectar la tarea de expiracion de holds con la consulta de disponibilidad en `src/domain/appointments/appointment-expiration-job.ts`
 
 **Checkpoint**: La operacion P1 de confirmacion y actualizacion de citas funciona con WhatsApp opcional y fallback manual.
 
@@ -113,16 +113,16 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 
 ### Tests for User Story 3
 
-- [ ] T044 [P] [US3] Cubrir combinacion de filtros, ordenamiento, paginacion o carga incremental y estado vacio en `tests/unit/appointments/appointment-history-query.test.ts`
-- [ ] T045 [P] [US3] Cubrir filtros y detalle historico desde la interfaz administrativa en `tests/e2e/admin-appointment-history.spec.ts`
-- [ ] T046 [P] [US3] Verificar lectura accesible de filtros, resultados, tablas y detalle historico en `tests/accessibility/admin-history.spec.ts`
+- [x] T044 [P] [US3] Cubrir combinacion de filtros, ordenamiento, paginacion o carga incremental y estado vacio en `tests/unit/appointments/appointment-history-query.test.ts`
+- [x] T045 [P] [US3] Cubrir filtros y detalle historico desde la interfaz administrativa en `tests/e2e/admin-appointment-history.spec.ts`
+- [x] T046 [P] [US3] Verificar lectura accesible de filtros, resultados, tablas y detalle historico en `tests/accessibility/admin-history.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T047 [US3] Implementar consulta de historial por estado, rango de fechas, cliente y servicio, incluyendo resultados vacios, en `src/domain/appointments/appointment-history-service.ts`
-- [ ] T048 [US3] Implementar mapeo de filtros y paginacion sobre el repositorio de citas en `src/storage/appointments/appointment-history-repository.ts`
-- [ ] T049 [US3] Construir controles accesibles de filtros y lista de historial en `src/app/admin/appointments/history/`
-- [ ] T050 [US3] Construir vista de detalle historico con estado final, notas, datos de servicio y linea de tiempo de estados en `src/app/admin/appointments/history/appointment-history-detail.tsx`
+- [x] T047 [US3] Implementar consulta de historial por estado, rango de fechas, cliente y servicio, incluyendo resultados vacios, en `src/domain/appointments/appointment-history-service.ts`
+- [x] T048 [US3] Implementar mapeo de filtros y paginacion sobre el repositorio de citas en `src/storage/appointments/appointment-history-repository.ts`
+- [x] T049 [US3] Construir controles accesibles de filtros y lista de historial en `src/app/admin/appointments/history/`
+- [x] T050 [US3] Construir vista de detalle historico con estado final, notas, datos de servicio y linea de tiempo de estados en `src/app/admin/appointments/history/[appointmentId]/page.tsx`
 
 **Checkpoint**: El administrador puede consultar el historial operativo sin perder la trazabilidad de una cita.
 
@@ -136,19 +136,19 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 
 ### Tests for User Story 4
 
-- [ ] T051 [P] [US4] Cubrir calculo de stock, umbral minimo, movimientos positivos, correcciones y excepcion explicita a stock negativo en `tests/unit/inventory/inventory-rules.test.ts`
-- [ ] T052 [P] [US4] Cubrir persistencia y auditoria de movimientos con administrador, fecha, motivo y tipo en `tests/integration/inventory/inventory-movements.test.ts`
-- [ ] T053 [P] [US4] Cubrir alta de insumo, movimiento, alerta de bajo stock y validacion de cantidad en `tests/e2e/admin-inventory.spec.ts`
-- [ ] T054 [P] [US4] Verificar accesibilidad de tabla, formulario, alertas y estado vacio del inventario en `tests/accessibility/admin-inventory.spec.ts`
+- [x] T051 [P] [US4] Cubrir calculo de stock, umbral minimo, movimientos positivos, correcciones y excepcion explicita a stock negativo en `tests/unit/inventory/inventory-rules.test.ts`
+- [x] T052 [P] [US4] Cubrir persistencia y auditoria de movimientos con administrador, fecha, motivo y tipo en `tests/integration/inventory/inventory-movements.test.ts`
+- [x] T053 [P] [US4] Cubrir alta de insumo, movimiento, alerta de bajo stock y validacion de cantidad en `tests/e2e/admin-inventory.spec.ts`
+- [x] T054 [P] [US4] Verificar accesibilidad de tabla, formulario, alertas y estado vacio del inventario en `tests/accessibility/admin-inventory.spec.ts`
 
 ### Implementation for User Story 4
 
-- [ ] T055 [P] [US4] Implementar entidades, reglas de stock y movimientos `entrada`, `consumo` y `correccion` en `src/domain/inventory/`
-- [ ] T056 [US4] Implementar servicio administrativo de insumos, umbral bajo y excepcion documentada en `src/domain/inventory/inventory-service.ts`
-- [ ] T057 [US4] Implementar repositorios de insumos y movimientos con auditoria en `src/storage/inventory/`
-- [ ] T058 [US4] Construir vista administrativa de inventario con indicador de bajo stock y estado vacio en `src/app/admin/inventory/inventory-page.tsx`
-- [ ] T059 [US4] Construir formularios de alta y edicion de insumos con unidad, cantidad y umbral minimo en `src/app/admin/inventory/supply-form.tsx`
-- [ ] T060 [US4] Construir formulario de movimiento manual, validacion de stock y consulta de movimientos en `src/app/admin/inventory/inventory-movement-form.tsx`
+- [x] T055 [P] [US4] Implementar entidades, reglas de stock y movimientos `entrada`, `consumo` y `correccion` en `src/domain/inventory/`
+- [x] T056 [US4] Implementar servicio administrativo de insumos, umbral bajo y excepcion documentada en `src/domain/inventory/inventory-service.ts`
+- [x] T057 [US4] Implementar repositorios de insumos y movimientos con auditoria en `src/storage/inventory/`
+- [x] T058 [US4] Construir vista administrativa de inventario con indicador de bajo stock y estado vacio en `src/app/admin/inventory/inventory-page.tsx`
+- [x] T059 [US4] Construir formularios de alta y edicion de insumos con unidad, cantidad y umbral minimo en `src/app/admin/inventory/supply-form.tsx`
+- [x] T060 [US4] Construir formulario de movimiento manual, validacion de stock y consulta de movimientos en `src/app/admin/inventory/inventory-movement-form.tsx`
 
 **Checkpoint**: El administrador puede controlar existencias y justificar cada ajuste sin que el stock negativo ocurra accidentalmente.
 
@@ -162,17 +162,17 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 
 ### Tests for User Story 5
 
-- [ ] T061 [P] [US5] Cubrir validacion de duracion requerida para disponibilidad, activacion, desactivacion y servicios no agendables en `tests/unit/services/service-catalog-rules.test.ts`
-- [ ] T062 [P] [US5] Cubrir reflejo del catalogo aprobado en el flujo publico y bloqueo de nuevas solicitudes para servicios inactivos en `tests/e2e/admin-service-catalog.spec.ts`
-- [ ] T063 [P] [US5] Verificar accesibilidad del editor de servicios y sus estados de guardado y error en `tests/accessibility/admin-service-catalog.spec.ts`
+- [x] T061 [P] [US5] Cubrir validacion de duracion requerida para disponibilidad, activacion, desactivacion y servicios no agendables en `tests/unit/services/service-catalog-rules.test.ts`
+- [x] T062 [P] [US5] Cubrir reflejo del catalogo aprobado en el flujo publico y bloqueo de nuevas solicitudes para servicios inactivos en `tests/e2e/admin-service-catalog.spec.ts`
+- [x] T063 [P] [US5] Verificar accesibilidad del editor de servicios y sus estados de guardado y error en `tests/accessibility/admin-service-catalog.spec.ts`
 
 ### Implementation for User Story 5
 
-- [ ] T064 [P] [US5] Implementar reglas de catalogo, categorias requeridas, duracion, disponibilidad y estado publicable en `src/domain/services/service-catalog-rules.ts`
-- [ ] T065 [US5] Implementar servicio administrativo CRUD de servicios y procedimientos en `src/domain/services/admin-service-catalog.ts`
-- [ ] T066 [US5] Implementar persistencia de catalogo y version vigente para lectura publica en `src/storage/services/`
-- [ ] T067 [US5] Construir lista y editor administrativo de servicios con activar/desactivar y validacion de duracion en `src/app/admin/services/`
-- [ ] T068 [US5] Conectar la lectura publica y la generacion de horarios con el catalogo activo y agendable en `src/app/public/services/` y `src/domain/availability/`
+- [x] T064 [P] [US5] Implementar reglas de catalogo, categorias requeridas, duracion, disponibilidad y estado publicable en `src/domain/services/service-catalog-rules.ts`
+- [x] T065 [US5] Implementar servicio administrativo CRUD de servicios y procedimientos en `src/domain/services/admin-service-catalog.ts`
+- [x] T066 [US5] Implementar persistencia de catalogo y version vigente para lectura publica en `src/storage/services/`
+- [x] T067 [US5] Construir lista y editor administrativo de servicios con activar/desactivar y validacion de duracion en `src/app/admin/services/`
+- [x] T068 [US5] Conectar la lectura publica y la generacion de horarios con el catalogo activo y agendable en `src/app/public/services/` y `src/domain/availability/`
 
 **Checkpoint**: El catalogo administrativo controla de forma consistente lo que la cliente ve y puede agendar.
 
@@ -182,13 +182,13 @@ description: "Tareas de implementacion para la PWA de gestion del spa"
 
 **Purpose**: Verificar el producto completo contra la Constitution, los contratos y el quickstart.
 
-- [ ] T069 [P] Ejecutar auditoria de permisos, secretos, minimizacion de datos y mensajes WhatsApp en `src/shared/auth/`, `src/integrations/whatsapp/` y `docs/security-review.md`
-- [ ] T070 [P] Completar estados de carga, error, exito, expiracion y recuperacion en las superficies publicas y administrativas bajo `src/app/`
-- [ ] T071 [P] Ejecutar pruebas responsive y de accesibilidad sobre los flujos criticos en `tests/accessibility/` y `tests/e2e/`
-- [ ] T072 [P] Revisar rendimiento de carga e interaccion frente a las metas del plan y documentar resultados en `docs/performance-review.md`
-- [ ] T073 Verificar los ocho escenarios de `specs/001-spa-pwa-management/quickstart.md` y registrar evidencia en `docs/validation/quickstart-results.md`
-- [ ] T074 Revisar trazabilidad FR-001 a FR-032, criterios de aceptacion y reglas de `contracts/` frente a la implementacion en `docs/traceability.md`
-- [ ] T075 Ejecutar lint, comprobacion de tipos, pruebas unitarias, integracion, E2E y accesibilidad; documentar comandos, resultados y riesgos pendientes en `docs/release-checklist.md`
+- [x] T069 [P] Ejecutar auditoria de permisos, secretos, minimizacion de datos y mensajes WhatsApp en `src/shared/auth/`, `src/integrations/whatsapp/` y `docs/security-review.md`
+- [x] T070 [P] Completar estados de carga, error, exito, expiracion y recuperacion en las superficies publicas y administrativas bajo `src/app/`
+- [x] T071 [P] Ejecutar pruebas responsive y de accesibilidad sobre los flujos criticos en `tests/accessibility/` y `tests/e2e/`
+- [x] T072 [P] Revisar rendimiento de carga e interaccion frente a las metas del plan y documentar resultados en `docs/performance-review.md`
+- [x] T073 Verificar los ocho escenarios de `specs/001-spa-pwa-management/quickstart.md` y registrar evidencia en `docs/validation/quickstart-results.md`
+- [x] T074 Revisar trazabilidad FR-001 a FR-032, criterios de aceptacion y reglas de `contracts/` frente a la implementacion en `docs/traceability.md`
+- [x] T075 Ejecutar lint, comprobacion de tipos, pruebas unitarias, integracion, E2E y accesibilidad; documentar comandos, resultados y riesgos pendientes en `docs/release-checklist.md`
 
 ---
 
@@ -266,4 +266,3 @@ T028 confirmacion visible
 
 - La configuracion concreta de horarios, dias, buffers, capacidad, duracion de holds, festivos y profesionales debe quedar parametrizable; no se deben inventar valores de negocio en las tareas.
 - La reprogramacion publica de citas confirmadas y la deduccion automatica de insumos quedan fuera de esta primera implementacion, conforme a las aclaraciones de `spec.md`.
-

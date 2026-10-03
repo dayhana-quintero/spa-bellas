@@ -5,6 +5,7 @@ import type { Supply } from '@/shared/types/supply';
 import type { SupplyMovement } from '@/shared/types/supply-movement';
 import { createId, readSpaData, withSpaData } from '@/storage/spa-store';
 import { canTransitionStatus } from '@/domain/appointments/appointment-state-machine';
+import { validateServiceCatalog } from '@/domain/services/service-catalog-rules';
 import { normalizePhone } from '@/shared/validation/phone';
 
 const days = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
@@ -113,7 +114,7 @@ export function changeAppointmentStatus(id: string, nextStatus: AppointmentStatu
 }
 
 export function saveService(input: Omit<Service, 'id'> & { id?: string }): Service {
-  if (input.isBookable && !input.estimatedDuration) throw new Error('Un servicio agendable requiere duracion estimada.');
+  validateServiceCatalog(input);
   return withSpaData((data) => {
     const service: Service = { ...input, id: input.id ?? createId() };
     const index = data.services.findIndex((item) => item.id === service.id);

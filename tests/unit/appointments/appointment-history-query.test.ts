@@ -1,0 +1,79 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
+import { findAppointmentHistory } from '../../../src/storage/appointments/appointment-history-repository';
+import {
+  _resetAppointments,
+  createAppointment,
+} from '../../../src/storage/appointments/in-memory-appointment-repository';
+import type { Appointment } from '../../../src/shared/types/appointment';
+
+const clientA = '123e4567-e89b-12d3-a456-426614174001';
+const clientB = '123e4567-e89b-12d3-a456-426614174002';
+const serviceA = '123e4567-e89b-12d3-a456-426614174101';
+const serviceB = '123e4567-e89b-12d3-a456-426614174102';
+
+function seedAppointment(
+  scheduledStart: string,
+  overrides: Partial<Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'scheduledStart' | 'scheduledEnd'>> = {},
+) {
+  const start = new Date(scheduledStart);
+  return createAppointment({
+    clientId: clientA,
+    serviceId: serviceA,
+    scheduledStart: start,
+    scheduledEnd: new Date(start.getTime() + 60 * 60 * 1000),
+    status: 'confirmada',
+    source: 'admin',
+    ...overrides,
+  });
+}
+
+describe('appointment history repository', () => {
+  beforeEach(() => {
+    _resetAppointments();
+  });
+
+  it('combines status, date, client, and service filters', () => {
+    const match = seedAppointment('2026-09-24T10:00:00Z');
+    seedAppointment('2026-09-25T10:00:00Z', { status: 'cancelada' });
+    seedAppointment('2026-09-24T11:00:00Z', { clientId: clientB });
+    seedAppointment('2026-09-24T12:00:00Z', { serviceId: serviceB });
+
+    const result = findAppointmentHistory({
+      status: 'confirmada',
+      from: new Date('2026-09-24T00:00:00Z'),
+      to: new Date('2026-09-24T23:59:59Z'),
+      clientId: clientA,
+      serviceId: serviceA,
+    });
+
+    expect(result.total).toBe(1);
+    expect(result.items.map((appointment) => appointment.id)).toEqual([match.id]);
+  });
+
+  it('sorts newest first and returns the requested page', () => {
+    const oldest = seedAppointment('2026-09-20T10:00:00Z');
+    const middle = seedAppointment('2026-09-21T10:00:00Z');
+    const newest = seedAppointment('2026-09-22T10:00:00Z');
+
+    const result = findAppointmentHistory({ page: 2, pageSize: 1 });
+
+    expect(result.total).toBe(3);
+    expect(result.totalPages).toBe(3);
+    expect(result.page).toBe(2);
+    expect(result.items.map((appointment) => appointment.id)).toEqual([middle.id]);
+    expect([oldest.id, newest.id]).not.toContain(result.items[0]?.id);
+  });
+
+  it('returns an empty page when no appointments match', () => {
+    seedAppointment('2026-09-24T10:00:00Z');
+
+    expect(findAppointmentHistory({ status: 'no asistio' })).toEqual({
+      items: [],
+      total: 0,
+      page: 1,
+      pageSize: 20,
+      totalPages: 0,
+    });
+  });
+});

@@ -1,3 +1,5 @@
+"use client";
+
 import { getAppointmentById } from '../../../domain/appointments/admin-appointment-service';
 import type { Appointment } from '../../../shared/types/appointment';
 import { StatusControls } from './status-controls';
@@ -16,12 +18,24 @@ export function AppointmentDetailPage({
   }
 
   return (
-    <article>
-      <h2>Detalle de la cita</h2>
-      <p>{appointment.id}</p>
-      <p>{appointment.status}</p>
-      <p>{new Date(appointment.scheduledStart).toISOString()}</p>
-      <StatusControls appointmentId={appointment.id} status={appointment.status} />
+    <article className="rounded-2xl border border-[#e7d8d3] bg-white p-6 shadow-sm">
+      <h2 className="font-serif text-3xl text-[#d56572]">Detalle de la cita</h2>
+      <div className="mt-4 space-y-2 text-[#2b2b2b]">
+        <p><strong>ID:</strong> {appointment.id}</p>
+        <p><strong>Estado:</strong> {appointment.status}</p>
+        <p><strong>Fecha:</strong> {new Date(appointment.scheduledStart).toLocaleString('es-ES')}</p>
+        <p><strong>Notas:</strong> {appointment.notes ?? 'Sin notas'}</p>
+      </div>
+      <div className="mt-6">
+        <StatusControls
+          appointmentId={appointment.id}
+          status={appointment.status}
+          clientName="Cliente"
+          phone="+0000000000"
+          serviceName="Servicio"
+          scheduledStart={appointment.scheduledStart}
+        />
+      </div>
     </article>
   );
 }

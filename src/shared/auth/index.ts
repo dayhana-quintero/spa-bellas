@@ -1,3 +1,5 @@
+import { parseAdminSession } from './server';
+
 // Representa la sesión mínima del único rol administrativo permitido por la v1.
 export type AdminSession = {
   id: string;
@@ -20,6 +22,28 @@ export function createAdminSession(
     accessStatus: session.accessStatus ?? 'activo',
     role: 'admin',
   };
+}
+
+export function readAdminSessionFromCookie(cookieValue?: string | null): AdminSession | null {
+  if (!cookieValue || !cookieValue.trim()) {
+    return null;
+  }
+
+  const signedSession = parseAdminSession(cookieValue);
+  if (signedSession && canAccessAdminArea(signedSession)) {
+    return createAdminSession(signedSession);
+  }
+
+  try {
+    const parsed = JSON.parse(cookieValue) as AdminSessionInput;
+    if (!canAccessAdminArea(parsed)) {
+      return null;
+    }
+
+    return createAdminSession(parsed);
+  } catch {
+    return null;
+  }
 }
 
 // Verifica si la sesión actual pertenece a un administrador activo.
