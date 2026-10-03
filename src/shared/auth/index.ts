@@ -1,9 +1,13 @@
+import { getAdminUserByCodeFromSupabase } from '@/lib/supabase-data';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { findAdminUserByCode as findStoredAdminUserByCode, getAdminUsers as readStoredAdminUsers } from '@/storage/admin-users';
 
 import { parseAdminSession } from './server';
 
 export type AdminRole = 'admin' | 'manager' | 'owner';
 export type AdminSessionRole = AdminRole | 'user';
+
+export type AdminSessionState = 'missing' | 'authenticated' | 'expired' | 'denied';
 
 export type AdminSession = {
   id: string;
@@ -24,6 +28,7 @@ export type AdminUser = {
 
 export type AdminSessionInput = Partial<Omit<AdminSession, 'role'>> & {
   role?: string;
+  expiresAt?: number;
 };
 
 const ADMIN_ACCESS_ROLES = new Set<AdminRole>(['admin', 'manager', 'owner']);
@@ -55,6 +60,24 @@ export function findAdminUserByCode(code: unknown): AdminUser | null {
   };
 }
 
+export async function findAdminUserByCodeForRequest(code: unknown): Promise<AdminUser | null> {
+  if (isSupabaseConfigured()) {
+    const remoteUser = await getAdminUserByCodeFromSupabase(String(code ?? ''));
+    if (remoteUser) {
+      return {
+        id: remoteUser.id,
+        name: remoteUser.name,
+        email: remoteUser.email,
+        role: (remoteUser.role ?? 'admin') as AdminRole,
+        accessCode: remoteUser.code,
+        isActive: true,
+      };
+    }
+  }
+
+  return findAdminUserByCode(code);
+}
+
 export function createAdminSession(
   session: AdminSessionInput = {},
 ): AdminSession {
@@ -69,18 +92,57 @@ export function createAdminSession(
   };
 }
 
-export function readAdminSessionFromCookie(cookieValue?: string | null): AdminSession | null {
+export function getAdminSessionState(cookieValue?: string | null): AdminSessionState {
   if (!cookieValue || !cookieValue.trim()) {
+    return 'missing';
+  }
+
+  if (parseAdminSession(cookieValue)) {
+    return 'authenticated';
+  }
+
+  try {
+    const decoded = JSON.parse(cookieValue) as AdminSessionInput;
+    if (decoded && typeof decoded === 'object' && typeof decoded.expiresAt === 'number' && decoded.expiresAt <= Date.now()) {
+      return 'expired';
+    }
+  } catch {
+    // No-op: invalid cookie payloads are denied.
+  }
+
+  try {
+    const [encoded, signature] = cookieValue.split('.');
+    if (encoded && signature) {
+      const payload = JSON.parse(Buffer.from(encoded, 'base64url').toString('utf8')) as Partial<AdminSessionInput> & { expiresAt?: number };
+      if (typeof payload.expiresAt === 'number' && payload.expiresAt <= Date.now()) {
+        return 'expired';
+      }
+    }
+  } catch {
+    // No-op: invalid cookie payloads are denied.
+  }
+
+  return 'denied';
+}
+
+export function readAdminSessionFromCookie(cookieValue?: string | null): AdminSession | null {
+  const value = cookieValue ?? '';
+  if (!value.trim()) {
     return null;
   }
 
-  const signedSession = parseAdminSession(cookieValue);
+  const state = getAdminSessionState(value);
+  if (state !== 'authenticated') {
+    return null;
+  }
+
+  const signedSession = parseAdminSession(value);
   if (signedSession && canAccessAdminArea(signedSession)) {
     return createAdminSession(signedSession);
   }
 
   try {
-    const parsed = JSON.parse(cookieValue) as AdminSessionInput;
+    const parsed = JSON.parse(value) as AdminSessionInput;
     if (!canAccessAdminArea(parsed)) {
       return null;
     }

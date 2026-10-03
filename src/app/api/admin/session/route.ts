@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-import { findAdminUserByCode } from '@/shared/auth';
+import { findAdminUserByCodeForRequest } from '@/shared/auth';
 import { clearAdminSessionCookie, cookieName, createAdminSessionCookie, isAdminSessionAuthenticated } from '@/shared/auth/server';
 
 export async function GET() {
@@ -11,7 +11,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const { accessCode } = await request.json();
-  const adminUser = findAdminUserByCode(accessCode);
+  const adminUser = await findAdminUserByCodeForRequest(accessCode);
 
   if (!adminUser) {
     return Response.json({ error: 'Codigo de acceso invalido.' }, { status: 401 });

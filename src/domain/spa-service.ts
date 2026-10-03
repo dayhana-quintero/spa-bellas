@@ -6,6 +6,8 @@ import type { SupplyMovement } from '@/shared/types/supply-movement';
 import { createId, readSpaData, withSpaData } from '@/storage/spa-store';
 import { canTransitionStatus } from '@/domain/appointments/appointment-state-machine';
 import { validateServiceCatalog } from '@/domain/services/service-catalog-rules';
+import { listAppointmentsFromSupabase } from '@/lib/supabase-data';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { normalizePhone } from '@/shared/validation/phone';
 
 const days = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
@@ -105,6 +107,17 @@ export function listAppointments(filters: { status?: string; from?: string; to?:
     const service = data.services.find((item) => item.id === appointment.serviceId);
     return (!filters.status || appointment.status === filters.status) && (!filters.from || appointment.scheduledStart >= new Date(filters.from)) && (!filters.to || appointment.scheduledStart <= new Date(`${filters.to}T23:59:59`)) && (!filters.client || client?.name.toLowerCase().includes(filters.client.toLowerCase())) && (!filters.service || service?.name.toLowerCase().includes(filters.service.toLowerCase()));
   }).sort((a, b) => b.scheduledStart.getTime() - a.scheduledStart.getTime()).map((appointment) => ({ ...appointment, client: data.clients.find((item) => item.id === appointment.clientId), service: data.services.find((item) => item.id === appointment.serviceId) }));
+}
+
+export async function listAppointmentsForAdmin(filters: { status?: string; from?: string; to?: string; client?: string; service?: string } = {}) {
+  if (isSupabaseConfigured()) {
+    const remoteAppointments = await listAppointmentsFromSupabase(filters);
+    if (remoteAppointments.length > 0 || filters.status || filters.from || filters.to || filters.client || filters.service) {
+      return remoteAppointments;
+    }
+  }
+
+  return listAppointments(filters);
 }
 
 export function changeAppointmentStatus(id: string, nextStatus: AppointmentStatus, adminId: string, note?: string): Appointment {

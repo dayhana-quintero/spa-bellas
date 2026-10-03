@@ -2,10 +2,11 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { LogoutButton } from './logout-button';
 import { AppointmentConfirmAction } from './appointment-confirm-action';
+import { LogoutButton } from './logout-button';
+import { getAdminDashboardSummary, getLowStockSupplies } from '@/domain/admin-dashboard';
+import { listAppointmentsForAdmin } from '@/domain/spa-service';
 import { readAdminSessionFromCookie } from '@/shared/auth';
-import { listAppointments } from '@/domain/spa-service';
 
 const appointmentStatuses = ['', 'pendiente', 'confirmada', 'cancelada', 'vencida', 'completada', 'no asistio', 'reprogramacion solicitada', 'reprogramada'] as const;
 const statusLabels: Record<(typeof appointmentStatuses)[number], string> = {
@@ -38,9 +39,17 @@ export default async function AdminPage({
   const status = appointmentStatuses.includes(requestedStatus as (typeof appointmentStatuses)[number])
     ? requestedStatus as (typeof appointmentStatuses)[number]
     : 'pendiente';
-  const appointments = listAppointments({ status: status || undefined });
-  const pendingCount = listAppointments({ status: 'pendiente' }).length;
+  const appointments = (await listAppointmentsForAdmin({ status: status || undefined })) as Array<{
+    id: string;
+    status: (typeof appointmentStatuses)[number];
+    scheduledStart: Date;
+    client?: { name?: string; phone?: string };
+    service?: { name?: string };
+  }>;
+  const pendingCount = (await listAppointmentsForAdmin({ status: 'pendiente' })).length;
   const pageTitle = status ? `Citas ${statusLabels[status].toLowerCase()}s` : statusLabels[status];
+  const summary = getAdminDashboardSummary();
+  const lowStockSupplies = getLowStockSupplies().slice(0, 3);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f3f0ef] text-[#2a2423]">
@@ -77,15 +86,15 @@ export default async function AdminPage({
             <span>Citas canceladas</span>
           </Link>
 
-          <button className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80">
+          <Link href="/admin/inventory" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
             <span className="text-lg">🧴</span>
             <span>Insumos</span>
-          </button>
+          </Link>
 
-          <button className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80">
+          <Link href="/admin/appointments/history" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
             <span className="text-lg">🧾</span>
             <span>Historial de citas</span>
-          </button>
+          </Link>
         </nav>
 
         <div className="mt-auto border-t border-white/10 pt-4">
@@ -133,6 +142,43 @@ export default async function AdminPage({
               + Nueva cita
             </button>
           </div>
+
+          <div className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <div className="rounded-2xl border border-[#e8d8d1] bg-white p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d6966]">Pendientes</p>
+              <p className="mt-3 text-3xl font-bold text-[#2a2323]">{summary.pendingAppointments}</p>
+            </div>
+            <div className="rounded-2xl border border-[#e8d8d1] bg-white p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d6966]">Confirmadas</p>
+              <p className="mt-3 text-3xl font-bold text-[#2a2323]">{summary.confirmedAppointments}</p>
+            </div>
+            <div className="rounded-2xl border border-[#e8d8d1] bg-white p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d6966]">Vencidas</p>
+              <p className="mt-3 text-3xl font-bold text-[#2a2323]">{summary.expiredAppointments}</p>
+            </div>
+            <div className="rounded-2xl border border-[#e8d8d1] bg-white p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d6966]">Servicios</p>
+              <p className="mt-3 text-3xl font-bold text-[#2a2323]">{summary.activeServices}</p>
+            </div>
+            <div className="rounded-2xl border border-[#e8d8d1] bg-white p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d6966]">Stock bajo</p>
+              <p className="mt-3 text-3xl font-bold text-[#2a2323]">{summary.lowStockItems}</p>
+            </div>
+          </div>
+
+          {lowStockSupplies.length > 0 ? (
+            <div className="mb-6 rounded-2xl border border-[#f2d8d0] bg-[#fff7f5] p-4 text-[#5b403d]">
+              <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[#7d6966]">Prioridad de inventario</p>
+              <ul className="mt-3 space-y-2 text-sm">
+                {lowStockSupplies.map((item) => (
+                  <li key={item.id} className="flex items-center justify-between gap-3 rounded-xl bg-white/70 px-3 py-2">
+                    <span>{item.name}</span>
+                    <span>{item.quantityAvailable}/{item.minimumThreshold}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           <form action="/admin" method="get" className="mb-6 grid gap-3 rounded-2xl bg-[#efe8e3] p-4 md:grid-cols-[1.2fr_1.2fr_1fr_0.8fr]">
             <label className="flex flex-col gap-2">

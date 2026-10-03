@@ -4,8 +4,8 @@ import type { SupplyMovement } from '@/shared/types/supply-movement';
 import {
   getNextQuantityForMovement,
   isLowStock,
-} from '@/domain/inventory/inventory-rules';
-import {
+} from '@/domain/inventory/inventory-rules';import { listSuppliesFromSupabase } from '@/lib/supabase-data';
+import { isSupabaseConfigured } from '@/lib/supabase';import {
   appendSupplyMovement,
   getSupplyById,
   listInventorySupplies,
@@ -17,6 +17,19 @@ export function listSupplies() {
     ...supply,
     isLowStock: isLowStock(supply),
   }));
+}
+
+export async function listSuppliesForAdmin() {
+  if (isSupabaseConfigured()) {
+    const remoteSupplies = await listSuppliesFromSupabase();
+    return remoteSupplies.map((supply) => ({
+      ...supply,
+      isLowStock: supply.quantityAvailable <= supply.minimumThreshold,
+      movements: [],
+    }));
+  }
+
+  return listSupplies();
 }
 
 export function createSupply(input: Omit<Supply, 'id'> & { id?: string }): Supply {
