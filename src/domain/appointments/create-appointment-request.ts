@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { createId } from '@/shared/id';
 import { normalizePhone } from '../../shared/validation/phone';
 
 const appointmentRequestSchema = z.object({
@@ -60,7 +61,7 @@ export function validateAppointmentRequest(input: AppointmentRequestInput): Appo
   const holdExpiresAt = new Date(scheduledStart.getTime() + 30 * 60 * 1000);
 
   return {
-    id: crypto.randomUUID(),
+    id: createId(),
     serviceId: parsed.serviceId,
     client: {
       ...parsed.client,

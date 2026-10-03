@@ -1,9 +1,7 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 
-import { getAvailableSlotsForDate } from '@/domain/availability/availability-service';
-import { getPublicCatalog } from '@/domain/services/public-catalog';
 import type { Service } from '@/shared/types/service';
 
 type SlotPickerState = {
@@ -12,30 +10,12 @@ type SlotPickerState = {
 };
 
 type AppointmentSlotPickerProps = {
+  service?: Service;
   serviceId: string;
   date: string;
   selectedSlot: string;
   onDateChange: (value: string) => void;
   onSlotChange: (value: string) => void;
-};
-
-const baseAvailability = {
-  spaCapacity: 1,
-  bufferBetweenAppointments: 15,
-  defaultHoldDuration: 30,
-  workingDays: ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'] as Array<
-    'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes' | 'sabado' | 'domingo'
-  >,
-  nonWorkingDays: [] as Date[],
-  openingHours: {
-    lunes: { opensAt: 9 * 60, closesAt: 18 * 60 },
-    martes: { opensAt: 9 * 60, closesAt: 18 * 60 },
-    miercoles: { opensAt: 9 * 60, closesAt: 18 * 60 },
-    jueves: { opensAt: 9 * 60, closesAt: 18 * 60 },
-    viernes: { opensAt: 9 * 60, closesAt: 18 * 60 },
-    sabado: { opensAt: 10 * 60, closesAt: 16 * 60 },
-  } as Partial<Record<'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes' | 'sabado' | 'domingo', { opensAt: number; closesAt: number }>>,
-  adminBlocks: [] as Array<{ startsAt: Date; endsAt: Date; reason?: string }>,
 };
 
 export function buildSlotPickerState({
@@ -75,29 +55,34 @@ export function buildSlotPickerState({
 }
 
 export default function AppointmentSlotPicker({
+  service,
   serviceId,
   date,
   selectedSlot,
   onDateChange,
   onSlotChange,
 }: AppointmentSlotPickerProps) {
-  const catalog = getPublicCatalog();
-  const service = catalog.find((item) => item.id === serviceId) ?? catalog[0];
+  const [slotData, setSlotData] = useState<{ key: string; slots: Array<{ time: string }> }>({ key: '', slots: [] });
+  const requestKey = `${serviceId}:${date}`;
+  const slots = slotData.key === requestKey ? slotData.slots : [];
 
-  const serviceDurationMinutes = service?.estimatedDuration ?? 60;
-  const slots = useMemo(() => {
-    if (!service || !date) {
-      return [];
-    }
+  useEffect(() => {
+    if (!serviceId || !date) return;
 
-    return getAvailableSlotsForDate({
-      date,
-      serviceDurationMinutes,
-      availability: baseAvailability,
-      bookedAppointments: [],
-      pendingHolds: [],
-    });
-  }, [date, service, serviceDurationMinutes]);
+    const controller = new AbortController();
+    fetch(`/api/public/slots?serviceId=${encodeURIComponent(serviceId)}&date=${encodeURIComponent(date)}`, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('No se pudieron cargar los horarios.');
+        return (await response.json()) as Array<{ time: string }>;
+      })
+      .then((availableSlots) => setSlotData({ key: requestKey, slots: availableSlots }))
+      .catch((error: unknown) => {
+        if (error instanceof Error && error.name === 'AbortError') return;
+        setSlotData({ key: requestKey, slots: [] });
+      });
+
+    return () => controller.abort();
+  }, [date, requestKey, serviceId]);
 
   const state = buildSlotPickerState({
     service,
@@ -106,10 +91,10 @@ export default function AppointmentSlotPicker({
   });
 
   useEffect(() => {
-    if (selectedSlot && !slots.some((slot) => slot.time === selectedSlot)) {
+    if (selectedSlot && (slotData.key !== requestKey || !slotData.slots.some((slot) => slot.time === selectedSlot))) {
       onSlotChange('');
     }
-  }, [onSlotChange, selectedSlot, slots]);
+  }, [onSlotChange, requestKey, selectedSlot, slotData]);
 
   return (
     <div className="rounded-3xl border border-[#e7d8d3] bg-white p-6 shadow-sm">

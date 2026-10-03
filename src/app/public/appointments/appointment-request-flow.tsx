@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import type { AppointmentRequest } from '@/domain/appointments/create-appointment-request';
-import { getPublicCatalog } from '@/domain/services/public-catalog';
+import type { Service } from '@/shared/types/service';
 import {
   readCustomerSession,
   saveCustomerSession,
@@ -13,12 +13,36 @@ import AppointmentRequestForm from './appointment-request-form';
 import AppointmentSlotPicker from './slot-picker';
 
 export default function AppointmentRequestFlow() {
-  const services = getPublicCatalog();
   const persistedSession = readCustomerSession();
+  const [services, setServices] = useState<Service[]>([]);
+  const [catalogLoaded, setCatalogLoaded] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState<string>(persistedSession.selectedServiceId ?? services[0]?.id ?? '');
-  const [date, setDate] = useState<string>(persistedSession.date ?? new Date(Date.now() + 86400000).toISOString().slice(0, 10));
+  const [date, setDate] = useState<string>(persistedSession.date ?? '');
   const [selectedSlot, setSelectedSlot] = useState(persistedSession.selectedSlot ?? '');
   const [submittedRequest, setSubmittedRequest] = useState<AppointmentRequest | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    fetch('/api/public/services')
+      .then(async (response) => {
+        if (!response.ok) throw new Error('No se pudieron cargar los servicios.');
+        return (await response.json()) as Service[];
+      })
+      .then((catalog) => {
+        if (!active) return;
+        setServices(catalog);
+        setSelectedServiceId((current) => catalog.some((service) => service.id === current) ? current : catalog[0]?.id ?? '');
+      })
+      .catch(() => {
+        if (active) setServices([]);
+      })
+      .finally(() => {
+        if (active) setCatalogLoaded(true);
+      });
+
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     saveCustomerSession({ selectedServiceId, date, selectedSlot });
@@ -29,7 +53,7 @@ export default function AppointmentRequestFlow() {
   if (services.length === 0) {
     return (
       <div className="mt-8 rounded-2xl border border-dashed border-[#d7c6c2] bg-white/50 p-6 text-[#564d4c]">
-        No hay servicios disponibles en este momento.
+        {catalogLoaded ? 'No hay servicios disponibles en este momento.' : 'Cargando servicios...'}
       </div>
     );
   }
@@ -60,6 +84,7 @@ export default function AppointmentRequestFlow() {
       </section>
 
       <AppointmentSlotPicker
+        service={selectedService}
         serviceId={selectedService?.id ?? selectedServiceId}
         date={date}
         selectedSlot={selectedSlot}

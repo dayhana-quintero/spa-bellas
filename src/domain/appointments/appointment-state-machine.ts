@@ -1,3 +1,5 @@
+import { createId } from '@/shared/id';
+
 import type { Appointment } from '../../shared/types/appointment';
 import type { AppointmentStatusRecord } from '../../shared/types/appointment-status';
 
@@ -50,7 +52,7 @@ export function createAppointmentStatusTransition({
   transitionAppointmentStatus({ previousStatus, newStatus });
 
   return {
-    id: crypto.randomUUID(),
+    id: createId(),
     appointmentId,
     previousStatus,
     newStatus,

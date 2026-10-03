@@ -1,26 +1,71 @@
+import { findAdminUserByCode as findStoredAdminUserByCode, getAdminUsers as readStoredAdminUsers } from '@/storage/admin-users';
+
 import { parseAdminSession } from './server';
 
-// Representa la sesión mínima del único rol administrativo permitido por la v1.
+export type AdminRole = 'admin' | 'manager' | 'owner';
+export type AdminSessionRole = AdminRole | 'user';
+
 export type AdminSession = {
   id: string;
   name: string;
+  email?: string;
   accessStatus: 'activo' | 'inactivo';
-  role: 'admin';
+  role: AdminSessionRole;
+};
+
+export type AdminUser = {
+  id: string;
+  name: string;
+  email?: string;
+  role: AdminRole;
+  accessCode: string;
+  isActive: boolean;
 };
 
 export type AdminSessionInput = Partial<Omit<AdminSession, 'role'>> & {
   role?: string;
 };
 
-// Crea una sesión de administrador con valores por defecto seguros.
+const ADMIN_ACCESS_ROLES = new Set<AdminRole>(['admin', 'manager', 'owner']);
+
+export function getAdminUsers(): AdminUser[] {
+  return readStoredAdminUsers().map((user) => ({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    accessCode: user.accessCode,
+    isActive: user.isActive,
+  }));
+}
+
+export function findAdminUserByCode(code: unknown): AdminUser | null {
+  const user = findStoredAdminUserByCode(code);
+  if (!user) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    accessCode: user.accessCode,
+    isActive: user.isActive,
+  };
+}
+
 export function createAdminSession(
   session: AdminSessionInput = {},
 ): AdminSession {
+  const normalizedRole = session.role ?? 'admin';
+
   return {
     id: session.id ?? '',
     name: session.name ?? 'Admin',
+    email: session.email,
     accessStatus: session.accessStatus ?? 'activo',
-    role: 'admin',
+    role: (ADMIN_ACCESS_ROLES.has(normalizedRole as AdminRole) ? normalizedRole : 'user') as AdminSessionRole,
   };
 }
 
@@ -52,7 +97,8 @@ export function isAdminActive(session?: AdminSessionInput | null): boolean {
     return false;
   }
 
-  return session.role === 'admin' && session.accessStatus === 'activo';
+  const normalizedRole = session.role as string | undefined;
+  return Boolean(normalizedRole && ADMIN_ACCESS_ROLES.has(normalizedRole as AdminRole)) && session.accessStatus === 'activo';
 }
 
 // Permite decidir de forma centralizada si el usuario puede entrar al área administrativa.

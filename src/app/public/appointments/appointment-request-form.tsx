@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { createId } from '@/shared/id';
 import {
   createAppointmentRequest,
   type AppointmentRequest,
@@ -156,7 +157,7 @@ export default function AppointmentRequestForm({
     selectedServiceId: service?.id ?? '',
   });
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrorMessage(null);
 
@@ -171,10 +172,10 @@ export default function AppointmentRequestForm({
     }
 
     try {
-      const request = createAppointmentRequest({
+      const appointmentRequest = createAppointmentRequest({
         serviceId: service.id,
         client: {
-          id: crypto.randomUUID(),
+          id: createId(),
           name: name.trim(),
           phone: phone.trim(),
           notes: notes.trim() || undefined,
@@ -184,8 +185,26 @@ export default function AppointmentRequestForm({
         consent,
       });
 
+      const response = await fetch('/api/public/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientName: name.trim(),
+          clientPhone: phone.trim(),
+          serviceId: service.id,
+          date,
+          slot: selectedSlot,
+          notes: notes.trim() || undefined,
+          whatsappConsent: consent,
+        }),
+      });
+      const result = await response.json() as { id?: string; error?: string };
+      if (!response.ok || !result.id) {
+        throw new Error(result.error ?? 'No se pudo guardar la solicitud.');
+      }
+
       clearCustomerSession();
-      onRequestCreated(request);
+      onRequestCreated({ ...appointmentRequest, id: result.id });
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'No se pudo crear la solicitud.');
     }

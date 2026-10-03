@@ -1,0 +1,26 @@
+[
+  {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "name": "Administrador",
+    "email": "admin@spa.local",
+    "role": "admin",
+    "accessCode": "spa-admin",
+    "isActive": true
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000002",
+    "name": "Manager",
+    "email": "manager@spa.local",
+    "role": "manager",
+    "accessCode": "spa-manager",
+    "isActive": true
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000003",
+    "name": "Dueño",
+    "email": "owner@spa.local",
+    "role": "owner",
+    "accessCode": "spa-owner",
+    "isActive": true
+  }
+]

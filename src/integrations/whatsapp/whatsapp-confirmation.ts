@@ -1,3 +1,4 @@
+import { createId } from '@/shared/id';
 import { confirmationMessageSchema } from '../../shared/types/confirmation-message';
 import { normalizePhone } from '../../shared/validation/phone';
 
@@ -39,7 +40,7 @@ export function prepareConfirmationMessage(input: PrepareConfirmationInput) {
   const messageText = `Hola ${input.clientName}, confirmamos tu cita de ${input.serviceName} para el ${scheduledText}. Responde este mensaje para confirmar tu asistencia.`;
 
   return confirmationMessageSchema.parse({
-    id: crypto.randomUUID(),
+    id: createId(),
     appointmentId: input.appointmentId,
     messageText,
     contactPhone,
@@ -65,7 +66,7 @@ export function recordManualConfirmationOutcome({
   }
 
   return confirmationMessageSchema.parse({
-    id: crypto.randomUUID(),
+    id: createId(),
     appointmentId,
     messageText: 'Confirmación registrada manualmente por el administrador.',
     contactPhone: '+0000000000',
