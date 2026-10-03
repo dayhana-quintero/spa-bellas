@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  BrowserWhatsAppChannel,
+  createWhatsAppAdapter,
+} from '../../../src/integrations/whatsapp/whatsapp-adapter';
+import {
   buildWhatsAppUrl,
   prepareConfirmationMessage,
   recordManualConfirmationOutcome,
@@ -55,5 +59,25 @@ describe('whatsapp confirmation', () => {
 
     expect(result.outcome).toBe('manually-recorded');
     expect(result.outcomeNote).toContain('manualmente');
+  });
+
+  it('opens a secure browser channel with the generated WhatsApp URL', () => {
+    const opened: string[] = [];
+
+    Object.defineProperty(globalThis, 'window', {
+      value: {
+        open: (url: string) => {
+          opened.push(url);
+          return {} as Window;
+        },
+      },
+      configurable: true,
+    });
+
+    const channel = createWhatsAppAdapter(new BrowserWhatsAppChannel());
+    const url = channel.openConfirmation('+34600123456', 'Hola María, confirmamos tu cita.');
+
+    expect(url).toContain('wa.me');
+    expect(opened).toHaveLength(1);
   });
 });

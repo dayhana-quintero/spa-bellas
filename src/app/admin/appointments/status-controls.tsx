@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { getAvailableStatusTransitions } from '../../../domain/appointments/admin-appointment-service';
 import { changeAppointmentStatus } from '../../../domain/spa-service';
+import { createWhatsAppCommunicationRecord } from '../../../integrations/whatsapp/whatsapp-communication';
 import {
   openWhatsAppConfirmation,
 } from '../../../integrations/whatsapp/whatsapp-adapter';
@@ -27,6 +28,9 @@ export function StatusControls({
 }) {
   const transitions = getAvailableStatusTransitions(status);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [manualResult, setManualResult] = useState<Appointment['status'] | 'sin respuesta'>('sin respuesta');
+  const [manualNote, setManualNote] = useState('');
+  const [manualFormOpen, setManualFormOpen] = useState(false);
 
   const handleTransition = (nextStatus: Appointment['status']) => {
     try {
@@ -50,12 +54,51 @@ export function StatusControls({
       });
 
       const url = openWhatsAppConfirmation(prepared.contactPhone, prepared.messageText);
-      window.open(url, '_blank', 'noopener,noreferrer');
+      createWhatsAppCommunicationRecord({
+        appointmentId,
+        messageText: prepared.messageText,
+        outcome: 'sent-by-admin',
+        outcomeNote: 'Mensaje preparado y abierto para envío por WhatsApp.',
+        adminId: 'admin-1',
+      });
       setStatusMessage('Mensaje de WhatsApp preparado y listo para enviar.');
+      setManualFormOpen(false);
+      void url;
     } catch (error) {
       setStatusMessage(
         error instanceof Error ? error.message : 'No se pudo preparar el mensaje de WhatsApp.',
       );
+    }
+  };
+
+  const handleManualResult = () => {
+    try {
+      if (!manualNote.trim()) {
+        throw new Error('Escribe una nota para registrar el resultado manual.');
+      }
+
+      const resultText = manualResult === 'sin respuesta'
+        ? 'Sin respuesta del cliente.'
+        : `Resultado manual: ${manualResult}.`;
+
+      createWhatsAppCommunicationRecord({
+        appointmentId,
+        messageText: resultText,
+        outcome: 'manually-recorded',
+        outcomeNote: `${resultText} ${manualNote.trim()}`,
+        adminId: 'admin-1',
+      });
+
+      if (manualResult !== 'sin respuesta') {
+        changeAppointmentStatus(appointmentId, manualResult, 'admin-1', manualNote.trim());
+      }
+
+      setManualFormOpen(false);
+      setManualNote('');
+      setStatusMessage('Resultado manual registrado en la trazabilidad de la cita.');
+      window.location.reload();
+    } catch (error) {
+      setStatusMessage(error instanceof Error ? error.message : 'No se pudo registrar el resultado manual.');
     }
   };
 
@@ -69,7 +112,49 @@ export function StatusControls({
         >
           Confirmar por WhatsApp
         </button>
+        <button
+          type="button"
+          onClick={() => setManualFormOpen((value) => !value)}
+          className="rounded-lg border border-[#d8c7c2] bg-[#f4ece9] px-3 py-2 text-sm text-[#2d2828]"
+        >
+          Registrar resultado manual
+        </button>
       </div>
+
+      {manualFormOpen ? (
+        <div className="mb-4 space-y-3 rounded-2xl border border-[#e7d8d3] bg-[#f9f4f2] p-4">
+          <label className="block text-sm font-medium text-[#2d2828]">
+            Resultado manual
+            <select
+              value={manualResult}
+              onChange={(event) => setManualResult(event.target.value as Appointment['status'] | 'sin respuesta')}
+              className="mt-1 w-full rounded-lg border border-[#d8c7c2] bg-white px-3 py-2 text-sm"
+            >
+              <option value="sin respuesta">Sin respuesta</option>
+              <option value="confirmada">Confirmada</option>
+              <option value="cancelada">Cancelada</option>
+              <option value="reprogramacion solicitada">Reprogramación solicitada</option>
+            </select>
+          </label>
+          <label className="block text-sm font-medium text-[#2d2828]">
+            Nota
+            <textarea
+              value={manualNote}
+              onChange={(event) => setManualNote(event.target.value)}
+              rows={3}
+              className="mt-1 w-full rounded-lg border border-[#d8c7c2] bg-white px-3 py-2 text-sm"
+              placeholder="Describe la respuesta, reprogramación o motivo de la ausencia."
+            />
+          </label>
+          <button
+            type="button"
+            onClick={handleManualResult}
+            className="rounded-lg bg-[#1f1f21] px-3 py-2 text-sm font-medium text-white"
+          >
+            Guardar resultado
+          </button>
+        </div>
+      ) : null}
 
       <p>Acciones disponibles:</p>
       <ul>

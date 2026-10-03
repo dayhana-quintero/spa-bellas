@@ -88,7 +88,13 @@ export function getAppointmentDetails(id: string) {
   const data = readSpaData();
   const appointment = data.appointments.find((item) => item.id === id);
   if (!appointment) return null;
-  return { appointment, client: data.clients.find((item) => item.id === appointment.clientId) ?? null, service: data.services.find((item) => item.id === appointment.serviceId) ?? null, history: data.statusRecords.filter((item) => item.appointmentId === id).sort((a, b) => a.changedAt.getTime() - b.changedAt.getTime()) };
+  return {
+    appointment,
+    client: data.clients.find((item) => item.id === appointment.clientId) ?? null,
+    service: data.services.find((item) => item.id === appointment.serviceId) ?? null,
+    history: data.statusRecords.filter((item) => item.appointmentId === id).sort((a, b) => a.changedAt.getTime() - b.changedAt.getTime()),
+    communicationRecords: data.communicationRecords.filter((item) => item.appointmentId === id).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()),
+  };
 }
 
 export function listAppointments(filters: { status?: string; from?: string; to?: string; client?: string; service?: string } = {}) {

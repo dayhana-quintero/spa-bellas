@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { getAppointmentDetail } from '@/domain/appointments/appointment-history-service';
+import { readSpaData } from '@/storage/spa-store';
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat('es-ES', {
@@ -35,6 +36,28 @@ export default async function AppointmentHistoryDetailPage({
       </main>
     );
   }
+
+  const data = readSpaData();
+  const timeline = [
+    ...data.statusRecords
+      .filter((record) => record.appointmentId === appointmentId)
+      .map((record) => ({
+        id: record.id,
+        kind: 'status' as const,
+        title: `Cambio de estado: ${record.previousStatus} → ${record.newStatus}`,
+        description: record.note ?? 'Sin nota asociada.',
+        timestamp: record.changedAt,
+      })),
+    ...data.communicationRecords
+      .filter((record) => record.appointmentId === appointmentId)
+      .map((record) => ({
+        id: record.id,
+        kind: 'whatsapp' as const,
+        title: `WhatsApp: ${record.outcome}`,
+        description: record.outcomeNote ?? record.messageText,
+        timestamp: record.createdAt,
+      })),
+  ].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
   return (
     <main className="min-h-screen bg-[#f3f0ef] p-8">
@@ -111,6 +134,28 @@ export default async function AppointmentHistoryDetailPage({
               <li>Hold expira: {formatDate(appointment.holdExpiresAt)} · {formatHour(appointment.holdExpiresAt)}</li>
             ) : null}
           </ul>
+        </div>
+
+        <div className="mt-6 rounded-2xl bg-[#efe8e3] p-4">
+          <p className="text-sm text-[#6c5d5a]">Línea de tiempo</p>
+          {timeline.length === 0 ? (
+            <p className="mt-3 text-[#2b2b2b]">Sin eventos registrados.</p>
+          ) : (
+            <ul className="mt-4 space-y-3">
+              {timeline.map((entry) => (
+                <li key={entry.id} className="rounded-xl bg-[#f7f2ef] p-3 shadow-sm">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[#7d6966]">
+                    {entry.kind === 'status' ? 'Estado' : 'WhatsApp'}
+                  </p>
+                  <p className="mt-1 font-semibold text-[#2b2b2b]">{entry.title}</p>
+                  <p className="mt-1 text-[#4b413f]">{entry.description}</p>
+                  <p className="mt-2 text-xs text-[#6c5d5a]">
+                    {formatDate(entry.timestamp)} · {formatHour(entry.timestamp)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </main>

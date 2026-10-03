@@ -4,6 +4,7 @@ import type { Cliente } from '@/shared/types/client';
 import type { Service } from '@/shared/types/service';
 import type { Supply } from '@/shared/types/supply';
 import type { SupplyMovement } from '@/shared/types/supply-movement';
+import type { WhatsAppCommunicationRecord } from '@/shared/types/whatsapp-communication';
 
 export type AvailabilitySettings = {
   spaCapacity: number;
@@ -20,6 +21,7 @@ type SpaData = {
   services: Service[];
   appointments: Appointment[];
   statusRecords: AppointmentStatusRecord[];
+  communicationRecords: WhatsAppCommunicationRecord[];
   supplies: Supply[];
   supplyMovements: SupplyMovement[];
   availability: AvailabilitySettings;
@@ -105,6 +107,7 @@ function defaultData(): SpaData {
     ],
     appointments: [],
     statusRecords: [],
+    communicationRecords: [],
     supplies: [],
     supplyMovements: [],
     availability: {
@@ -129,6 +132,7 @@ function hydrate(data: SpaData): SpaData {
     clients: data.clients.map((item) => ({ ...item, createdAt: new Date(item.createdAt) })),
     appointments: data.appointments.map((item) => ({ ...item, scheduledStart: new Date(item.scheduledStart), scheduledEnd: new Date(item.scheduledEnd), holdExpiresAt: item.holdExpiresAt ? new Date(item.holdExpiresAt) : undefined, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) })),
     statusRecords: data.statusRecords.map((item) => ({ ...item, changedAt: new Date(item.changedAt) })),
+    communicationRecords: (data.communicationRecords ?? []).map((item) => ({ ...item, createdAt: new Date(item.createdAt) })),
     supplyMovements: data.supplyMovements.map((item) => ({ ...item, createdAt: new Date(item.createdAt) })),
   };
 }
