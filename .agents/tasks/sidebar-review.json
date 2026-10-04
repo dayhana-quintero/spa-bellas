@@ -1,0 +1,9 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    "Active state faltante en filtros de estado — Los enlaces 'Citas confirmadas' y 'Citas canceladas' usan clases hardcodeadas en lugar de linkClass(). Nunca recibirán el estilo activo ni el hover coherente con el resto de la navegación. Migrarlos a linkClass('/admin') o replantear si deben ser subitems sin active state propio.",
+    "Exclusión de login/access-denied solo en el sidebar — El layout renderiza el wrapper flex h-screen overflow-hidden para todas las rutas, incluidas /admin/login y /admin/access-denied. Solo el <aside> se oculta. Si esas rutas tienen su propio diseño de pantalla completa, el wrapper exterior puede interferir. Mover la condición de exclusión al layout, o crear un layout separado para esas rutas.",
+    "Historial de citas sobre datos estáticos (JSON) — getAppointmentHistory consume readSpaData(), que carga un archivo JSON local. Los datos no vienen de ninguna base de datos en tiempo real. Si se espera que el historial refleje citas reales, debe conectarse al origen de datos persistente."
+  ],
+  "reviewDoc": "c:\\Users\\quint\\OneDrive\\Desktop\\proyecto-spa\\.agents\\tasks\\sidebar-review.md"
+}

@@ -1,26 +1,45 @@
 "use client";
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import { LogoutButton } from './logout-button';
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+  pendingCount?: number;
+}
+
+function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   // No renderizar sidebar en login/access-denied
   if (pathname.startsWith('/admin/login') || pathname.startsWith('/admin/access-denied')) {
     return null;
   }
 
-  const isActive = (path: string) => {
-    if (path === '/admin') return pathname === '/admin';
-    return pathname.startsWith(path);
+  const isActive = (path: string): boolean => {
+    const url = new URL(path, 'http://x');
+    const targetPathname = url.pathname;
+    const targetStatus = url.searchParams.get('status');
+
+    if (targetPathname === '/admin') {
+      if (targetStatus === null) {
+        // /admin sin status: activo si pathname === '/admin' y no hay status o es 'pendiente'
+        return pathname === '/admin' && (searchParams.get('status') === null || searchParams.get('status') === 'pendiente');
+      }
+      // /admin?status=xxx
+      return pathname === '/admin' && searchParams.get('status') === targetStatus;
+    }
+
+    return pathname.startsWith(targetPathname);
   };
 
   const linkClass = (path: string) =>
-    `flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] font-medium text-[#f5f0ef] ${
+    `flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] font-medium text-[#f5f0ef] transition ${
       isActive(path)
-        ? 'bg-[#2b2b2f] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]'
-        : 'opacity-80 hover:bg-[#2b2b2f]'
+        ? 'bg-[#2b2b2f] border-l-[3px] border-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]'
+        : 'border-l-[3px] border-transparent opacity-80 hover:bg-[#2b2b2f]'
     }`;
 
   return (
@@ -36,14 +55,14 @@ export default function AdminSidebar() {
         <Link href="/admin" className={linkClass('/admin')}>
           <span className="text-lg">📅</span>
           <span>Citas pendientes</span>
+          {pendingCount !== undefined && (
+            <span className="ml-auto rounded-full bg-[#f5d9d5] px-2 text-[11px] font-bold text-[#1d1a1a]">
+              {pendingCount}
+            </span>
+          )}
         </Link>
 
-        <Link href="/admin?status=confirmada" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
-          <span className="text-lg">✓</span>
-          <span>Citas confirmadas</span>
-        </Link>
-
-        <Link href="/admin?status=cancelada" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
+        <Link href="/admin?status=cancelada" className={linkClass('/admin?status=cancelada')}>
           <span className="text-lg">✕</span>
           <span>Citas canceladas</span>
         </Link>
@@ -59,7 +78,8 @@ export default function AdminSidebar() {
         </Link>
       </nav>
 
-      <div className="mt-auto border-t border-white/10 pt-4">
+      <div className="mt-auto border-t border-white/10 pt-4 flex flex-col gap-2">
+        <LogoutButton />
         <Link
           href="/"
           className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 py-3 text-[15px] font-medium text-[#f5f0ef] transition hover:bg-white/5"
@@ -69,5 +89,13 @@ export default function AdminSidebar() {
         </Link>
       </div>
     </aside>
+  );
+}
+
+export default function AdminSidebar({ pendingCount }: AdminSidebarProps) {
+  return (
+    <Suspense fallback={null}>
+      <AdminSidebarInner pendingCount={pendingCount} />
+    </Suspense>
   );
 }

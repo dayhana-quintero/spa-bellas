@@ -3,6 +3,75 @@ import type { Supply } from '@/shared/types/supply';
 import type { SupplyMovement } from '@/shared/types/supply-movement';
 import { getNextQuantityForMovement } from '@/domain/inventory/inventory-rules';
 
+export type AvailabilitySettingsFromSupabase = {
+  spaCapacity: number;
+  bufferBetweenAppointments: number;
+  defaultHoldDuration: number;
+  workingDays: string[];
+  nonWorkingDays: string[];
+  openingHours: Record<string, { opensAt: number; closesAt: number }>;
+  adminBlocks: Array<{ startsAt: string; endsAt: string; reason?: string }>;
+};
+
+export async function getAvailabilitySettingsFromSupabase(): Promise<AvailabilitySettingsFromSupabase> {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para consultar la disponibilidad.');
+
+  const { data, error } = await supabase
+    .from('availability_settings')
+    .select('spa_capacity, buffer_between_appointments, default_hold_duration, working_days, non_working_days, opening_hours, admin_blocks')
+    .eq('id', 'default')
+    .single();
+
+  if (error || !data) {
+    console.error('Supabase availability fetch failed:', error?.message);
+    throw new Error('No se pudo consultar la disponibilidad en Supabase. Aplica la migración remota y vuelve a intentar.');
+  }
+
+  return {
+    spaCapacity: Number(data.spa_capacity),
+    bufferBetweenAppointments: Number(data.buffer_between_appointments),
+    defaultHoldDuration: Number(data.default_hold_duration),
+    workingDays: data.working_days,
+    nonWorkingDays: data.non_working_days,
+    openingHours: data.opening_hours,
+    adminBlocks: data.admin_blocks ?? [],
+  };
+}
+
+export async function listServicesFromSupabase({ publicOnly = false }: { publicOnly?: boolean } = {}) {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para consultar servicios.');
+
+  let query = supabase
+    .from('services')
+    .select('id, local_id, category, name, description, duration_minutes, price_display, price, is_active, is_bookable')
+    .order('name', { ascending: true });
+  if (publicOnly) query = query.eq('is_active', true).eq('is_bookable', true);
+
+  const { data, error } = await query;
+  if (error) {
+    console.error('Supabase services fetch failed:', error.message);
+    throw new Error('No se pudo consultar el catálogo en Supabase.');
+  }
+
+  return (data ?? []).map((item) => ({
+    id: item.local_id ?? item.id,
+    category: item.category ?? 'general',
+    name: item.name,
+    description: item.description ?? item.name,
+    estimatedDuration: Number(item.duration_minutes ?? 60),
+    priceDisplay: item.price_display ?? (Number(item.price) ? `$${Number(item.price).toLocaleString('es-CO')}` : undefined),
+    isActive: Boolean(item.is_active),
+    isBookable: Boolean(item.is_bookable),
+  }));
+}
+
+export async function getServiceFromSupabase(id: string) {
+  const services = await listServicesFromSupabase();
+  return services.find((service) => service.id === id) ?? null;
+}
+
 export async function listAppointmentsFromSupabase(filters: { id?: string; status?: string; from?: string; to?: string; client?: string; service?: string } = {}) {
   const supabase = getSupabaseAdminClient();
 
@@ -178,6 +247,93 @@ export async function updateAppointmentStatusInSupabase(input: {
   };
 }
 
+export async function expireAppointmentHoldsInSupabase(now = new Date()) {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para actualizar citas vencidas.');
+
+  const { data, error } = await supabase
+    .from('appointments')
+    .update({ status: 'vencida', updated_at: now.toISOString() })
+    .eq('status', 'pendiente')
+    .lte('hold_expires_at', now.toISOString())
+    .select('id');
+
+  if (error) {
+    console.error('Supabase appointment hold expiration failed:', error.message);
+    throw new Error('No se pudieron actualizar las citas vencidas en Supabase.');
+  }
+
+  return data?.length ?? 0;
+}
+
+export async function saveWhatsAppCommunicationToSupabase(input: {
+  id: string;
+  appointmentId: string;
+  messageText: string;
+  outcome: string;
+  outcomeNote?: string;
+  adminId?: string;
+  createdAt?: Date;
+}) {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para guardar el registro de WhatsApp.');
+
+  const { data, error } = await supabase
+    .from('whatsapp_communications')
+    .insert({
+      id: input.id,
+      appointment_id: input.appointmentId,
+      message_text: input.messageText,
+      outcome: input.outcome,
+      outcome_note: input.outcomeNote ?? null,
+      admin_id: input.adminId ?? null,
+      created_at: (input.createdAt ?? new Date()).toISOString(),
+    })
+    .select('id, appointment_id, message_text, outcome, outcome_note, admin_id, created_at')
+    .single();
+
+  if (error) {
+    console.error('Supabase WhatsApp communication save failed:', error.message);
+    throw new Error('No se pudo guardar el registro de WhatsApp en Supabase.');
+  }
+
+  return {
+    id: data.id,
+    appointmentId: data.appointment_id,
+    messageText: data.message_text,
+    outcome: data.outcome,
+    outcomeNote: data.outcome_note ?? undefined,
+    adminId: data.admin_id ?? undefined,
+    createdAt: new Date(data.created_at),
+  };
+}
+
+export async function listWhatsAppCommunicationsFromSupabase(appointmentId: string) {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para consultar registros de WhatsApp.');
+
+  const { data, error } = await supabase
+    .from('whatsapp_communications')
+    .select('id, appointment_id, message_text, outcome, outcome_note, admin_id, created_at')
+    .eq('appointment_id', appointmentId)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Supabase WhatsApp communications fetch failed:', error.message);
+    throw new Error('No se pudo consultar el historial de WhatsApp en Supabase.');
+  }
+
+  return (data ?? []).map((item) => ({
+    id: item.id,
+    appointmentId: item.appointment_id,
+    messageText: item.message_text,
+    outcome: item.outcome,
+    outcomeNote: item.outcome_note ?? undefined,
+    adminId: item.admin_id ?? undefined,
+    createdAt: new Date(item.created_at),
+  }));
+}
+
 export async function countActiveServicesFromSupabase() {
   const supabase = getSupabaseAdminClient();
   if (!supabase) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para consultar servicios.');
@@ -199,7 +355,7 @@ export async function saveClientToSupabase(client: { id: string; name: string; p
   const supabase = getSupabaseAdminClient();
 
   if (!supabase) {
-    return null;
+    throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para guardar clientes.');
   }
 
   const { data, error } = await supabase
@@ -221,89 +377,88 @@ export async function saveClientToSupabase(client: { id: string; name: string; p
 
   if (error) {
     console.error('Supabase client sync failed:', error.message);
-    return null;
+    throw new Error('No se pudo guardar el cliente en Supabase.');
   }
 
   return data;
 }
 
+export async function findClientByPhoneFromSupabase(phone: string) {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para consultar clientes.');
+
+  const { data, error } = await supabase
+    .from('clients')
+    .select('id, name, phone, email, notes, whatsapp_consent, created_at')
+    .eq('phone', phone)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Supabase client lookup failed:', error.message);
+    throw new Error('No se pudo consultar el cliente en Supabase.');
+  }
+
+  return data ? {
+    id: data.id,
+    name: data.name,
+    phone: data.phone ?? '',
+    email: data.email ?? undefined,
+    notes: data.notes ?? undefined,
+    whatsappConsent: Boolean(data.whatsapp_consent),
+    createdAt: new Date(data.created_at),
+  } : null;
+}
+
 export async function saveServiceToSupabase(service: {
-  id: string;
+  id?: string;
   name: string;
+  category?: string;
+  description?: string;
   durationMinutes: number;
+  priceDisplay?: string;
   isActive: boolean;
   isBookable: boolean;
 }) {
   const supabase = getSupabaseAdminClient();
 
   if (!supabase) {
-    return null;
+    throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para guardar servicios.');
   }
 
-  const { data, error } = await supabase
-    .from('services')
-    .upsert(
-      {
-        local_id: service.id,
-        name: service.name,
-        duration_minutes: service.durationMinutes,
-        is_active: service.isActive,
-        is_bookable: service.isBookable,
-      },
-      { onConflict: 'local_id' },
-    )
-    .select('id')
-    .single();
-
-  if (!error) {
-    return data;
-  }
-
-  const needsLegacyLookup = error.message.toLowerCase().includes('local_id') || error.code === '42P10';
-  if (!needsLegacyLookup) {
-    console.error('Supabase service sync failed:', error.message);
-    return null;
-  }
-
-  const { data: existingService, error: lookupError } = await supabase
-    .from('services')
-    .select('id')
-    .eq('name', service.name)
-    .eq('duration_minutes', service.durationMinutes)
-    .limit(1)
-    .maybeSingle();
-
-  if (lookupError) {
-    console.error('Supabase service lookup failed:', lookupError.message);
-    return null;
-  }
-
-  const serviceValues = {
+  const values = {
     name: service.name,
+    category: service.category ?? 'general',
+    description: service.description ?? service.name,
     duration_minutes: service.durationMinutes,
+    price_display: service.priceDisplay ?? null,
+    price: Number((service.priceDisplay ?? '').replace(/[^\d.]/g, '')) || 0,
     is_active: service.isActive,
     is_bookable: service.isBookable,
   };
 
-  const { data: syncedService, error: syncError } = existingService
-    ? await supabase
-        .from('services')
-        .update(serviceValues)
-        .eq('id', existingService.id)
-        .select('id')
-        .single()
-    : await supabase
-        .from('services')
-        .insert(serviceValues)
-        .select('id')
-        .single();
+  const query = service.id
+    ? supabase.from('services').upsert({ ...values, id: service.id }, { onConflict: 'id' })
+    : supabase.from('services').insert(values);
+  const { data, error } = await query
+    .select('id, local_id, category, name, description, duration_minutes, price_display, is_active, is_bookable')
+    .single();
 
-  if (syncError) {
-    console.error('Supabase service sync failed:', syncError.message);
-    return null;
+  if (error) {
+    console.error('Supabase service sync failed:', error.message);
+    throw new Error('No se pudo guardar el servicio en Supabase. Aplica la migración remota y vuelve a intentar.');
   }
 
-  return syncedService;
+  return {
+    id: data.id,
+    localId: data.local_id ?? undefined,
+    category: data.category,
+    name: data.name,
+    description: data.description,
+    durationMinutes: Number(data.duration_minutes),
+    priceDisplay: data.price_display ?? undefined,
+    isActive: Boolean(data.is_active),
+    isBookable: Boolean(data.is_bookable),
+  };
 }
 
 export async function saveAppointmentToSupabase(appointment: {
@@ -322,7 +477,7 @@ export async function saveAppointmentToSupabase(appointment: {
   const supabase = getSupabaseAdminClient();
 
   if (!supabase) {
-    return null;
+    throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para guardar citas.');
   }
 
   const { data, error } = await supabase
@@ -348,7 +503,7 @@ export async function saveAppointmentToSupabase(appointment: {
 
   if (error) {
     console.error('Supabase appointment sync failed:', error.message);
-    return null;
+    throw new Error('No se pudo guardar la cita en Supabase.');
   }
 
   return data;
@@ -512,8 +667,9 @@ export async function getAdminUserByCodeFromSupabase(code: string) {
 
   const { data, error } = await supabase
     .from('admin_users')
-    .select('*')
+    .select('id, code, name, email, role, active')
     .eq('code', code)
+    .eq('active', true)
     .maybeSingle();
 
   if (error) {

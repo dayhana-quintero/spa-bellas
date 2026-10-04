@@ -14,9 +14,12 @@ create table if not exists public.clients (
 create table if not exists public.services (
   id uuid primary key default gen_random_uuid(),
   local_id text,
+  category text not null default 'general',
   name text not null,
+  description text not null default '',
   duration_minutes integer not null default 60,
   price numeric(10,2) not null default 0,
+  price_display text,
   is_active boolean not null default true,
   is_bookable boolean not null default true,
   created_at timestamptz not null default now(),
@@ -24,6 +27,9 @@ create table if not exists public.services (
 );
 
 alter table public.services add column if not exists local_id text;
+alter table public.services add column if not exists category text not null default 'general';
+alter table public.services add column if not exists description text not null default '';
+alter table public.services add column if not exists price_display text;
 create unique index if not exists idx_services_local_id on public.services(local_id);
 
 create table if not exists public.appointments (
@@ -48,6 +54,28 @@ create table if not exists public.appointment_status_history (
   changed_by_admin_id text,
   note text,
   changed_at timestamptz not null default now()
+);
+
+create table if not exists public.availability_settings (
+  id text primary key default 'default' check (id = 'default'),
+  spa_capacity integer not null default 1,
+  buffer_between_appointments integer not null default 15,
+  default_hold_duration integer not null default 15,
+  working_days text[] not null default array['lunes','martes','miercoles','jueves','viernes','sabado'],
+  non_working_days text[] not null default '{}',
+  opening_hours jsonb not null default '{}'::jsonb,
+  admin_blocks jsonb not null default '[]'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.whatsapp_communications (
+  id uuid primary key default gen_random_uuid(),
+  appointment_id uuid not null references public.appointments(id) on delete cascade,
+  message_text text not null,
+  outcome text not null check (outcome in ('prepared','sent-by-admin','failed','client-confirmed','manually-recorded')),
+  outcome_note text,
+  admin_id text,
+  created_at timestamptz not null default now()
 );
 
 create table if not exists public.inventory_items (
@@ -77,8 +105,19 @@ create table if not exists public.admin_users (
   id uuid primary key default gen_random_uuid(),
   code text not null unique,
   name text,
+  email text,
+  role text not null default 'admin',
+  active boolean not null default true,
   created_at timestamptz not null default now()
 );
+
+alter table public.admin_users add column if not exists email text;
+alter table public.admin_users add column if not exists role text not null default 'admin';
+alter table public.admin_users add column if not exists active boolean not null default true;
+
+insert into public.availability_settings (id, opening_hours)
+values ('default', '{"lunes":{"opensAt":540,"closesAt":1020},"martes":{"opensAt":540,"closesAt":1020},"miercoles":{"opensAt":540,"closesAt":1020},"jueves":{"opensAt":540,"closesAt":1020},"viernes":{"opensAt":540,"closesAt":1020},"sabado":{"opensAt":540,"closesAt":840}}'::jsonb)
+on conflict (id) do nothing;
 
 create index if not exists idx_appointments_status on public.appointments(status);
 create index if not exists idx_appointments_scheduled_start on public.appointments(scheduled_start);
@@ -89,6 +128,8 @@ alter table public.clients enable row level security;
 alter table public.services enable row level security;
 alter table public.appointments enable row level security;
 alter table public.appointment_status_history enable row level security;
+alter table public.availability_settings enable row level security;
+alter table public.whatsapp_communications enable row level security;
 alter table public.inventory_items enable row level security;
 alter table public.inventory_movements enable row level security;
 alter table public.admin_users enable row level security;
