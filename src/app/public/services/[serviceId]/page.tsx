@@ -8,7 +8,7 @@ export default async function PublicServiceDetailPage({
   params: Promise<{ serviceId: string }>;
 }) {
   const { serviceId } = await params;
-  const service = getPublicServiceById(serviceId);
+  const service = await getPublicServiceById(serviceId);
 
   if (!service) {
     return (

@@ -1,14 +1,15 @@
 import type { Service } from '../../shared/types/service';
 import { getPublicServices as getPublicServicesFromCatalog } from './public-service-catalog';
 
-export function getPublicCatalog(): Service[] {
+export async function getPublicCatalog(): Promise<Service[]> {
   return getPublicServicesFromCatalog();
 }
 
-export function getPublicServices(): Service[] {
+export async function getPublicServices(): Promise<Service[]> {
   return getPublicServicesFromCatalog();
 }
 
-export function getPublicServiceById(id: string): Service | undefined {
-  return getPublicCatalog().find((service) => service.id === id);
+export async function getPublicServiceById(id: string): Promise<Service | undefined> {
+  const catalog = await getPublicCatalog();
+  return catalog.find((service) => service.id === id);
 }

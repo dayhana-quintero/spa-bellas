@@ -88,8 +88,9 @@ function ServiceIcon({ variant }: { variant: 'leaf' | 'spark' | 'wave' | 'hand' 
   );
 }
 
-export default function PublicPage() {
-  const services = getPublicCatalog().length > 0 ? getPublicCatalog() : fallbackServices;
+export default async function PublicPage() {
+  const services = await getPublicCatalog();
+  const displayServices = services.length > 0 ? services : fallbackServices;
 
   return (
     <main className="min-h-screen bg-[#f6f1ef] text-[#2b2b2b]">
@@ -147,7 +148,7 @@ export default function PublicPage() {
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {services.map((service, index) => (
+          {displayServices.map((service, index) => (
             <article
               key={service.id}
               className={`rounded-[24px] border border-[#e7d7d1] p-5 shadow-sm ${cardStyles[index % cardStyles.length]}`}

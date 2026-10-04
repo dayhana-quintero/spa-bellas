@@ -2,8 +2,8 @@ import Link from 'next/link';
 
 import { getPublicCatalog } from '@/domain/services/public-catalog';
 
-export default function PublicServicesPage() {
-  const services = getPublicCatalog();
+export default async function PublicServicesPage() {
+  const services = await getPublicCatalog();
 
   return (
     <main className="min-h-screen bg-[#f5f0ee] px-6 py-10 text-[#1f1b1b]">
