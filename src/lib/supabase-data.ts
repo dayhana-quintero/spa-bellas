@@ -88,6 +88,165 @@ export async function listAppointmentsFromSupabase(filters: { status?: string; f
   });
 }
 
+export async function saveClientToSupabase(client: { id: string; name: string; phone: string; email?: string | null; notes?: string | null; whatsappConsent: boolean; createdAt?: Date | string }) {
+  const supabase = getSupabaseClient();
+
+  if (!supabase) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from('clients')
+    .upsert(
+      {
+        id: client.id,
+        name: client.name,
+        phone: client.phone,
+        email: client.email ?? null,
+        notes: client.notes ?? null,
+        whatsapp_consent: Boolean(client.whatsappConsent),
+        created_at: client.createdAt ? new Date(client.createdAt).toISOString() : new Date().toISOString(),
+      },
+      { onConflict: 'id' },
+    )
+    .select('id')
+    .maybeSingle();
+
+  if (error) {
+    console.error('Supabase client sync failed:', error.message);
+    return null;
+  }
+
+  return data;
+}
+
+export async function saveServiceToSupabase(service: {
+  id: string;
+  name: string;
+  durationMinutes: number;
+  isActive: boolean;
+  isBookable: boolean;
+}) {
+  const supabase = getSupabaseClient();
+
+  if (!supabase) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from('services')
+    .upsert(
+      {
+        local_id: service.id,
+        name: service.name,
+        duration_minutes: service.durationMinutes,
+        is_active: service.isActive,
+        is_bookable: service.isBookable,
+      },
+      { onConflict: 'local_id' },
+    )
+    .select('id')
+    .single();
+
+  if (!error) {
+    return data;
+  }
+
+  const needsLegacyLookup = error.message.toLowerCase().includes('local_id') || error.code === '42P10';
+  if (!needsLegacyLookup) {
+    console.error('Supabase service sync failed:', error.message);
+    return null;
+  }
+
+  const { data: existingService, error: lookupError } = await supabase
+    .from('services')
+    .select('id')
+    .eq('name', service.name)
+    .eq('duration_minutes', service.durationMinutes)
+    .limit(1)
+    .maybeSingle();
+
+  if (lookupError) {
+    console.error('Supabase service lookup failed:', lookupError.message);
+    return null;
+  }
+
+  const serviceValues = {
+    name: service.name,
+    duration_minutes: service.durationMinutes,
+    is_active: service.isActive,
+    is_bookable: service.isBookable,
+  };
+
+  const { data: syncedService, error: syncError } = existingService
+    ? await supabase
+        .from('services')
+        .update(serviceValues)
+        .eq('id', existingService.id)
+        .select('id')
+        .single()
+    : await supabase
+        .from('services')
+        .insert(serviceValues)
+        .select('id')
+        .single();
+
+  if (syncError) {
+    console.error('Supabase service sync failed:', syncError.message);
+    return null;
+  }
+
+  return syncedService;
+}
+
+export async function saveAppointmentToSupabase(appointment: {
+  id: string;
+  clientId: string;
+  serviceId: string;
+  scheduledStart: Date | string;
+  scheduledEnd: Date | string;
+  status: string;
+  notes?: string | null;
+  source?: string;
+  holdExpiresAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+}) {
+  const supabase = getSupabaseClient();
+
+  if (!supabase) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from('appointments')
+    .upsert(
+      {
+        id: appointment.id,
+        client_id: appointment.clientId,
+        service_id: appointment.serviceId,
+        scheduled_start: new Date(appointment.scheduledStart).toISOString(),
+        scheduled_end: new Date(appointment.scheduledEnd).toISOString(),
+        status: appointment.status,
+        notes: appointment.notes ?? null,
+        source: appointment.source ?? 'publico',
+        hold_expires_at: appointment.holdExpiresAt ? new Date(appointment.holdExpiresAt).toISOString() : null,
+        created_at: appointment.createdAt ? new Date(appointment.createdAt).toISOString() : new Date().toISOString(),
+        updated_at: appointment.updatedAt ? new Date(appointment.updatedAt).toISOString() : new Date().toISOString(),
+      },
+      { onConflict: 'id' },
+    )
+    .select('id')
+    .maybeSingle();
+
+  if (error) {
+    console.error('Supabase appointment sync failed:', error.message);
+    return null;
+  }
+
+  return data;
+}
+
 export async function listSuppliesFromSupabase() {
   const supabase = getSupabaseClient();
 

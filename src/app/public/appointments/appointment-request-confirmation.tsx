@@ -26,7 +26,8 @@ export default function AppointmentRequestConfirmation({
     date: request.date,
     slot: request.slot,
   });
-
+ console.log(summary);
+ 
   return (
     <div
       aria-live="polite"

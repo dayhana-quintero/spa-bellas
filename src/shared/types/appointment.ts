@@ -16,7 +16,7 @@ export const appointmentSourceSchema = z.enum(['publico', 'admin']);
 export const appointmentSchema = z.object({
   id: z.string().uuid(),
   clientId: z.string().uuid(),
-  serviceId: z.string().uuid(),
+  serviceId: z.string().trim().min(1),
   scheduledStart: z.coerce.date(),
   scheduledEnd: z.coerce.date(),
   status: appointmentStatusSchema,

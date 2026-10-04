@@ -52,6 +52,23 @@ describe('appointment request validation', () => {
     ).toThrow();
   });
 
+  it('accepts service ids in the app format even when they are not UUIDs', () => {
+    expect(() =>
+      validateAppointmentRequest({
+        serviceId: '1',
+        client: {
+          id: '123e4567-e89b-12d3-a456-426614174001',
+          name: 'Ana García',
+          phone: '(55) 1234-5678',
+          notes: 'Necesito un masaje relajante.',
+        },
+        date: '2026-09-24',
+        slot: '10:30',
+        consent: true,
+      }),
+    ).not.toThrow();
+  });
+
   it('creates a fallback UUID when crypto.randomUUID is unavailable', () => {
     const originalCrypto = globalThis.crypto;
     Object.defineProperty(globalThis, 'crypto', {

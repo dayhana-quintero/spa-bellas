@@ -6,7 +6,7 @@ import type { SupplyMovement } from '@/shared/types/supply-movement';
 import { createId, readSpaData, withSpaData } from '@/storage/spa-store';
 import { canTransitionStatus } from '@/domain/appointments/appointment-state-machine';
 import { validateServiceCatalog } from '@/domain/services/service-catalog-rules';
-import { listAppointmentsFromSupabase } from '@/lib/supabase-data';
+import { listAppointmentsFromSupabase, saveAppointmentToSupabase, saveClientToSupabase, saveServiceToSupabase } from '@/lib/supabase-data';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { normalizePhone } from '@/shared/validation/phone';
 
@@ -52,14 +52,15 @@ export function getAvailableSlots(serviceId: string, date: string): Slot[] {
 
 export type AppointmentRequestInput = { clientName: string; clientPhone: string; serviceId: string; date: string; startsAt: string; notes?: string; whatsappConsent: boolean };
 
-export function requestAppointment(input: AppointmentRequestInput): Appointment {
+export async function requestAppointment(input: AppointmentRequestInput): Promise<Appointment> {
   if (!input.clientName.trim() || !input.whatsappConsent) throw new Error('Completa el nombre y autoriza el contacto por WhatsApp.');
   const phone = normalizePhone(input.clientPhone);
   if (phone.replace(/\D/g, '').length < 10) throw new Error('Ingresa un telefono valido para WhatsApp.');
   const requestedStart = new Date(input.startsAt);
   const slot = getAvailableSlots(input.serviceId, input.date).find((item) => item.startsAt === requestedStart.toISOString());
   if (!slot) throw new Error('Ese horario ya no esta disponible. Selecciona otro horario.');
-  return withSpaData((data) => {
+
+  const appointment = withSpaData((data) => {
     const service = data.services.find((item) => item.id === input.serviceId);
     if (!service?.isActive || !service.isBookable || !service.estimatedDuration) throw new Error('El servicio no esta disponible para agendar.');
     let client = data.clients.find((item) => item.phone === phone);
@@ -68,10 +69,62 @@ export function requestAppointment(input: AppointmentRequestInput): Appointment 
       data.clients.push(client);
     }
     const now = new Date();
-    const appointment: Appointment = { id: createId(), clientId: client.id, serviceId: service.id, scheduledStart: requestedStart, scheduledEnd: new Date(slot.endsAt), status: 'pendiente', notes: input.notes?.trim() || undefined, source: 'publico', holdExpiresAt: new Date(now.getTime() + data.availability.defaultHoldDuration * 60000), createdAt: now, updatedAt: now };
-    data.appointments.push(appointment);
-    return appointment;
+    const nextAppointment: Appointment = { id: createId(), clientId: client.id, serviceId: service.id, scheduledStart: requestedStart, scheduledEnd: new Date(slot.endsAt), status: 'pendiente', notes: input.notes?.trim() || undefined, source: 'publico', holdExpiresAt: new Date(now.getTime() + data.availability.defaultHoldDuration * 60000), createdAt: now, updatedAt: now };
+    data.appointments.push(nextAppointment);
+    return nextAppointment;
   });
+
+  if (isSupabaseConfigured()) {
+    try {
+      const client = readSpaData().clients.find((item) => item.id === appointment.clientId) ?? null;
+      const service = readSpaData().services.find((item) => item.id === appointment.serviceId) ?? null;
+      if (client) {
+        const savedClient = await saveClientToSupabase({
+          id: client.id,
+          name: client.name,
+          phone: client.phone,
+          notes: client.notes ?? null,
+          email: client.email ?? undefined,
+          whatsappConsent: Boolean(client.whatsappConsent),
+          createdAt: client.createdAt,
+        });
+        if (!savedClient) throw new Error('No se pudo guardar el cliente en Supabase.');
+      }
+
+      if (!service) throw new Error('No se encontro el servicio para sincronizar la cita.');
+      const supabaseService = await saveServiceToSupabase({
+        id: service.id,
+        name: service.name,
+        durationMinutes: service.estimatedDuration ?? 60,
+        isActive: service.isActive,
+        isBookable: service.isBookable,
+      });
+      if (!supabaseService) throw new Error('No se pudo guardar el servicio en Supabase.');
+
+      const savedAppointment = await saveAppointmentToSupabase({
+        id: appointment.id,
+        clientId: appointment.clientId,
+        serviceId: supabaseService.id,
+        scheduledStart: appointment.scheduledStart,
+        scheduledEnd: appointment.scheduledEnd,
+        status: appointment.status,
+        notes: appointment.notes ?? null,
+        source: appointment.source,
+        holdExpiresAt: appointment.holdExpiresAt,
+        createdAt: appointment.createdAt,
+        updatedAt: appointment.updatedAt,
+      });
+      if (!savedAppointment) throw new Error('No se pudo guardar la cita en Supabase.');
+    } catch (error) {
+      console.error('Supabase appointment sync failed:', error instanceof Error ? error.message : String(error));
+      withSpaData((data) => {
+        data.appointments = data.appointments.filter((item) => item.id !== appointment.id);
+      });
+      throw new Error('No se pudo guardar la cita en la base de datos. Verifica el esquema de Supabase y vuelve a intentarlo.');
+    }
+  }
+
+  return appointment;
 }
 
 export function expireHolds(now = new Date()): number {

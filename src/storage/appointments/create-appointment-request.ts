@@ -17,7 +17,7 @@ const createAppointmentRequestInputSchema = z.object({
   clientName: z.string().min(3),
   clientPhoneRaw: z.string(),
   whatsappConsent: z.boolean(),
-  serviceId: z.string().uuid(),
+  serviceId: z.string().trim().min(1),
   scheduledStart: z.coerce.date(),
   notes: z.string().optional(),
 });

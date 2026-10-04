@@ -13,6 +13,7 @@ create table if not exists public.clients (
 
 create table if not exists public.services (
   id uuid primary key default gen_random_uuid(),
+  local_id text,
   name text not null,
   duration_minutes integer not null default 60,
   price numeric(10,2) not null default 0,
@@ -21,6 +22,9 @@ create table if not exists public.services (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.services add column if not exists local_id text;
+create unique index if not exists idx_services_local_id on public.services(local_id);
 
 create table if not exists public.appointments (
   id uuid primary key default gen_random_uuid(),

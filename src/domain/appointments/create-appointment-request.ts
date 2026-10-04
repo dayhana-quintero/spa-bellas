@@ -4,7 +4,7 @@ import { createId } from '@/shared/id';
 import { normalizePhone } from '../../shared/validation/phone';
 
 const appointmentRequestSchema = z.object({
-  serviceId: z.string().uuid(),
+  serviceId: z.string().trim().min(1),
   client: z.object({
     id: z.string().uuid(),
     name: z.string().min(3),
