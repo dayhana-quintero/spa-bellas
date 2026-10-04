@@ -25,7 +25,7 @@ const { supabaseMock, upsertQuery, lookupQuery, insertQuery } = vi.hoisted(() =>
 });
 
 vi.mock('@/lib/supabase', () => ({
-  getSupabaseClient: () => supabaseMock,
+  getSupabaseAdminClient: () => supabaseMock,
 }));
 
 import { saveServiceToSupabase } from '@/lib/supabase-data';

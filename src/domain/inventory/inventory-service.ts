@@ -4,8 +4,14 @@ import type { SupplyMovement } from '@/shared/types/supply-movement';
 import {
   getNextQuantityForMovement,
   isLowStock,
-} from '@/domain/inventory/inventory-rules';import { listSuppliesFromSupabase } from '@/lib/supabase-data';
-import { isSupabaseConfigured } from '@/lib/supabase';import {
+} from '@/domain/inventory/inventory-rules';
+import {
+  listSuppliesFromSupabase,
+  recordSupplyMovementToSupabase,
+  saveSupplyToSupabase,
+} from '@/lib/supabase-data';
+import { isSupabaseConfigured } from '@/lib/supabase';
+import {
   appendSupplyMovement,
   getSupplyById,
   listInventorySupplies,
@@ -33,15 +39,47 @@ export async function listSuppliesForAdmin() {
 }
 
 export function createSupply(input: Omit<Supply, 'id'> & { id?: string }): Supply {
-  if (input.quantityAvailable < 0) {
-    throw new Error('La cantidad inicial no puede ser negativa.');
-  }
+  validateSupply(input);
+  return upsertSupply(normalizeSupply(input));
+}
 
-  if (input.minimumThreshold < 0) {
-    throw new Error('El umbral minimo no puede ser negativo.');
-  }
+export async function saveSupplyForAdmin(input: Omit<Supply, 'id'> & { id?: string }): Promise<Supply> {
+  validateSupply(input);
+  const normalized = normalizeSupply(input);
+  if (isSupabaseConfigured()) return saveSupplyToSupabase(normalized);
+  return upsertSupply(normalized);
+}
 
-  return upsertSupply(input);
+function normalizeSupply(input: Omit<Supply, 'id'> & { id?: string }) {
+  return {
+    ...input,
+    name: input.name.trim(),
+    category: input.category?.trim() || undefined,
+    unit: input.unit.trim(),
+  };
+}
+
+function validateSupply(input: Omit<Supply, 'id'> & { id?: string }) {
+  if (input.name.trim().length < 2) throw new Error('El nombre del insumo debe tener al menos 2 caracteres.');
+  if (!input.unit.trim()) throw new Error('La unidad del insumo es obligatoria.');
+  if (!Number.isInteger(input.quantityAvailable) || input.quantityAvailable < 0) {
+    throw new Error('La cantidad inicial debe ser un numero entero igual o mayor que cero.');
+  }
+  if (!Number.isInteger(input.minimumThreshold) || input.minimumThreshold < 0) {
+    throw new Error('El umbral minimo debe ser un numero entero igual o mayor que cero.');
+  }
+}
+
+export async function recordSupplyMovementForAdmin(input: {
+  supplyId: string;
+  type: SupplyMovement['type'];
+  quantity: number;
+  reason: string;
+  adminId: string;
+  allowsNegativeStock?: boolean;
+}): Promise<SupplyMovement> {
+  if (isSupabaseConfigured()) return recordSupplyMovementToSupabase(input);
+  return recordSupplyMovement(input);
 }
 
 export function recordSupplyMovement(input: {
@@ -62,7 +100,7 @@ export function recordSupplyMovement(input: {
     throw new Error('Indica un motivo valido para el movimiento.');
   }
 
-  const nextQuantity = getNextQuantityForMovement(
+  getNextQuantityForMovement(
     supply.quantityAvailable,
     input.type,
     input.quantity,

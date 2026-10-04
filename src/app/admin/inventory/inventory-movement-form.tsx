@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from 'react';
-
-import { recordSupplyMovement } from '@/domain/spa-service';
+import { useState, type FormEvent } from 'react';
 
 export function InventoryMovementForm({
   supplies,
@@ -20,25 +18,28 @@ export function InventoryMovementForm({
     allowsNegativeStock: false,
   });
   const [message, setMessage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (!form.supplyId && defaultSupplyId) {
-      setForm((current) => ({ ...current, supplyId: defaultSupplyId }));
-    }
-  }, [defaultSupplyId, form.supplyId]);
+  const selectedSupplyId = form.supplyId || defaultSupplyId;
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setMessage(null);
+    setIsSaving(true);
 
     try {
-      recordSupplyMovement({
-        supplyId: form.supplyId,
-        type: form.type,
-        quantity: Number(form.quantity),
-        reason: form.reason,
-        adminId: 'admin-1',
-        allowsNegativeStock: form.allowsNegativeStock,
+      const response = await fetch(`/api/admin/supplies/${selectedSupplyId}/movements`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: form.type,
+          quantity: Number(form.quantity),
+          reason: form.reason,
+          allowsNegativeStock: form.allowsNegativeStock,
+        }),
       });
+      const result = await response.json() as { error?: string };
+      if (!response.ok) throw new Error(result.error ?? 'No se pudo registrar el movimiento.');
 
       setMessage('Movimiento registrado correctamente.');
       setForm((current) => ({
@@ -50,6 +51,8 @@ export function InventoryMovementForm({
       onSaved?.();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No se pudo registrar el movimiento.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -62,7 +65,7 @@ export function InventoryMovementForm({
           <span>Insumo</span>
           <select
             required
-            value={form.supplyId}
+            value={selectedSupplyId}
             onChange={(event) => setForm((current) => ({ ...current, supplyId: event.target.value }))}
             className="h-10 rounded-xl border border-[#d9c8c3] bg-[#f9f4f2] px-3"
           >
@@ -132,9 +135,10 @@ export function InventoryMovementForm({
       <div className="mt-4 flex items-center justify-between gap-3">
         <button
           type="submit"
-          className="rounded-xl bg-[#1f1f21] px-4 py-2 text-sm font-semibold text-white"
+          disabled={isSaving || supplies.length === 0}
+          className="rounded-xl bg-[#1f1f21] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
         >
-          Registrar movimiento
+          {isSaving ? 'Guardando…' : 'Registrar movimiento'}
         </button>
         {message ? <span className="text-sm text-[#4a423f]">{message}</span> : null}
       </div>

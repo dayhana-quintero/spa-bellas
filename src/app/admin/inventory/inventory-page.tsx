@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-
-import { listSuppliesForAdmin } from '@/domain/inventory/inventory-service';
+import Link from 'next/link';
+import type { Supply } from '@/shared/types/supply';
 
 import { InventoryMovementForm } from './inventory-movement-form';
 import { SupplyForm } from './supply-form';
@@ -12,14 +12,35 @@ function formatNumber(value: number) {
 }
 
 export default function InventoryPage() {
-  const [supplies, setSupplies] = useState<Awaited<ReturnType<typeof listSuppliesForAdmin>>>([]);
+  const [supplies, setSupplies] = useState<Array<Supply & { isLowStock: boolean; movements: [] }>>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const fetchSupplies = async () => {
+    const response = await fetch('/api/admin/supplies');
+    const result = await response.json() as Array<Supply & { isLowStock: boolean; movements: [] }> | { error?: string };
+    if (!response.ok || !Array.isArray(result)) {
+      throw new Error(!Array.isArray(result) ? result.error : undefined);
+    }
+    return result;
+  };
 
   const refreshSupplies = async () => {
-    setSupplies(await listSuppliesForAdmin());
+    try {
+      setSupplies(await fetchSupplies());
+      setLoadError(null);
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : 'No se pudo cargar el inventario.');
+    }
   };
 
   useEffect(() => {
-    void refreshSupplies();
+    let isMounted = true;
+    void fetchSupplies().then((nextSupplies) => {
+      if (isMounted) setSupplies(nextSupplies);
+    }).catch((error: unknown) => {
+      if (isMounted) setLoadError(error instanceof Error ? error.message : 'No se pudo cargar el inventario.');
+    });
+    return () => { isMounted = false; };
   }, []);
 
   const lowStockCount = supplies.filter((supply) => supply.isLowStock).length;
@@ -42,32 +63,32 @@ export default function InventoryPage() {
         </div>
 
         <nav className="space-y-2">
-          <a href="/admin" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
+          <Link href="/admin" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
             <span className="text-lg">📅</span>
             <span>Citas pendientes</span>
-          </a>
-          <a href="/admin?status=confirmada" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
+          </Link>
+          <Link href="/admin?status=confirmada" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
             <span className="text-lg">✓</span>
             <span>Citas confirmadas</span>
-          </a>
-          <a href="/admin/inventory" className="flex w-full items-center gap-3 rounded-xl bg-[#2b2b2f] px-3 py-3 text-left text-[15px] font-medium text-[#f5f0ef] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]">
+          </Link>
+          <Link href="/admin/inventory" className="flex w-full items-center gap-3 rounded-xl bg-[#2b2b2f] px-3 py-3 text-left text-[15px] font-medium text-[#f5f0ef] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]">
             <span className="text-lg">🧴</span>
             <span>Insumos</span>
-          </a>
-          <a href="/admin/appointments/history" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
+          </Link>
+          <Link href="/admin/appointments/history" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
             <span className="text-lg">🧾</span>
             <span>Historial de citas</span>
-          </a>
+          </Link>
         </nav>
 
         <div className="mt-auto border-t border-white/10 pt-4">
-          <a
+          <Link
             href="/"
             className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 py-3 text-[15px] font-medium text-[#f5f0ef] transition hover:bg-white/5"
           >
             <span>◐</span>
             <span>Ver como cliente</span>
-          </a>
+          </Link>
         </div>
       </aside>
 
@@ -117,6 +138,12 @@ export default function InventoryPage() {
             <SupplyForm onSaved={() => { void refreshSupplies(); }} />
             <InventoryMovementForm supplies={supplies} onSaved={() => { void refreshSupplies(); }} />
           </div>
+
+          {loadError ? (
+            <p role="alert" className="mb-4 rounded-xl border border-[#e3aaa3] bg-[#fff5f3] px-4 py-3 text-sm text-[#8a3f3a]">
+              {loadError}
+            </p>
+          ) : null}
 
           <section className="overflow-hidden rounded-2xl border border-[#d9c8c3] bg-[#f7f2ef] shadow-sm">
             <table className="w-full border-separate border-spacing-0">

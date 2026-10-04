@@ -1,5 +1,5 @@
 import type { Appointment } from '@/shared/types/appointment';
-import { findAllAppointments } from './in-memory-appointment-repository';
+import { readSpaData } from '@/storage/spa-store';
 
 type AppointmentHistoryFilters = {
   status?: Appointment['status'];
@@ -22,7 +22,7 @@ type AppointmentHistoryPage = {
 export function findAppointmentHistory(
   filters: AppointmentHistoryFilters,
 ): AppointmentHistoryPage {
-  const allAppointments = findAllAppointments();
+  const allAppointments = readSpaData().appointments;
 
   let data: Appointment[] = allAppointments;
 

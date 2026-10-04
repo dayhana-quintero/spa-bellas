@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation';
 
 import { AppointmentConfirmAction } from './appointment-confirm-action';
 import { LogoutButton } from './logout-button';
-import { getAdminDashboardSummary, getLowStockSupplies } from '@/domain/admin-dashboard';
+import { getAdminDashboardSummary } from '@/domain/admin-dashboard';
+import { listSuppliesForAdmin } from '@/domain/inventory/inventory-service';
 import { listAppointmentsForAdmin } from '@/domain/spa-service';
 import { readAdminSessionFromCookie } from '@/shared/auth';
 
@@ -48,8 +49,14 @@ export default async function AdminPage({
   }>;
   const pendingCount = (await listAppointmentsForAdmin({ status: 'pendiente' })).length;
   const pageTitle = status ? `Citas ${statusLabels[status].toLowerCase()}s` : statusLabels[status];
-  const summary = getAdminDashboardSummary();
-  const lowStockSupplies = getLowStockSupplies().slice(0, 3);
+  const supplies = await listSuppliesForAdmin();
+  const lowStockSupplies = supplies
+    .filter((supply) => supply.isActive && supply.isLowStock)
+    .slice(0, 3);
+  const summary = {
+    ...getAdminDashboardSummary(),
+    lowStockItems: supplies.filter((supply) => supply.isActive && supply.isLowStock).length,
+  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f3f0ef] text-[#2a2423]">

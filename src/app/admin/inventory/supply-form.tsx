@@ -2,8 +2,6 @@
 
 import { useState, type FormEvent } from 'react';
 
-import { saveSupply } from '@/domain/spa-service';
-
 const emptyForm = {
   name: '',
   category: '',
@@ -16,25 +14,36 @@ const emptyForm = {
 export function SupplyForm({ onSaved }: { onSaved?: () => void }) {
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setMessage(null);
+    setIsSaving(true);
 
     try {
-      saveSupply({
-        ...form,
-        name: form.name.trim(),
-        category: form.category.trim() || undefined,
-        unit: form.unit.trim(),
-        quantityAvailable: Number(form.quantityAvailable),
-        minimumThreshold: Number(form.minimumThreshold),
+      const response = await fetch('/api/admin/supplies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          name: form.name.trim(),
+          category: form.category.trim() || undefined,
+          unit: form.unit.trim(),
+          quantityAvailable: Number(form.quantityAvailable),
+          minimumThreshold: Number(form.minimumThreshold),
+        }),
       });
+      const result = await response.json() as { error?: string };
+      if (!response.ok) throw new Error(result.error ?? 'No se pudo guardar el insumo.');
 
       setMessage('Insumo guardado correctamente.');
       setForm(emptyForm);
       onSaved?.();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No se pudo guardar el insumo.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -116,9 +125,10 @@ export function SupplyForm({ onSaved }: { onSaved?: () => void }) {
       <div className="mt-4 flex items-center justify-between gap-3">
         <button
           type="submit"
+          disabled={isSaving}
           className="rounded-xl bg-[#1f1f21] px-4 py-2 text-sm font-semibold text-white"
         >
-          Guardar insumo
+          {isSaving ? 'Guardando…' : 'Guardar insumo'}
         </button>
         {message ? <span className="text-sm text-[#4a423f]">{message}</span> : null}
       </div>

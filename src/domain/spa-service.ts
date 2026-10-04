@@ -6,7 +6,14 @@ import type { SupplyMovement } from '@/shared/types/supply-movement';
 import { createId, readSpaData, withSpaData } from '@/storage/spa-store';
 import { canTransitionStatus } from '@/domain/appointments/appointment-state-machine';
 import { validateServiceCatalog } from '@/domain/services/service-catalog-rules';
-import { listAppointmentsFromSupabase, saveAppointmentToSupabase, saveClientToSupabase, saveServiceToSupabase } from '@/lib/supabase-data';
+import {
+  listAppointmentStatusHistoryFromSupabase,
+  listAppointmentsFromSupabase,
+  saveAppointmentToSupabase,
+  saveClientToSupabase,
+  saveServiceToSupabase,
+  updateAppointmentStatusInSupabase,
+} from '@/lib/supabase-data';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { normalizePhone } from '@/shared/validation/phone';
 
@@ -61,6 +68,8 @@ export async function requestAppointment(input: AppointmentRequestInput): Promis
   if (!slot) throw new Error('Ese horario ya no esta disponible. Selecciona otro horario.');
 
   const appointment = withSpaData((data) => {
+    
+    
     const service = data.services.find((item) => item.id === input.serviceId);
     if (!service?.isActive || !service.isBookable || !service.estimatedDuration) throw new Error('El servicio no esta disponible para agendar.');
     let client = data.clients.find((item) => item.phone === phone);
@@ -164,13 +173,29 @@ export function listAppointments(filters: { status?: string; from?: string; to?:
 
 export async function listAppointmentsForAdmin(filters: { status?: string; from?: string; to?: string; client?: string; service?: string } = {}) {
   if (isSupabaseConfigured()) {
-    const remoteAppointments = await listAppointmentsFromSupabase(filters);
-    if (remoteAppointments.length > 0 || filters.status || filters.from || filters.to || filters.client || filters.service) {
-      return remoteAppointments;
-    }
+    return listAppointmentsFromSupabase(filters);
   }
 
   return listAppointments(filters);
+}
+
+export async function getAppointmentDetailsForAdmin(id: string) {
+  if (!isSupabaseConfigured()) return getAppointmentDetails(id);
+
+  const [appointments, history] = await Promise.all([
+    listAppointmentsFromSupabase({ id }),
+    listAppointmentStatusHistoryFromSupabase(id),
+  ]);
+  const appointment = appointments[0];
+  if (!appointment) return null;
+
+  return {
+    appointment,
+    client: appointment.client ?? null,
+    service: appointment.service ?? null,
+    history,
+    communicationRecords: [],
+  };
 }
 
 export function changeAppointmentStatus(id: string, nextStatus: AppointmentStatus, adminId: string, note?: string): Appointment {
@@ -183,6 +208,31 @@ export function changeAppointmentStatus(id: string, nextStatus: AppointmentStatu
     data.statusRecords.push({ id: createId(), appointmentId: id, previousStatus, newStatus: nextStatus, changedByAdminId: adminId, changedAt: appointment.updatedAt, note });
     return appointment;
   });
+}
+
+export async function changeAppointmentStatusForAdmin(
+  id: string,
+  nextStatus: AppointmentStatus,
+  adminId: string,
+  note?: string,
+) {
+  if (!isSupabaseConfigured()) return changeAppointmentStatus(id, nextStatus, adminId, note);
+
+  const detail = await getAppointmentDetailsForAdmin(id);
+  if (!detail) throw new Error('No se encontro la cita.');
+  if (!canTransitionStatus(detail.appointment.status, nextStatus)) {
+    throw new Error('Ese cambio de estado no esta permitido.');
+  }
+
+  const updated = await updateAppointmentStatusInSupabase({
+    appointmentId: id,
+    previousStatus: detail.appointment.status,
+    newStatus: nextStatus,
+    adminId,
+    note,
+  });
+
+  return { ...detail.appointment, status: updated.status, updatedAt: updated.updatedAt };
 }
 
 export function saveService(input: Omit<Service, 'id'> & { id?: string }): Service {

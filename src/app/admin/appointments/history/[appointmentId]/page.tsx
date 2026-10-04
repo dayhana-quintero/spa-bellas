@@ -38,6 +38,12 @@ export default async function AppointmentHistoryDetailPage({
   }
 
   const data = readSpaData();
+  const clientName =
+    data.clients.find((c) => c.id === appointment.clientId)?.name ??
+    'Cliente sin nombre';
+  const serviceName =
+    data.services.find((s) => s.id === appointment.serviceId)?.name ??
+    'Servicio sin nombre';
   const timeline = [
     ...data.statusRecords
       .filter((record) => record.appointmentId === appointmentId)
@@ -103,11 +109,11 @@ export default async function AppointmentHistoryDetailPage({
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-2xl bg-[#efe8e3] p-4">
             <p className="text-sm text-[#6c5d5a]">Cliente</p>
-            <p className="mt-2 text-xl font-semibold text-[#2b2b2b]">Cliente #{appointment.clientId.slice(0, 8)}</p>
+            <p className="mt-2 text-xl font-semibold text-[#2b2b2b]">{clientName}</p>
           </div>
           <div className="rounded-2xl bg-[#efe8e3] p-4">
             <p className="text-sm text-[#6c5d5a]">Servicio</p>
-            <p className="mt-2 text-xl font-semibold text-[#2b2b2b]">Servicio #{appointment.serviceId.slice(0, 8)}</p>
+            <p className="mt-2 text-xl font-semibold text-[#2b2b2b]">{serviceName}</p>
           </div>
           <div className="rounded-2xl bg-[#efe8e3] p-4">
             <p className="text-sm text-[#6c5d5a]">Fecha</p>

@@ -11,8 +11,8 @@ export function getNextQuantityForMovement(
   quantity: number,
   allowsNegativeStock = false,
 ): number {
-  if (!Number.isFinite(quantity) || quantity <= 0) {
-    throw new Error('La cantidad del movimiento debe ser positiva.');
+  if (!Number.isInteger(quantity) || quantity <= 0) {
+    throw new Error('La cantidad del movimiento debe ser un numero entero positivo.');
   }
 
   const direction = type === 'entrada' ? 1 : -1;

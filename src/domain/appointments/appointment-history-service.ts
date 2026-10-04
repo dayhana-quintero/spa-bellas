@@ -1,4 +1,4 @@
-import { findAppointmentById } from '@/storage/appointments/in-memory-appointment-repository';
+import { readSpaData } from '@/storage/spa-store';
 import { findAppointmentHistory as findHistory } from '@/storage/appointments/appointment-history-repository';
 import type { Appointment } from '@/shared/types/appointment';
 
@@ -25,5 +25,5 @@ export function getAppointmentHistory(filters: AppointmentHistoryQuery): Appoint
 }
 
 export function getAppointmentDetail(id: string): Appointment | undefined {
-  return findAppointmentById(id);
+  return readSpaData().appointments.find((a) => a.id === id);
 }
