@@ -87,62 +87,6 @@ export default async function HistoryPage({
   const total = result.total;
 
   return (
-    <div className="flex min-h-screen bg-[#f3f0ef] text-[#2b2b2b]">
-      <aside className="sticky top-0 flex h-screen w-[260px] shrink-0 flex-col bg-[#17171a] px-4 py-5 text-[#f6f3f2]">
-        <div className="mb-6 text-[11px] uppercase tracking-[0.18em] text-[#f2f2f0]/80">
-          BELLAS • Panel del spa
-        </div>
-
-        <div className="mb-7 pl-2">
-          <div className="font-serif text-5xl font-bold tracking-[0.1em] text-[#f5f0ef]">BELLAS</div>
-          <div className="mt-2 text-sm text-[#d7d2d0]">Panel del spa</div>
-        </div>
-
-        <nav className="mt-3 space-y-2">
-          <Link
-            href="/admin"
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[#e8e1df] opacity-90 hover:bg-[#2b2b2f] transition-colors"
-          >
-            <span className="text-lg">📅</span>
-            <span>Citas pendientes</span>
-          </Link>
-
-          <Link
-            href="/admin?status=cancelada"
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[#e8e1df] opacity-90 hover:bg-[#2b2b2f] transition-colors"
-          >
-            <span className="text-lg">✕</span>
-            <span>Citas canceladas</span>
-          </Link>
-
-          <Link
-            href="/admin/inventory"
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[#e8e1df] opacity-90 hover:bg-[#2b2b2f] transition-colors"
-          >
-            <span className="text-lg">🧴</span>
-            <span>Insumos</span>
-          </Link>
-
-          <Link
-            href="/admin/appointments/history"
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 font-semibold transition-colors bg-[#e8dbd7] text-[#1f1d1d] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.04)]"
-          >
-            <span className="text-lg">🧾</span>
-            <span>Historial de citas</span>
-          </Link>
-        </nav>
-
-        <div className="mt-auto border-t border-white/10 pt-4">
-          <Link
-            href="/"
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 py-3 text-[15px] font-medium text-[#f3eceb] transition hover:bg-white/5"
-          >
-            <span>◐</span>
-            <span>Ver como cliente</span>
-          </Link>
-        </div>
-      </aside>
-
       <main className="flex-1 overflow-auto px-7 py-6">
         <div className="mb-4 flex items-center justify-between">
           <div className="text-[11px] font-semibold tracking-[0.08em] text-[#7d6966] uppercase">
@@ -319,6 +263,5 @@ export default async function HistoryPage({
           )}
         </div>
       </main>
-    </div>
   );
 }

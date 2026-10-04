@@ -59,62 +59,6 @@ export default async function AdminPage({
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f3f0ef] text-[#2a2423]">
-      <aside className="flex w-65 shrink-0 flex-col bg-[#17171a] px-4 py-5 text-[#f9f2f1]">
-        <div className="mb-7 px-2 text-[10px] font-medium uppercase tracking-[0.18em] text-[#d7d0ce]">
-          Bellas • Panel del spa
-        </div>
-
-        <div className="mb-6 px-2">
-          <div className="font-serif text-[44px] font-bold leading-[0.72] tracking-[0.02em] text-[#f5f0ef]">
-            BELLA
-            <span className="inline-block w-[0.18em]" aria-hidden="true" />
-            <span className="inline-block translate-y-[-0.04em]">S</span>
-          </div>
-          <div className="mt-1 text-[14px] text-[#d7d2d0]">Panel del spa</div>
-        </div>
-
-        <nav className="space-y-2">
-          <Link href="/admin" className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] font-medium text-[#f5f0ef] ${status === 'pendiente' ? 'bg-[#2b2b2f] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]' : 'opacity-80 hover:bg-[#2b2b2f]'}`}>
-            <span className="text-lg">📅</span>
-            <span>Citas pendientes</span>
-            <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-[#f5d9d5] px-1 text-[11px] font-bold text-[#1d1a1a]">
-              {pendingCount}
-            </span>
-          </Link>
-
-          <Link href="/admin?status=confirmada" className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] ${status === 'confirmada' ? 'bg-[#2b2b2f] opacity-100' : 'opacity-80 hover:bg-[#2b2b2f]'}`}>
-            <span className="text-lg">✓</span>
-            <span>Citas confirmadas</span>
-          </Link>
-
-          <Link href="/admin?status=cancelada" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
-            <span className="text-lg">✕</span>
-            <span>Citas canceladas</span>
-          </Link>
-
-          <Link href="/admin/inventory" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
-            <span className="text-lg">🧴</span>
-            <span>Insumos</span>
-          </Link>
-
-          <Link href="/admin/appointments/history" className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] text-[#ece4e1] opacity-80 hover:bg-[#2b2b2f]">
-            <span className="text-lg">🧾</span>
-            <span>Historial de citas</span>
-          </Link>
-        </nav>
-
-        <div className="mt-auto border-t border-white/10 pt-4">
-          <Link
-            href="/"
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 py-3 text-[15px] font-medium text-[#f5f0ef] transition hover:bg-white/5"
-          >
-            <span>◐</span>
-            <span>Ver como cliente</span>
-          </Link>
-        </div>
-      </aside>
-
       <main className="flex-1 overflow-hidden px-8 py-7">
         <div className="mb-6 flex items-center justify-between">
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d6966]">
@@ -278,6 +222,5 @@ export default async function AdminPage({
           <LogoutButton />
         </div>
       </main>
-    </div>
   );
 }
