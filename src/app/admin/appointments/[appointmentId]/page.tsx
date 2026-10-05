@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { getAppointmentDetails } from '@/domain/spa-service';
+import { getAppointmentDetailsForAdmin } from '@/domain/spa-service';
 import { StatusControls } from '../status-controls';
 
 export default async function AdminAppointmentDetailRoute({
@@ -9,7 +9,7 @@ export default async function AdminAppointmentDetailRoute({
   params: Promise<{ appointmentId: string }>;
 }) {
   const { appointmentId } = await params;
-  const detail = getAppointmentDetails(appointmentId);
+  const detail = await getAppointmentDetailsForAdmin(appointmentId);
 
   if (!detail || !detail.appointment) {
     return (

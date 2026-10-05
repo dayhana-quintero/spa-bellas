@@ -32,7 +32,7 @@ export default function AppointmentRequestFlow() {
       .then((catalog) => {
         if (!active) return;
         setServices(catalog);
-        setSelectedServiceId((current) => catalog.some((service) => service.id === current) ? current : catalog[0]?.id ?? '');
+        setSelectedServiceId((current) => catalog?.some((service) => service.id === current) ? current : catalog[0]?.id ?? '');
       })
       .catch(() => {
         if (active) setServices([]);

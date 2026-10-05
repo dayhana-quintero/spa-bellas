@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { getPublicServiceById } from '@/domain/services/public-catalog';
+import { formatDuration } from '@/shared/format-duration';
 
 export default async function PublicServiceDetailPage({
   params,
@@ -49,7 +50,7 @@ export default async function PublicServiceDetailPage({
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl bg-[#f7f2ef] p-4">
             <p className="text-xs uppercase tracking-[0.18em] text-[#7d6966]">Duración</p>
-            <p className="mt-2 text-xl font-semibold text-[#2b2b2b]">{service.estimatedDuration ?? 60} min</p>
+            <p className="mt-2 text-xl font-semibold text-[#2b2b2b]">{formatDuration(service.estimatedDuration ?? 60)}</p>
           </div>
           <div className="rounded-2xl bg-[#f7f2ef] p-4">
             <p className="text-xs uppercase tracking-[0.18em] text-[#7d6966]">Estado</p>

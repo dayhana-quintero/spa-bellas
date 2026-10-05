@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { getPublicCatalog } from '@/domain/services/public-catalog';
+import { formatDuration } from '@/shared/format-duration';
 
 const fallbackServices = [
   {
@@ -88,6 +89,7 @@ function ServiceIcon({ variant }: { variant: 'leaf' | 'spark' | 'wave' | 'hand' 
   );
 }
 
+
 export default async function PublicPage() {
   const services = await getPublicCatalog();
   const displayServices = services.length > 0 ? services : fallbackServices;
@@ -167,7 +169,7 @@ export default async function PublicPage() {
 
               <div className="mt-6 flex items-end justify-between gap-2 border-t border-[#d9c8c3] pt-4 text-[#383232]">
                 <span className="text-[1.08rem] font-semibold">{service.priceDisplay}</span>
-                <span className="text-[0.96rem] text-[#514947]">{service.estimatedDuration ?? 60} min</span>
+                <span className="text-[0.96rem] text-[#514947]">{formatDuration(service.estimatedDuration ?? 60)}</span>
               </div>
 
               <div className="mt-6 flex justify-center">

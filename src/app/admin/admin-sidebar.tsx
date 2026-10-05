@@ -72,6 +72,11 @@ function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
           <span>Insumos</span>
         </Link>
 
+        <Link href="/admin/services" className={linkClass('/admin/services')}>
+          <span className="text-lg">💆</span>
+          <span>Servicios</span>
+        </Link>
+
         <Link href="/admin/appointments/history" className={linkClass('/admin/appointments/history')}>
           <span className="text-lg">🧾</span>
           <span>Historial de citas</span>
@@ -94,7 +99,7 @@ function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
 
 export default function AdminSidebar({ pendingCount }: AdminSidebarProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<aside className="flex w-64 shrink-0 bg-[#17171a]" />}>
       <AdminSidebarInner pendingCount={pendingCount} />
     </Suspense>
   );

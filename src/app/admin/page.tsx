@@ -3,7 +3,6 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { AppointmentConfirmAction } from './appointment-confirm-action';
-import { LogoutButton } from './logout-button';
 import { getAdminDashboardSummary } from '@/domain/admin-dashboard';
 import { listSuppliesForAdmin } from '@/domain/inventory/inventory-service';
 import { listAppointmentsForAdmin } from '@/domain/spa-service';
@@ -47,7 +46,6 @@ export default async function AdminPage({
     client?: { name?: string; phone?: string };
     service?: { name?: string };
   }>;
-  const pendingCount = (await listAppointmentsForAdmin({ status: 'pendiente' })).length;
   const pageTitle = status ? `Citas ${statusLabels[status].toLowerCase()}s` : statusLabels[status];
   const supplies = await listSuppliesForAdmin();
   const lowStockSupplies = supplies
@@ -88,9 +86,8 @@ export default async function AdminPage({
           <label className="flex flex-col gap-2">
             <span className="text-sm text-[#4d433f]">Fecha</span>
             <input
-              type="text"
-              value="dd/mm/aaaa"
-              readOnly
+              type="date"
+              name="date"
               className="h-12 rounded-xl border border-[#d8c7c2] bg-[#f7f3f1] px-3 text-[#5d5b5b] outline-none"
             />
           </label>
@@ -180,13 +177,17 @@ export default async function AdminPage({
 
             return (
               <article key={appointment.id} className="rounded-[22px] border border-[#e6d7d2] bg-[#f7f3f1] p-5">
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-6">
                   {/* Columna izquierda: hora */}
-                  <div className="w-20 shrink-0 pt-1 text-center">
-                    <div className="font-serif text-[40px] leading-none text-[#2f2b2a]">{time}</div>
-                    <div className="mt-1 text-[11px] uppercase tracking-[0.12em] text-[#7d6966]">{period}</div>
-                    <div className="mt-2 text-[12px] text-[#7d6966]">{date}</div>
+                  <div className="w-28 shrink-0 pt-1 text-center">
+                    <div className="font-serif text-[44px] leading-none text-[#2f2b2a]">{time}</div>
+                    <div className="mt-1.5 text-[11px] uppercase tracking-[0.12em] text-[#7d6966]">{period}</div>
+                    <div className="mt-3 text-[12px] leading-5 text-[#7d6966]">{date}</div>
                   </div>
+
+                  {/* Separador vertical */}
+                  <div className="self-stretch w-px bg-[#e6d7d2] shrink-0" />
+
                   {/* Columna derecha: datos */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
@@ -195,11 +196,11 @@ export default async function AdminPage({
                         {statusLabels[appointment.status]}
                       </span>
                     </div>
-                    <div className="mt-3 space-y-1.5 text-[14px] leading-6 text-[#4c4544]">
-                      <div>📅 {date}</div>
-                      <div>⏰ {time} {period}</div>
-                      <div>✦ {appointment.service?.name ?? 'Servicio no disponible'}</div>
-                      <div>📞 {appointment.client?.phone ?? 'Sin teléfono'}</div>
+                    <div className="mt-3 space-y-2 text-[14px] leading-6 text-[#4c4544]">
+                      <div className="flex items-center gap-2"><span className="text-[#a08880]">📅</span> {date}</div>
+                      <div className="flex items-center gap-2"><span className="text-[#a08880]">⏰</span> {time} {period}</div>
+                      <div className="flex items-center gap-2"><span className="text-[#a08880]">✦</span> {appointment.service?.name ?? 'Servicio no disponible'}</div>
+                      <div className="flex items-center gap-2"><span className="text-[#a08880]">📞</span> {appointment.client?.phone ?? 'Sin teléfono'}</div>
                     </div>
                   </div>
                 </div>
@@ -233,9 +234,6 @@ export default async function AdminPage({
       </div>
 
       {/* Footer */}
-      <div className="mt-6 flex items-center justify-end">
-        <LogoutButton />
-      </div>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { getPublicCatalog } from '@/domain/services/public-catalog';
+import { formatDuration } from '@/shared/format-duration';
 
 export default async function PublicServicesPage() {
   const services = await getPublicCatalog();
@@ -31,7 +32,7 @@ export default async function PublicServicesPage() {
                 <p className="mt-3 text-sm leading-6 text-[#4a4342]">{service.description}</p>
 
                 <div className="mt-5 flex items-center justify-between gap-3 text-sm text-[#453d3c]">
-                  <span>{service.estimatedDuration ?? 60} min</span>
+                  <span>{formatDuration(service.estimatedDuration ?? 60)}</span>
                   <span className="font-semibold text-[#d56572]">{service.priceDisplay ?? 'Consultar'}</span>
                 </div>
 

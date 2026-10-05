@@ -14,6 +14,7 @@ import {
   listAppointmentsFromSupabase,
   listServicesFromSupabase,
   listSuppliesFromSupabase,
+  listWhatsAppCommunicationsFromSupabase,
   recordSupplyMovementToSupabase,
   saveAppointmentToSupabase,
   saveClientToSupabase,
@@ -179,9 +180,10 @@ export async function listAppointmentsForAdmin(
 }
 
 export async function getAppointmentDetailsForAdmin(id: string) {
-  const [appointments, history] = await Promise.all([
+  const [appointments, history, communicationRecords] = await Promise.all([
     listAppointmentsFromSupabase({ id }),
     listAppointmentStatusHistoryFromSupabase(id),
+    listWhatsAppCommunicationsFromSupabase(id),
   ]);
   const appointment = appointments[0];
   if (!appointment) return null;
@@ -191,6 +193,7 @@ export async function getAppointmentDetailsForAdmin(id: string) {
     client: appointment.client ?? null,
     service: appointment.service ?? null,
     history,
+    communicationRecords,
   };
 }
 

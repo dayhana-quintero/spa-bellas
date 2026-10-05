@@ -5,11 +5,11 @@ import { validateServiceCatalog } from './service-catalog-rules';
 
 export type AdminServiceInput = Omit<Service, 'id'> & { id?: string };
 
-export function listAdminServices(): Service[] {
+export async function listAdminServices(): Promise<Service[]> {
   return listServices();
 }
 
-export function saveAdminService(input: AdminServiceInput): Service {
+export async function saveAdminService(input: AdminServiceInput): Promise<Service> {
   const normalized: AdminServiceInput = {
     ...input,
     category: input.category.trim(),
@@ -25,8 +25,9 @@ export function saveAdminService(input: AdminServiceInput): Service {
   return saveService(normalized as Service);
 }
 
-export function toggleServicePublication(id: string, nextIsActive?: boolean): Service {
-  const service = listServices().find((item) => item.id === id);
+export async function toggleServicePublication(id: string, nextIsActive?: boolean): Promise<Service> {
+  const services = await listServices();
+  const service = services.find((item) => item.id === id);
   if (!service) {
     throw new Error('No se encontró el servicio.');
   }
@@ -37,8 +38,9 @@ export function toggleServicePublication(id: string, nextIsActive?: boolean): Se
   });
 }
 
-export function toggleServiceBooking(id: string, nextIsBookable?: boolean): Service {
-  const service = listServices().find((item) => item.id === id);
+export async function toggleServiceBooking(id: string, nextIsBookable?: boolean): Promise<Service> {
+  const services = await listServices();
+  const service = services.find((item) => item.id === id);
   if (!service) {
     throw new Error('No se encontró el servicio.');
   }

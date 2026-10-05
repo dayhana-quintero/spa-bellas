@@ -1,3 +1,6 @@
 import { getPublicServices } from '@/domain/spa-service';
 
-export function GET() { return Response.json(getPublicServices()); }
+export async function GET() {
+  const services = await getPublicServices();
+  return Response.json(services);
+}
