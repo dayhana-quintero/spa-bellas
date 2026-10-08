@@ -19,16 +19,19 @@ test.describe('admin inventory flow', () => {
 
     await expect(page.getByRole('heading', { name: /insumos del spa/i })).toBeVisible();
 
-    await page.getByLabel('Nombre').fill('Aceite de lavanda');
+    // Nombre único para que la prueba sea idempotente entre corridas.
+    const itemName = `Aceite de lavanda ${Date.now()}`;
+
+    await page.getByLabel('Nombre').fill(itemName);
     await page.getByLabel('Unidad').fill('botellas');
     await page.getByLabel('Stock disponible').fill('12');
     await page.getByLabel('Umbral mínimo').fill('3');
     await page.getByRole('button', { name: /guardar insumo/i }).click();
 
     await expect(page.getByText('Insumo guardado correctamente.')).toBeVisible();
-    await expect(page.getByRole('cell', { name: 'Aceite de lavanda' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: itemName })).toHaveCount(1);
 
-    await page.getByLabel('Insumo').selectOption({ label: 'Aceite de lavanda' });
+    await page.getByLabel('Insumo').selectOption({ label: itemName });
     await page.getByLabel('Tipo').selectOption('consumo');
     await page.getByLabel('Cantidad del movimiento').fill('4');
     await page.getByLabel('Motivo').fill('Uso de tratamiento');

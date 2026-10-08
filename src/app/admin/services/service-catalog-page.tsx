@@ -15,6 +15,13 @@ const emptyForm = {
   isBookable: true,
 };
 
+async function fetchServices(): Promise<Service[]> {
+  const res = await fetch('/api/admin/services');
+  if (!res.ok) throw new Error('No se pudo cargar los servicios.');
+  const data = await res.json() as Service[];
+  return Array.isArray(data) ? data : [];
+}
+
 export default function AdminServicesCatalogPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [draft, setDraft] = useState(emptyForm);
@@ -23,17 +30,26 @@ export default function AdminServicesCatalogPage() {
 
   const loadServices = async () => {
     try {
-      const res = await fetch('/api/admin/services');
-      if (!res.ok) throw new Error('No se pudo cargar los servicios.');
-      const data = await res.json() as Service[];
-      setServices(Array.isArray(data) ? data : []);
+      setServices(await fetchServices());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error cargando servicios.');
     }
   };
 
   useEffect(() => {
-    void loadServices();
+    let isActive = true;
+
+    fetchServices()
+      .then((data) => {
+        if (isActive) setServices(data);
+      })
+      .catch((err: unknown) => {
+        if (isActive) setError(err instanceof Error ? err.message : 'Error cargando servicios.');
+      });
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   const publishedCount = useMemo(

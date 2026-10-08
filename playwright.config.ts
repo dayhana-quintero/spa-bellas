@@ -3,6 +3,9 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
 
+  // Solo specs de Playwright: los archivos *.test.ts pertenecen a Vitest.
+  testMatch: "**/*.spec.ts",
+
   fullyParallel: true,
 
   forbidOnly: !!process.env.CI,

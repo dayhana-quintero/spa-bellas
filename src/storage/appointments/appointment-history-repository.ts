@@ -56,16 +56,21 @@ export function findAppointmentHistory(
     (a, b) => b.scheduledStart.getTime() - a.scheduledStart.getTime(),
   );
 
-  const page = filters.page ?? 1;
-  const pageSize = filters.pageSize ?? 20;
+  return paginateAppointments(data, filters.page ?? 1, filters.pageSize ?? 20);
+}
+
+// Extrae una pagina de la lista ya filtrada y ordenada.
+export function paginateAppointments(
+  data: Appointment[],
+  page: number,
+  pageSize: number,
+): AppointmentHistoryPage {
   const total = data.length;
   const totalPages = Math.ceil(total / pageSize) || 0;
-
   const startIndex = (page - 1) * pageSize;
-  const items = data.slice(startIndex, startIndex + pageSize);
 
   return {
-    items,
+    items: data.slice(startIndex, startIndex + pageSize),
     total,
     page,
     pageSize,

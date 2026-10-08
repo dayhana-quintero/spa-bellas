@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- el runtime de Node se resuelve de forma sincrona a proposito (el almacenamiento es sincrono). */
 import type { Appointment } from '@/shared/types/appointment';
 import type { AppointmentStatusRecord } from '@/shared/types/appointment-status';
 import type { Cliente } from '@/shared/types/client';

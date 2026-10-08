@@ -41,14 +41,32 @@ test("el cliente puede consultar servicios, elegir un horario y registrar una so
   await page.getByLabel("Notas opcionales").fill("Necesito relajación profunda.");
   await page.getByLabel("Acepto que el spa confirme por WhatsApp").check();
 
+  const createdResponse = page.waitForResponse(
+    (response) =>
+      response.url().includes("/api/public/appointments") &&
+      response.request().method() === "POST",
+  );
+
   await page.getByRole("button", { name: /enviar solicitud/i }).click();
 
   await expect(page.getByRole("status")).toHaveText(`Solicitud pendiente para Ana García el ${booking!.date} a las ${booking!.time}.`);
 
-  await page.goto("/admin");
+  const created = (await (await createdResponse).json()) as { id: string };
+  expect(created.id).toBeTruthy();
+
+  // Tras crear la cita se limpian la seleccion y los datos del cliente.
+  await expect(page.getByLabel("Fecha de la cita")).toHaveValue("");
+  await expect(page.getByLabel("Nombre completo")).toHaveValue("");
+  await expect(page.getByLabel("Teléfono WhatsApp")).toHaveValue("");
+  await expect(page.getByLabel("Notas opcionales")).toHaveValue("");
+  await expect(page.getByLabel("Acepto que el spa confirme por WhatsApp")).not.toBeChecked();
+
+  await page.goto(`/admin/appointments/${created.id}`);
   await expect(page.getByText("Ana García")).toBeVisible();
-  await page.getByRole("button", { name: "Confirmar cita" }).click();
-  await expect(page).toHaveURL(/\/admin\?status=confirmada/);
-  await expect(page.getByText("Ana García")).toBeVisible();
-  await expect(page.getByText("Confirmada", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Cambiar estado a confirmada" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Cambiar estado a confirmada" }).click();
+
+  await expect(page.getByText(/Estado:\s*confirmada/i)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Cambiar estado a confirmada" })).toHaveCount(0);
 });

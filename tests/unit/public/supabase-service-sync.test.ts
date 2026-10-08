@@ -55,23 +55,28 @@ describe('Supabase service sync', () => {
       .mockReturnValueOnce(insertQuery);
   });
 
-  it('creates a remote service when the deployed schema has no local_id column', async () => {
-    const result = await saveServiceToSupabase({
-      id: 'service-1',
-      name: 'Masaje relajante',
-      durationMinutes: 60,
-      isActive: true,
-      isBookable: true,
-    });
+  it('fails with an actionable migration error when the deployed schema has no local_id column', async () => {
+    await expect(
+      saveServiceToSupabase({
+        id: 'service-1',
+        name: 'Masaje relajante',
+        durationMinutes: 60,
+        isActive: true,
+        isBookable: true,
+      }),
+    ).rejects.toThrow('Aplica la migración remota');
 
-    expect(result).toEqual({ id: '33333333-3333-4333-8333-333333333333' });
-    expect(lookupQuery.eq).toHaveBeenNthCalledWith(1, 'name', 'Masaje relajante');
-    expect(lookupQuery.eq).toHaveBeenNthCalledWith(2, 'duration_minutes', 60);
-    expect(insertQuery.insert).toHaveBeenCalledWith({
-      name: 'Masaje relajante',
-      duration_minutes: 60,
-      is_active: true,
-      is_bookable: true,
-    });
+    expect(upsertQuery.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'service-1',
+        name: 'Masaje relajante',
+        duration_minutes: 60,
+        is_active: true,
+        is_bookable: true,
+      }),
+      { onConflict: 'id' },
+    );
+    expect(lookupQuery.eq).not.toHaveBeenCalled();
+    expect(insertQuery.insert).not.toHaveBeenCalled();
   });
 });

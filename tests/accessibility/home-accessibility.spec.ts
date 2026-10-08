@@ -5,17 +5,17 @@ test.describe("accesibilidad de la landing principal", () => {
     await desktopPage.goto("/");
 
     await expect(
-      desktopPage.getByRole("navigation", { name: /navegacion principal/i }),
+      desktopPage.getByRole("navigation", { name: /navegaci[oó]n principal/i }),
     ).toBeVisible();
     await expect(desktopPage.getByRole("main")).toBeVisible();
     await expect(
       desktopPage.getByRole("heading", {
-        name: /cuidado de spa pensado para tu bienestar/i,
+        name: /bellas/i,
         level: 1,
       }),
     ).toBeVisible();
     await expect(
-      desktopPage.getByRole("link", { name: /ver servicios/i }),
+      desktopPage.getByRole("link", { name: /solicitar cita/i }).first(),
     ).toBeVisible();
   });
 
@@ -25,7 +25,7 @@ test.describe("accesibilidad de la landing principal", () => {
     await expect(mobilePage.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(mobilePage.getByRole("main")).toBeVisible();
     await expect(
-      mobilePage.getByRole("link", { name: /agendar cita/i }),
+      mobilePage.getByRole("link", { name: /solicitar cita/i }).first(),
     ).toBeVisible();
   });
 });

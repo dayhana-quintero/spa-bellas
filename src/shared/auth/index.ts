@@ -31,7 +31,7 @@ export type AdminSessionInput = Partial<Omit<AdminSession, 'role'>> & {
   expiresAt?: number;
 };
 
-const ADMIN_ACCESS_ROLES = new Set<AdminRole>(['admin', 'manager', 'owner']);
+export const ADMIN_ACCESS_ROLES = new Set<AdminRole>(['admin', 'manager', 'owner']);
 
 export function getAdminUsers(): AdminUser[] {
   return readStoredAdminUsers().map((user) => ({

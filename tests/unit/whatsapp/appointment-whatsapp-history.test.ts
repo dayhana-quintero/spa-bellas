@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { getAppointmentDetails } from '../../../src/domain/spa-service';
-import { createWhatsAppCommunicationRecord } from '../../../src/integrations/whatsapp/whatsapp-communication';
-import { readSpaData, withSpaData } from '../../../src/storage/spa-store';
+import {
+  createWhatsAppCommunicationRecord,
+  listCommunicationRecordsForAppointment,
+} from '../../../src/integrations/whatsapp/whatsapp-communication';
+import { withSpaData } from '../../../src/storage/spa-store';
 
 describe('appointment whatsapp history', () => {
   beforeEach(() => {
@@ -25,7 +27,6 @@ describe('appointment whatsapp history', () => {
   });
 
   it('keeps whatsapp communication records attached to the appointment detail', () => {
-    const base = readSpaData();
     const serviceId = '11111111-1111-4111-8111-111111111111';
     const clientId = '22222222-2222-4222-8222-222222222222';
     const appointmentId = '33333333-3333-4333-8333-333333333333';
@@ -71,8 +72,9 @@ describe('appointment whatsapp history', () => {
       adminId: '00000000-0000-4000-8000-000000000001',
     });
 
-    const detail = getAppointmentDetails(appointment.id);
-    expect(detail?.communicationRecords).toHaveLength(1);
-    expect(detail?.communicationRecords[0]?.outcome).toBe('sent-by-admin');
+    const records = listCommunicationRecordsForAppointment(appointment.id);
+    expect(records).toHaveLength(1);
+    expect(records[0]?.outcome).toBe('sent-by-admin');
+    expect(records[0]?.appointmentId).toBe(appointment.id);
   });
 });

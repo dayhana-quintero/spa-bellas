@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   AppError,
   createEmptyState,
-  createErrorState,
   createLoadingState,
   createSuccessState,
   isEmptyState,

@@ -1,10 +1,17 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { getAdminDashboardSummary, getLowStockSupplies } from '../../../src/domain/admin-dashboard';
-import { withSpaData } from '../../../src/storage/spa-store';
+import { getAdminDashboardSummary } from '../../../src/domain/admin-dashboard';import { withSpaData } from '../../../src/storage/spa-store';
+
+// Sin Supabase configurado el resumen debe degradar al almacenamiento local.
+vi.mock('../../../src/lib/supabase', () => ({
+  isSupabaseConfigured: () => false,
+  getSupabaseClient: () => null,
+  getSupabaseAdminClient: () => null,
+  assertSupabaseReady: () => null,
+}));
 
 describe('admin dashboard summary', () => {
-  it('counts active appointments, services and stock risk from the current spa data', () => {
+  it('counts active appointments, services and stock risk from the current spa data', async () => {
     withSpaData((data) => {
       data.appointments = [
         {
@@ -22,7 +29,7 @@ describe('admin dashboard summary', () => {
         {
           id: '44444444-4444-4444-8444-444444444444',
           clientId: '55555555-5555-4555-8555-555555555555',
-          serviceId: '66666666-6666-4666-8666-666666666666',
+          serviceId: '33333333-3333-4333-8333-333333333333',
           scheduledStart: new Date('2026-10-03T10:00:00Z'),
           scheduledEnd: new Date('2026-10-03T11:00:00Z'),
           status: 'confirmada',
@@ -33,7 +40,7 @@ describe('admin dashboard summary', () => {
         {
           id: '77777777-7777-4777-8777-777777777777',
           clientId: '88888888-8888-4888-8888-888888888888',
-          serviceId: '99999999-9999-4999-8999-999999999999',
+          serviceId: '33333333-3333-4333-8333-333333333333',
           scheduledStart: new Date('2026-10-04T10:00:00Z'),
           scheduledEnd: new Date('2026-10-04T11:00:00Z'),
           status: 'vencida',
@@ -86,7 +93,9 @@ describe('admin dashboard summary', () => {
       ];
     });
 
-    expect(getAdminDashboardSummary()).toMatchObject({
+    const summary = await getAdminDashboardSummary();
+
+    expect(summary).toMatchObject({
       pendingAppointments: 1,
       confirmedAppointments: 1,
       expiredAppointments: 1,
@@ -94,6 +103,7 @@ describe('admin dashboard summary', () => {
       lowStockItems: 1,
     });
 
-    expect(getLowStockSupplies().map((item) => item.name)).toEqual(['Exfoliante']);
+    expect(summary.generatedAt).toBeInstanceOf(Date);
+    expect(summary.lowStockSupplies.map((item) => item.name)).toEqual(['Exfoliante']);
   });
 });

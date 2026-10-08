@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Worktrees embebidos de otras herramientas (no forman parte del codigo fuente).
+    ".kilo/**",
+    // Artefactos de pruebas:
+    "test-results/**",
+    "playwright-report/**",
   ]),
 ]);
 

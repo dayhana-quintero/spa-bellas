@@ -3,7 +3,6 @@
 import { useState } from 'react';
 
 import { getAvailableStatusTransitions } from '../../../domain/appointments/admin-appointment-service';
-import { changeAppointmentStatus } from '../../../domain/spa-service';
 import { createWhatsAppCommunicationRecord } from '../../../integrations/whatsapp/whatsapp-communication';
 import {
   openWhatsAppConfirmation,
@@ -32,9 +31,21 @@ export function StatusControls({
   const [manualNote, setManualNote] = useState('');
   const [manualFormOpen, setManualFormOpen] = useState(false);
 
-  const handleTransition = (nextStatus: Appointment['status']) => {
+  const patchStatus = async (nextStatus: Appointment['status'], note: string) => {
+    const response = await fetch(`/api/admin/appointments/${appointmentId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: nextStatus, note }),
+    });
+    const result = (await response.json()) as { error?: string };
+    if (!response.ok) {
+      throw new Error(result.error ?? 'No se pudo actualizar el estado.');
+    }
+  };
+
+  const handleTransition = async (nextStatus: Appointment['status']) => {
     try {
-      changeAppointmentStatus(appointmentId, nextStatus, 'admin-1', 'Cambio realizado desde la vista administrativa');
+      await patchStatus(nextStatus, 'Cambio realizado desde la vista administrativa');
       setStatusMessage(`Estado actualizado a ${nextStatus}.`);
       window.location.reload();
     } catch (error) {
@@ -71,7 +82,7 @@ export function StatusControls({
     }
   };
 
-  const handleManualResult = () => {
+  const handleManualResult = async () => {
     try {
       if (!manualNote.trim()) {
         throw new Error('Escribe una nota para registrar el resultado manual.');
@@ -81,6 +92,10 @@ export function StatusControls({
         ? 'Sin respuesta del cliente.'
         : `Resultado manual: ${manualResult}.`;
 
+      if (manualResult !== 'sin respuesta') {
+        await patchStatus(manualResult, manualNote.trim());
+      }
+
       createWhatsAppCommunicationRecord({
         appointmentId,
         messageText: resultText,
@@ -88,10 +103,6 @@ export function StatusControls({
         outcomeNote: `${resultText} ${manualNote.trim()}`,
         adminId: 'admin-1',
       });
-
-      if (manualResult !== 'sin respuesta') {
-        changeAppointmentStatus(appointmentId, manualResult, 'admin-1', manualNote.trim());
-      }
 
       setManualFormOpen(false);
       setManualNote('');

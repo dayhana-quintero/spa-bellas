@@ -50,6 +50,15 @@ export default function AppointmentRequestFlow() {
 
   const selectedService = services.find((service) => service.id === selectedServiceId) ?? services[0];
 
+  // Al crear la cita se limpia la seleccion (servicio, fecha y horario) para que
+  // la siguiente reserva empiece desde cero, y el formulario se remonta vacio.
+  function handleRequestCreated(request: AppointmentRequest) {
+    setSubmittedRequest(request);
+    setSelectedServiceId(services[0]?.id ?? '');
+    setDate('');
+    setSelectedSlot('');
+  }
+
   if (services.length === 0) {
     return (
       <div className="mt-8 rounded-2xl border border-dashed border-[#d7c6c2] bg-white/50 p-6 text-[#564d4c]">
@@ -94,14 +103,15 @@ export default function AppointmentRequestFlow() {
 
       {submittedRequest ? (
         <AppointmentRequestConfirmation request={submittedRequest} />
-      ) : (
-        <AppointmentRequestForm
-          service={selectedService}
-          date={date}
-          selectedSlot={selectedSlot}
-          onRequestCreated={setSubmittedRequest}
-        />
-      )}
+      ) : null}
+
+      <AppointmentRequestForm
+        key={submittedRequest?.id ?? 'nueva-solicitud'}
+        service={selectedService}
+        date={date}
+        selectedSlot={selectedSlot}
+        onRequestCreated={handleRequestCreated}
+      />
     </div>
   );
 }

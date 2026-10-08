@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Suspense } from 'react';
 import { LogoutButton } from './logout-button';
 
@@ -11,7 +11,6 @@ interface AdminSidebarProps {
 
 function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   // No renderizar sidebar en login/access-denied
   if (pathname.startsWith('/admin/login') || pathname.startsWith('/admin/access-denied')) {
@@ -21,15 +20,9 @@ function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
   const isActive = (path: string): boolean => {
     const url = new URL(path, 'http://x');
     const targetPathname = url.pathname;
-    const targetStatus = url.searchParams.get('status');
 
     if (targetPathname === '/admin') {
-      if (targetStatus === null) {
-        // /admin sin status: activo si pathname === '/admin' y no hay status o es 'pendiente'
-        return pathname === '/admin' && (searchParams.get('status') === null || searchParams.get('status') === 'pendiente');
-      }
-      // /admin?status=xxx
-      return pathname === '/admin' && searchParams.get('status') === targetStatus;
+      return pathname === '/admin';
     }
 
     return pathname.startsWith(targetPathname);
@@ -53,6 +46,11 @@ function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
 
       <nav className="space-y-2">
         <Link href="/admin" className={linkClass('/admin')}>
+          <span className="text-lg">📊</span>
+          <span>Dashboard</span>
+        </Link>
+
+        <Link href="/admin/appointments/pending" className={linkClass('/admin/appointments/pending')}>
           <span className="text-lg">📅</span>
           <span>Citas pendientes</span>
           {pendingCount !== undefined && (
@@ -62,9 +60,9 @@ function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
           )}
         </Link>
 
-        <Link href="/admin?status=cancelada" className={linkClass('/admin?status=cancelada')}>
-          <span className="text-lg">✕</span>
-          <span>Citas canceladas</span>
+        <Link href="/admin/appointments/history" className={linkClass('/admin/appointments/history')}>
+          <span className="text-lg">🧾</span>
+          <span>Historial de citas</span>
         </Link>
 
         <Link href="/admin/inventory" className={linkClass('/admin/inventory')}>
@@ -75,11 +73,6 @@ function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
         <Link href="/admin/services" className={linkClass('/admin/services')}>
           <span className="text-lg">💆</span>
           <span>Servicios</span>
-        </Link>
-
-        <Link href="/admin/appointments/history" className={linkClass('/admin/appointments/history')}>
-          <span className="text-lg">🧾</span>
-          <span>Historial de citas</span>
         </Link>
       </nav>
 

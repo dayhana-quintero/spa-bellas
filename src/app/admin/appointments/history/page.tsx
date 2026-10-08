@@ -9,19 +9,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getAppointmentHistory } from '@/domain/appointments/appointment-history-service';
+import { getAppointmentStatusMeta } from '@/domain/appointments/appointment-status-meta';
 import { readSpaData } from '@/storage/spa-store';
 import type { Appointment } from '@/shared/types/appointment';
-
-const statusMeta: Record<string, { label: string; color: string; bg: string }> = {
-  pendiente: { label: 'Pendiente', color: '#7a2a2a', bg: '#f8e1e3' },
-  confirmada: { label: 'Confirmada', color: '#1d6a4d', bg: '#dff5ea' },
-  cancelada: { label: 'Cancelada', color: '#8b2d2d', bg: '#f4d5d5' },
-  vencida: { label: 'Vencida', color: '#5f4b41', bg: '#f0e2d8' },
-  completada: { label: 'Completada', color: '#9f2d46', bg: '#f7dfe4' },
-  'no asistio': { label: 'No asistió', color: '#6e4d35', bg: '#f6e8d8' },
-  'reprogramacion solicitada': { label: 'Reprogramación', color: '#5f3d69', bg: '#f0e4f4' },
-  reprogramada: { label: 'Reprogramada', color: '#214f63', bg: '#dfeff4' },
-};
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat('es-ES', {
@@ -64,7 +54,7 @@ export default async function HistoryPage({
   const dateTo = params.to ?? '';
   const page = Number(params.page ?? '1') || 1;
 
-  const result = getAppointmentHistory({
+  const result = await getAppointmentHistory({
     status: (status || undefined) as Appointment['status'] | undefined,
     from: dateFrom ? new Date(`${dateFrom}T00:00:00`) : undefined,
     to: dateTo ? new Date(`${dateTo}T23:59:59`) : undefined,
@@ -77,9 +67,11 @@ export default async function HistoryPage({
   const rows = result.items.map((item) => ({
     ...item,
     clientName:
+      item.client?.name ??
       spaData.clients.find((c) => c.id === item.clientId)?.name ??
       'Cliente sin nombre',
     serviceName:
+      item.service?.name ??
       spaData.services.find((s) => s.id === item.serviceId)?.name ??
       'Servicio sin nombre',
   }));
@@ -190,11 +182,7 @@ export default async function HistoryPage({
                   </TableRow>
                 ) : (
                   rows.map((row, index) => {
-                    const meta = statusMeta[row.status] ?? {
-                      label: row.status,
-                      color: '#4d4d4d',
-                      bg: '#efefef',
-                    };
+                    const meta = getAppointmentStatusMeta(row.status);
 
                     return (
                       <TableRow key={row.id} className={index % 2 === 0 ? 'bg-[#f6f2ef]' : 'bg-[#f9f6f4]'}>

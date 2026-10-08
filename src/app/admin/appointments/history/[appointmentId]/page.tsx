@@ -1,7 +1,6 @@
 import Link from 'next/link';
 
 import { getAppointmentDetail } from '@/domain/appointments/appointment-history-service';
-import { readSpaData } from '@/storage/spa-store';
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat('es-ES', {
@@ -24,9 +23,9 @@ export default async function AppointmentHistoryDetailPage({
   params: Promise<{ appointmentId: string }>;
 }) {
   const { appointmentId } = await params;
-  const appointment = getAppointmentDetail(appointmentId);
+  const detail = await getAppointmentDetail(appointmentId);
 
-  if (!appointment) {
+  if (!detail) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f3f0ef] p-8">
         <h1 className="font-serif text-4xl text-[#d56572]">Cita no encontrada</h1>
@@ -37,33 +36,7 @@ export default async function AppointmentHistoryDetailPage({
     );
   }
 
-  const data = readSpaData();
-  const clientName =
-    data.clients.find((c) => c.id === appointment.clientId)?.name ??
-    'Cliente sin nombre';
-  const serviceName =
-    data.services.find((s) => s.id === appointment.serviceId)?.name ??
-    'Servicio sin nombre';
-  const timeline = [
-    ...data.statusRecords
-      .filter((record) => record.appointmentId === appointmentId)
-      .map((record) => ({
-        id: record.id,
-        kind: 'status' as const,
-        title: `Cambio de estado: ${record.previousStatus} → ${record.newStatus}`,
-        description: record.note ?? 'Sin nota asociada.',
-        timestamp: record.changedAt,
-      })),
-    ...data.communicationRecords
-      .filter((record) => record.appointmentId === appointmentId)
-      .map((record) => ({
-        id: record.id,
-        kind: 'whatsapp' as const,
-        title: `WhatsApp: ${record.outcome}`,
-        description: record.outcomeNote ?? record.messageText,
-        timestamp: record.createdAt,
-      })),
-  ].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  const { appointment, clientName, serviceName, timeline } = detail;
 
   return (
     <main className="min-h-screen bg-[#f3f0ef] p-8">

@@ -268,15 +268,14 @@ export default function AppointmentRequestForm({
       </label>
 
       {errorMessage ? (
-        <p className="rounded-2xl border border-[#f2d0d0] bg-[#fff6f6] px-4 py-3 text-sm text-[#7f2d2d]">
+        <p role="alert" className="rounded-2xl border border-[#f2d0d0] bg-[#fff6f6] px-4 py-3 text-sm text-[#7f2d2d]">
           {errorMessage}
         </p>
       ) : null}
 
       <button
         type="submit"
-        className="rounded-xl bg-[#1f1f21] px-5 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
-        disabled={!formState.canSubmit}
+        className="rounded-xl bg-[#1f1f21] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#2a2a2d] disabled:cursor-not-allowed disabled:opacity-60"
       >
         Enviar solicitud
       </button>

@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -14,6 +15,10 @@ export default function AdminLoginPage() {
     let cancelled = false;
 
     void (async () => {
+      if (searchParams.get('reason') === 'expired') {
+        await fetch('/api/admin/session', { method: 'DELETE' });
+      }
+
       const response = await fetch('/api/admin/session');
       const data = (await response.json().catch(() => ({ authenticated: false }))) as { authenticated?: boolean };
 
@@ -25,7 +30,7 @@ export default function AdminLoginPage() {
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, [router, searchParams]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,6 +67,12 @@ export default function AdminLoginPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7d6966]">Administración</p>
         <h1 className="mt-2 font-serif text-4xl text-[#d56572]">Acceso privado</h1>
         <p className="mt-3 text-sm text-[#544a48]">Ingresa el código de acceso para entrar al panel del spa.</p>
+
+        {searchParams.get('reason') === 'expired' ? (
+          <p className="mt-3 rounded-xl border border-[#fde6cd] bg-[#fff7ed] px-3 py-2 text-sm text-[#7c441e]">
+            Tu sesión expiró. Por favor, inicia sesión nuevamente.
+          </p>
+        ) : null}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <label className="block text-sm font-medium text-[#433d3b]">

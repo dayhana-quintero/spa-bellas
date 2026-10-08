@@ -97,7 +97,7 @@ export default async function PublicPage() {
   return (
     <main className="min-h-screen bg-[#f6f1ef] text-[#2b2b2b]">
       <header className="border-b border-[#e5d8d5] bg-[#f5f2f1]">
-        <nav className="mx-auto flex max-w-[1600px] items-center justify-between px-5 py-3 sm:px-6">
+        <nav aria-label="Navegación principal" className="mx-auto flex max-w-[1600px] items-center justify-between px-5 py-3 sm:px-6">
           <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.26em] text-[#332d2d]">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#d7c8c4] bg-[#f8f3f1] text-[10px] text-[#af7b7d]">
               ✦

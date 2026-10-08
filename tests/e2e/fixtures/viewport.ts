@@ -18,7 +18,7 @@ type ViewportFixtures = {
 };
 
 export const test = base.extend<ViewportFixtures>({
-  mobilePage: async ({ browser }, use) => {
+  mobilePage: async ({ browser }, runFixture) => {
     const context = await browser.newContext({
       viewport: mobileViewport,
       isMobile: true,
@@ -27,20 +27,20 @@ export const test = base.extend<ViewportFixtures>({
     const page = await context.newPage();
 
     try {
-      await use(page);
+      await runFixture(page);
     } finally {
       await context.close();
     }
   },
 
-  desktopPage: async ({ browser }, use) => {
+  desktopPage: async ({ browser }, runFixture) => {
     const context = await browser.newContext({
       viewport: desktopViewport,
     });
     const page = await context.newPage();
 
     try {
-      await use(page);
+      await runFixture(page);
     } finally {
       await context.close();
     }

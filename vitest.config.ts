@@ -11,5 +11,6 @@ export default defineConfig({
     environment: "node",
     globals: true,
     include: ["tests/**/*.test.ts"],
+    setupFiles: ["tests/setup/memory-storage.ts"],
   },
 });
