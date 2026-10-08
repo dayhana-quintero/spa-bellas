@@ -1,13 +1,44 @@
 import {
   RescheduleError,
   rescheduleAppointmentForAdmin,
+  type RescheduleResult,
 } from '@/domain/appointments/admin-reschedule-service';
+import { prepareRescheduleNoticeMessage } from '@/integrations/whatsapp/whatsapp-confirmation';
 import { appointmentStatusSchema } from '@/shared/types/appointment';
 import { requireAdmin } from '../../../guard';
 
 type RescheduleContext = {
   params: Promise<{ id: string }>;
 };
+
+type NoticeBlock = { available: true; messageText: string } | { available: false };
+
+// Prepara el aviso con la nueva fecha solo si hay consentimiento (FR-010);
+// cualquier fallo (p. ej. telefono invalido) deja el aviso sin ofrecer pero no
+// afecta a la reprogramacion ya completada.
+function buildNotice(
+  appointmentId: string,
+  candidate: RescheduleResult['noticeCandidate'],
+): NoticeBlock {
+  if (!candidate.consent) {
+    return { available: false };
+  }
+
+  try {
+    const prepared = prepareRescheduleNoticeMessage({
+      appointmentId,
+      clientName: candidate.clientName,
+      phone: candidate.phone,
+      serviceName: candidate.serviceName,
+      previousStart: candidate.previousStart,
+      nextStart: candidate.nextStart,
+      consent: true,
+    });
+    return { available: true, messageText: prepared.messageText };
+  } catch {
+    return { available: false };
+  }
+}
 
 const STATUS_BY_REASON: Record<string, number> = {
   'invalid-params': 400,
@@ -69,6 +100,7 @@ export async function POST(request: Request, context: RescheduleContext) {
     return Response.json({
       appointment: result.appointment,
       statusRecord: result.statusRecord,
+      notice: buildNotice(id, result.noticeCandidate),
     });
   } catch (error) {
     if (error instanceof RescheduleError) {
@@ -79,9 +111,9 @@ export async function POST(request: Request, context: RescheduleContext) {
     }
 
     const message = error instanceof Error ? error.message : 'No se pudo reprogramar la cita.';
-    return Response.json(
-      { error: message },
-      { status: message === 'No autorizado' ? 401 : 400 },
-    );
+    if (message === 'No autorizado') {
+      return Response.json({ error: 'No autorizado.' }, { status: 401 });
+    }
+    return Response.json({ error: message }, { status: 400 });
   }
 }

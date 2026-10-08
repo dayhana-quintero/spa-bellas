@@ -58,7 +58,12 @@ export function InventoryMovementForm({
 
   return (
     <form onSubmit={handleSubmit} className="rounded-2xl bg-[#efe8e3] p-4">
-      <h2 className="mb-4 text-lg font-semibold text-[#2b2b2b]">Registrar movimiento</h2>
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold text-[#2b2b2b]">Entrada / salida de stock</h2>
+        <p className="mt-1 text-sm text-[#6a5d5a]">
+          Úsalo para sumar o restar unidades de un insumo ya registrado (compra, consumo o corrección).
+        </p>
+      </div>
 
       <div className="grid gap-3 md:grid-cols-2">
         <label className="flex flex-col gap-2 text-sm text-[#473e3d]">
@@ -138,7 +143,7 @@ export function InventoryMovementForm({
           disabled={isSaving || supplies.length === 0}
           className="rounded-xl bg-[#1f1f21] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
         >
-          {isSaving ? 'Guardando…' : 'Registrar movimiento'}
+          {isSaving ? 'Guardando…' : 'Registrar entrada/salida'}
         </button>
         {message ? <span className="text-sm text-[#4a423f]">{message}</span> : null}
       </div>

@@ -22,6 +22,7 @@ export function StatusControls({
   scheduledStart,
   serviceId,
   service,
+  autoOpenReschedule = false,
 }: {
   appointmentId: string;
   status: Appointment['status'];
@@ -31,13 +32,15 @@ export function StatusControls({
   scheduledStart?: Date;
   serviceId?: string;
   service?: Service;
+  /** Abre el panel de reprogramacion al entrar (p. ej. desde ?reschedule=1). */
+  autoOpenReschedule?: boolean;
 }) {
   const transitions = getAvailableStatusTransitions(status);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [manualResult, setManualResult] = useState<Appointment['status'] | 'sin respuesta'>('sin respuesta');
   const [manualNote, setManualNote] = useState('');
   const [manualFormOpen, setManualFormOpen] = useState(false);
-  const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const [rescheduleOpen, setRescheduleOpen] = useState(autoOpenReschedule);
   const canReschedule = RESCHEDULABLE_STATUSES.includes(status);
 
   const patchStatus = async (nextStatus: Appointment['status'], note: string) => {
@@ -197,6 +200,7 @@ export function StatusControls({
           service={service}
           currentStart={scheduledStart}
           expectedStatus={status}
+          phone={phone}
           onClose={() => setRescheduleOpen(false)}
         />
       ) : null}

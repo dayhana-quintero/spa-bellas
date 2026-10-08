@@ -5,10 +5,14 @@ import { StatusControls } from '../status-controls';
 
 export default async function AdminAppointmentDetailRoute({
   params,
+  searchParams,
 }: {
   params: Promise<{ appointmentId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { appointmentId } = await params;
+  const queryParams = searchParams ? await searchParams : undefined;
+  const autoOpenReschedule = queryParams?.reschedule === '1';
   const detail = await getAppointmentDetailsForAdmin(appointmentId);
 
   if (!detail || !detail.appointment) {
@@ -52,7 +56,28 @@ export default async function AdminAppointmentDetailRoute({
             scheduledStart={detail.appointment.scheduledStart}
             serviceId={detail.appointment.serviceId}
             service={detail.service ?? undefined}
+            autoOpenReschedule={autoOpenReschedule}
           />
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-[#e7d8d3] bg-[#faf5f3] p-5">
+          <h2 className="font-serif text-2xl text-[#d56572]">Historial de estados</h2>
+          {detail.history.length === 0 ? (
+            <p className="mt-3 text-sm text-[#5a4541]">Todavía no hay cambios de estado registrados.</p>
+          ) : (
+            <ol className="mt-4 space-y-3">
+              {detail.history.map((record) => (
+                <li key={record.id} className="rounded-xl bg-white p-3 text-sm text-[#2d2828] shadow-sm">
+                  <p className="font-semibold text-[#1f1f21]">{record.previousStatus} → {record.newStatus}</p>
+                  {record.note ? <p className="mt-1 text-[#5a4541]">{record.note}</p> : null}
+                  <p className="mt-2 text-xs uppercase tracking-[0.16em] text-[#7d6966]">
+                    {new Date(record.changedAt).toLocaleString('es-ES')} ·{' '}
+                    {detail.adminNames[record.changedByAdminId] ?? 'Administrador'}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          )}
         </div>
 
         <div className="mt-8 rounded-2xl border border-[#e7d8d3] bg-[#faf5f3] p-5">

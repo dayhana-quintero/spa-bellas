@@ -70,7 +70,11 @@ export default function AdminServicesCatalogPage() {
           name: draft.name,
           description: draft.description,
           estimatedDuration: Number(draft.estimatedDuration) || 60,
-          priceDisplay: draft.priceDisplay || undefined,
+          priceDisplay: (() => {
+            const raw = draft.priceDisplay.trim();
+            if (!raw) return undefined;
+            return raw.startsWith('$') ? raw : `$${raw}`;
+          })(),
           isActive: draft.isActive,
           isBookable: draft.isBookable,
         }),
@@ -118,6 +122,27 @@ export default function AdminServicesCatalogPage() {
       void loadServices();
     } catch (toggleError) {
       setError(toggleError instanceof Error ? toggleError.message : 'No se pudo actualizar el servicio.');
+    }
+  };
+
+  const handleDelete = async (service: Service) => {
+    const confirmed = window.confirm(
+      `¿Eliminar el servicio "${service.name}"? Esta acción no se puede deshacer.`,
+    );
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`/api/admin/services/${service.id}`, { method: 'DELETE' });
+      const result = await res.json() as { error?: string };
+      if (!res.ok) throw new Error(result.error ?? 'No se pudo eliminar el servicio.');
+      setMessage('Servicio eliminado correctamente.');
+      setError(null);
+      // Si el servicio eliminado estaba en el formulario, se limpia el borrador.
+      if (draft.id === service.id) setDraft(emptyForm);
+      void loadServices();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : 'No se pudo eliminar el servicio.');
+      setMessage(null);
     }
   };
 
@@ -192,15 +217,19 @@ export default function AdminServicesCatalogPage() {
                 />
               </label>
 
-              <label className="flex flex-col gap-1.5 text-sm text-[#473e3d]">
+              <div className="flex flex-col gap-1.5 text-sm text-[#473e3d]">
                 <span>Precio</span>
-                <input
-                  value={draft.priceDisplay}
-                  onChange={(e) => setDraft((c) => ({ ...c, priceDisplay: e.target.value }))}
-                  className="h-11 rounded-xl border border-[#d9c8c3] bg-[#f9f4f2] px-3 outline-none focus:border-[#d56572]"
-                  placeholder="$80.000"
-                />
-              </label>
+                <div className="flex items-center rounded-xl border border-[#d9c8c3] bg-[#f9f4f2] focus-within:border-[#d56572]">
+                  <span className="pl-3 pr-1 text-[#7d6966]">$</span>
+                  <input
+                    inputMode="numeric"
+                    value={draft.priceDisplay.replace(/^\$/, '')}
+                    onChange={(e) => setDraft((c) => ({ ...c, priceDisplay: e.target.value.replace(/[^\d.,]/g, '') }))}
+                    className="h-11 flex-1 rounded-xl bg-transparent px-2 outline-none"
+                    placeholder="80.000"
+                  />
+                </div>
+              </div>
 
               <label className="flex flex-col gap-1.5 text-sm text-[#473e3d]">
                 <span>Publicar</span>
@@ -286,6 +315,13 @@ export default function AdminServicesCatalogPage() {
                           className="rounded-lg bg-[#1f1f21] px-2.5 py-1 text-xs font-medium text-white hover:bg-[#2a2a2d]"
                         >
                           Editar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void handleDelete(service)}
+                          className="rounded-lg border border-[#d8b4b4] px-2.5 py-1 text-xs font-medium text-[#8b2d2d] hover:bg-[#f9e7e7]"
+                        >
+                          Eliminar
                         </button>
                       </div>
                     </div>

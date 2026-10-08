@@ -1,10 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import AppointmentSlotPicker from '../../public/appointments/slot-picker';
+import {
+  openWhatsAppConfirmation,
+} from '../../../integrations/whatsapp/whatsapp-adapter';
 import type { Appointment } from '../../../shared/types/appointment';
 import type { Service } from '../../../shared/types/service';
+
+type NoticeBlock = { available: boolean; messageText?: string };
 
 type ReschedulePanelProps = {
   appointmentId: string;
@@ -12,6 +18,8 @@ type ReschedulePanelProps = {
   service?: Service;
   currentStart: Date;
   expectedStatus: Appointment['status'];
+  /** Telefono de la clienta para abrir wa.me con el aviso (FR-010). */
+  phone?: string;
   onClose: () => void;
 };
 
@@ -27,13 +35,18 @@ export function ReschedulePanel({
   service,
   currentStart,
   expectedStatus,
+  phone,
   onClose,
 }: ReschedulePanelProps) {
+  const router = useRouter();
   const [date, setDate] = useState(() => toDateInput(currentStart));
   const [selectedSlot, setSelectedSlot] = useState('');
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ tone: 'success' | 'error'; text: string } | null>(null);
+  const [rescheduled, setRescheduled] = useState(false);
+  const [notice, setNotice] = useState<NoticeBlock | null>(null);
+  const [noticeSending, setNoticeSending] = useState(false);
 
   const handleConfirm = async () => {
     if (!selectedSlot) {
@@ -59,6 +72,7 @@ export function ReschedulePanel({
       const result = (await response.json()) as {
         error?: string;
         appointment?: { scheduledStart: string };
+        notice?: NoticeBlock;
       };
 
       if (!response.ok || !result.appointment) {
@@ -69,15 +83,57 @@ export function ReschedulePanel({
         dateStyle: 'medium',
         timeStyle: 'short',
       });
+      const noticeBlock = result.notice ?? { available: false };
+      setNotice(noticeBlock);
+      setRescheduled(true);
       setMessage({ tone: 'success', text: `Cita reprogramada para el ${formatted}.` });
-      // Deja leer el aviso y luego recarga el detalle con la fecha nueva.
-      window.setTimeout(() => window.location.reload(), 1500);
+      // El detalle de atras se refresca con la fecha nueva sin perder el panel
+      // abierto, donde se ofrece el aviso (US2/US3: sin pasos extra).
+      router.refresh();
     } catch (error) {
       setMessage({
         tone: 'error',
         text: error instanceof Error ? error.message : 'No se pudo reprogramar la cita.',
       });
       setSubmitting(false);
+    }
+  };
+
+  const handleSendNotice = async () => {
+    if (!notice?.messageText) return;
+
+    setNoticeSending(true);
+
+    try {
+      // Se abre primero la pestana de WhatsApp (si no, el navegador la bloquea)
+      // y enseguida se registra el evento en el servidor.
+      const url = openWhatsAppConfirmation(phone ?? '', notice.messageText);
+      const response = await fetch(`/api/admin/appointments/${appointmentId}/communications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messageText: notice.messageText,
+          outcome: 'prepared',
+          outcomeNote: 'Aviso de reprogramacion preparado para envio por WhatsApp.',
+        }),
+      });
+      const result = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        throw new Error(result.error ?? 'No se pudo registrar el aviso de WhatsApp.');
+      }
+
+      setMessage({
+        tone: 'success',
+        text: 'Aviso de reprogramacion registrado. Enviarlo desde la pestana de WhatsApp.',
+      });
+      void url;
+    } catch (error) {
+      setMessage({
+        tone: 'error',
+        text:
+          error instanceof Error ? error.message : 'No se pudo preparar el aviso de WhatsApp.',
+      });
+      setNoticeSending(false);
     }
   };
 
@@ -118,21 +174,34 @@ export function ReschedulePanel({
       </label>
 
       <div className="mt-4 flex flex-wrap gap-3">
-        <button
-          type="button"
-          onClick={handleConfirm}
-          disabled={submitting}
-          className="rounded-lg bg-[#1f1f21] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-        >
-          {submitting ? 'Confirmando...' : 'Confirmar reprogramacion'}
-        </button>
+        {rescheduled ? (
+          notice?.available && notice.messageText ? (
+            <button
+              type="button"
+              onClick={handleSendNotice}
+              disabled={noticeSending}
+              className="rounded-lg bg-[#0a7d49] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+            >
+              {noticeSending ? 'Preparando aviso...' : 'Preparar aviso por WhatsApp'}
+            </button>
+          ) : null
+        ) : (
+          <button
+            type="button"
+            onClick={handleConfirm}
+            disabled={submitting}
+            className="rounded-lg bg-[#1f1f21] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+          >
+            {submitting ? 'Confirmando...' : 'Confirmar reprogramacion'}
+          </button>
+        )}
         <button
           type="button"
           onClick={onClose}
-          disabled={submitting}
+          disabled={submitting && !rescheduled}
           className="rounded-lg border border-[#d8c7c2] bg-white px-4 py-2 text-sm text-[#2d2828]"
         >
-          Cancelar
+          {rescheduled ? 'Cerrar' : 'Cancelar'}
         </button>
       </div>
 

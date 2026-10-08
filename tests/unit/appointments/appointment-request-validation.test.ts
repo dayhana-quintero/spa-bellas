@@ -20,7 +20,7 @@ describe('appointment request validation', () => {
       consent: true,
     });
 
-    expect(result.client.phone).toBe('+525512345678');
+    expect(result.client.phone).toBe('+575512345678');
     expect(result.status).toBe('pendiente');
     expect(result.source).toBe('publico');
   });

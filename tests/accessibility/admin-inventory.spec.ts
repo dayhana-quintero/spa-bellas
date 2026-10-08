@@ -21,7 +21,7 @@ test.describe('accesibilidad del inventario administrativo', () => {
     await expect(desktopPage.getByLabel('Nombre')).toBeVisible();
     await expect(desktopPage.getByLabel('Unidad')).toBeVisible();
     await expect(desktopPage.getByLabel('Stock disponible')).toBeVisible();
-    await expect(desktopPage.getByLabel('Umbral mínimo')).toBeVisible();
-    await expect(desktopPage.getByRole('button', { name: /guardar insumo/i })).toBeVisible();
+    await expect(desktopPage.getByLabel('Stock mínimo')).toBeVisible();
+    await expect(desktopPage.getByRole('button', { name: /guardar nuevo insumo/i })).toBeVisible();
   });
 });

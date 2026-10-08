@@ -73,14 +73,14 @@ description: "Tasks for 004-reschedule-appointments (Reprogramar citas)"
 
 ### Tests for User Story 2
 
-- [ ] T014 [P] [US2] Tests unitarios de la plantilla de aviso en `tests/unit/whatsapp/reschedule-notice.test.ts`: redacción con la nueva fecha y hora, rechazo sin consentimiento y teléfono inválido (escribirlos antes de T015 y confirmar que fallan)
+- [x] T014 [P] [US2] Tests unitarios de la plantilla de aviso en `tests/unit/whatsapp/reschedule-notice.test.ts`: redacción con la nueva fecha y hora, rechazo sin consentimiento y teléfono inválido (escribirlos antes de T015 y confirmar que fallan)
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Implementar `prepareRescheduleNoticeMessage` en `src/integrations/whatsapp/whatsapp-confirmation.ts` con las mismas validaciones de consentimiento y teléfono que `prepareConfirmationMessage` y redacción de cambio de horario (research R6)
-- [ ] T016 [US2] Devolver el bloque `notice` (`available` + `messageText` cuando hay consentimiento) en la respuesta de `POST /api/admin/appointments/[id]/reschedule` en `src/app/api/admin/appointments/[id]/reschedule/route.ts` (depende de T015)
-- [ ] T017 [US2] Ofrecer "Preparar aviso por WhatsApp" tras el éxito en `src/app/admin/appointments/reschedule-panel.tsx`, abriendo wa.me y registrando el evento vía `POST /api/admin/appointments/[id]/communications` con la sesión real (depende de T016)
-- [ ] T018 [US2] Ampliar `tests/e2e/admin-reschedule.spec.ts` con el aviso: mensaje con el nuevo horario, evento en la trazabilidad con `adminId` de sesión y ausencia de la opción sin consentimiento (depende de T017)
+- [x] T015 [US2] Implementar `prepareRescheduleNoticeMessage` en `src/integrations/whatsapp/whatsapp-confirmation.ts` con las mismas validaciones de consentimiento y teléfono que `prepareConfirmationMessage` y redacción de cambio de horario (research R6)
+- [x] T016 [US2] Devolver el bloque `notice` (`available` + `messageText` cuando hay consentimiento) en la respuesta de `POST /api/admin/appointments/[id]/reschedule` en `src/app/api/admin/appointments/[id]/reschedule/route.ts` (depende de T015)
+- [x] T017 [US2] Ofrecer "Preparar aviso por WhatsApp" tras el éxito en `src/app/admin/appointments/reschedule-panel.tsx`, abriendo wa.me y registrando el evento vía `POST /api/admin/appointments/[id]/communications` con la sesión real (depende de T016)
+- [x] T018 [US2] Ampliar `tests/e2e/admin-reschedule.spec.ts` con el aviso: mensaje con el nuevo horario, evento en la trazabilidad con `adminId` de sesión y ausencia de la opción sin consentimiento (depende de T017)
 
 **Checkpoint**: US1 y US2 funcionan de forma independiente
 
@@ -94,12 +94,12 @@ description: "Tasks for 004-reschedule-appointments (Reprogramar citas)"
 
 ### Tests for User Story 3
 
-- [ ] T019 [P] [US3] Tests unitarios de auditoría en `tests/unit/admin/reschedule-audit.test.ts`: nota automática con fecha anterior → nueva, identidad real del administrador, y que dos reprogramaciones añaden dos registros sin pisarse (depende de T007)
+- [x] T019 [P] [US3] Tests unitarios de auditoría en `tests/unit/admin/reschedule-audit.test.ts`: nota automática con fecha anterior → nueva, identidad real del administrador, y que dos reprogramaciones añaden dos registros sin pisarse (depende de T007)
 
 ### Implementation for User Story 3
 
-- [ ] T020 [P] [US3] Mostrar el historial de estados en el detalle administrativo: renderizar `detail.history` en `src/app/admin/appointments/[appointmentId]/page.tsx` y `src/app/admin/appointments/detail-page.tsx` con fecha anterior, nueva fecha, administrador y nota (depende de T012)
-- [ ] T021 [US3] Ampliar `tests/e2e/admin-reschedule.spec.ts`: tras confirmar, el detalle muestra la nueva fecha sin pasos extra y el historial de la cita encadena dos reprogramaciones con sus notas (depende de T020)
+- [x] T020 [P] [US3] Mostrar el historial de estados en el detalle administrativo: renderizar `detail.history` en `src/app/admin/appointments/[appointmentId]/page.tsx` y `src/app/admin/appointments/detail-page.tsx` con fecha anterior, nueva fecha, administrador y nota (depende de T012)
+- [x] T021 [US3] Ampliar `tests/e2e/admin-reschedule.spec.ts`: tras confirmar, el detalle muestra la nueva fecha sin pasos extra y el historial de la cita encadena dos reprogramaciones con sus notas (depende de T020)
 
 **Checkpoint**: Las tres historias funcionan de forma independiente
 
@@ -109,9 +109,9 @@ description: "Tasks for 004-reschedule-appointments (Reprogramar citas)"
 
 **Purpose**: Calidad transversal exigida por el spec (accesibilidad, validación completa)
 
-- [ ] T022 [P] Ampliar `tests/accessibility/admin-appointment-detail.spec.ts` con el panel de reprogramación abierto: axe sin violaciones, etiquetas del selector visibles y flujo completo con teclado (depende de T012)
-- [ ] T023 Ejecutar la validación completa de `specs/004-reschedule-appointments/quickstart.md` (`npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npx playwright test`) y corregir cualquier regresión (depende de T013, T018, T021, T022)
-- [ ] T024 Revisar que la interfaz nueva no expone claves, identificadores de sesión ni datos de otras clientas (FR-015) en `src/app/admin/appointments/reschedule-panel.tsx` y que los mensajes de rechazo usan el texto de `specs/004-reschedule-appointments/contracts/ui-flows.md` (depende de T023)
+- [x] T022 [P] Ampliar `tests/accessibility/admin-appointment-detail.spec.ts` con el panel de reprogramación abierto: axe sin violaciones, etiquetas del selector visibles y flujo completo con teclado (depende de T012)
+- [x] T023 Ejecutar la validación completa de `specs/004-reschedule-appointments/quickstart.md` (`npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npx playwright test`) y corregir cualquier regresión (depende de T013, T018, T021, T022)
+- [x] T024 Revisar que la interfaz nueva no expone claves, identificadores de sesión ni datos de otras clientas (FR-015) en `src/app/admin/appointments/reschedule-panel.tsx` y que los mensajes de rechazo usan el texto de `specs/004-reschedule-appointments/contracts/ui-flows.md` (depende de T023)
 
 ---
 

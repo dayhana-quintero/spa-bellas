@@ -57,6 +57,15 @@ export type RescheduleResult = {
     changedAt: Date;
     note: string;
   };
+  /** Datos con los que la ruta prepara el aviso al cliente (FR-010). */
+  noticeCandidate: {
+    consent: boolean;
+    clientName: string;
+    phone: string;
+    serviceName: string;
+    previousStart: Date;
+    nextStart: Date;
+  };
 };
 
 function parseSlotDateTime(date: string, slot: string): Date {
@@ -126,7 +135,7 @@ export async function rescheduleAppointmentForAdmin(
 
   const storedList = await listAppointmentsFromSupabase({ id: input.appointmentId });
   const stored = storedList[0];
-  const staleMessage = 'La cita cambio desde otra pestana. Revisa su estado antes de reprogramar.';
+  const staleMessage = 'La cita cambió desde otra pestaña. Revisa su estado antes de reprogramar.';
 
   if (!stored) {
     throw new RescheduleError('stale-appointment', staleMessage);
@@ -150,7 +159,7 @@ export async function rescheduleAppointmentForAdmin(
   });
   const chosen = slots.find((candidate) => candidate.time === input.slot);
   if (!chosen) {
-    throw new RescheduleError('slot-unavailable', 'Ese horario ya no esta libre. Elige otro.');
+    throw new RescheduleError('slot-unavailable', 'Ese horario ya no está libre. Elige otro.');
   }
 
   const nextEnd = new Date(chosen.endsAt);
@@ -211,6 +220,14 @@ export async function rescheduleAppointmentForAdmin(
       newStatus: nextStatus,
       changedAt: updated.updatedAt,
       note,
+    },
+    noticeCandidate: {
+      consent: Boolean(stored.client?.whatsappConsent),
+      clientName: stored.client?.name ?? '',
+      phone: stored.client?.phone ?? '',
+      serviceName: stored.service?.name ?? '',
+      previousStart: stored.scheduledStart,
+      nextStart,
     },
   };
 }

@@ -106,7 +106,7 @@ export default function InventoryPage() {
                   <th className="px-4 py-3 text-left text-sm font-bold text-[#4a423f]">Insumo</th>
                   <th className="px-4 py-3 text-left text-sm font-bold text-[#4a423f]">Unidad</th>
                   <th className="px-4 py-3 text-left text-sm font-bold text-[#4a423f]">Cantidad</th>
-                  <th className="px-4 py-3 text-left text-sm font-bold text-[#4a423f]">Umbral</th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-[#4a423f]">Stock mínimo</th>
                   <th className="px-4 py-3 text-left text-sm font-bold text-[#4a423f]">Estado</th>
                 </tr>
               </thead>

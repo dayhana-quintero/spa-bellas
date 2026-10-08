@@ -12,6 +12,7 @@ import {
   getServiceFromSupabase,
   listAppointmentStatusHistoryFromSupabase,
   listAppointmentsFromSupabase,
+  listAdminUsersByIdsFromSupabase,
   listServicesFromSupabase,
   listSuppliesFromSupabase,
   listWhatsAppCommunicationsFromSupabase,
@@ -202,12 +203,19 @@ export async function getAppointmentDetailsForAdmin(id: string) {
   const appointment = appointments[0];
   if (!appointment) return null;
 
+  // Nombres de administradores para la auditoria del historial de estados.
+  const adminUsers = await listAdminUsersByIdsFromSupabase(
+    history.map((record) => record.changedByAdminId),
+  );
+  const adminNames = Object.fromEntries(adminUsers.map((admin) => [admin.id, admin.name]));
+
   return {
     appointment,
     client: appointment.client ?? null,
     service: appointment.service ?? null,
     history,
     communicationRecords,
+    adminNames,
   };
 }
 

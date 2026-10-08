@@ -49,8 +49,11 @@ export function SupplyForm({ onSaved }: { onSaved?: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="rounded-2xl bg-[#efe8e3] p-4">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-[#2b2b2b]">Agregar insumo</h2>
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold text-[#2b2b2b]">Nuevo insumo</h2>
+        <p className="mt-1 text-sm text-[#6a5d5a]">
+          Úsalo solo la primera vez, para registrar un insumo que aún no existe en el catálogo.
+        </p>
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
@@ -111,7 +114,7 @@ export function SupplyForm({ onSaved }: { onSaved?: () => void }) {
         </label>
 
         <label className="flex flex-col gap-2 text-sm text-[#473e3d]">
-          <span>Umbral mínimo</span>
+          <span>Stock mínimo</span>
           <input
             type="number"
             min={0}
@@ -128,7 +131,7 @@ export function SupplyForm({ onSaved }: { onSaved?: () => void }) {
           disabled={isSaving}
           className="rounded-xl bg-[#1f1f21] px-4 py-2 text-sm font-semibold text-white"
         >
-          {isSaving ? 'Guardando…' : 'Guardar insumo'}
+          {isSaving ? 'Guardando…' : 'Guardar nuevo insumo'}
         </button>
         {message ? <span className="text-sm text-[#4a423f]">{message}</span> : null}
       </div>

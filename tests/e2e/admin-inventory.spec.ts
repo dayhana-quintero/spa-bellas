@@ -25,8 +25,8 @@ test.describe('admin inventory flow', () => {
     await page.getByLabel('Nombre').fill(itemName);
     await page.getByLabel('Unidad').fill('botellas');
     await page.getByLabel('Stock disponible').fill('12');
-    await page.getByLabel('Umbral mínimo').fill('3');
-    await page.getByRole('button', { name: /guardar insumo/i }).click();
+    await page.getByLabel('Stock mínimo').fill('3');
+    await page.getByRole('button', { name: /guardar nuevo insumo/i }).click();
 
     await expect(page.getByText('Insumo guardado correctamente.')).toBeVisible();
     await expect(page.getByRole('cell', { name: itemName })).toHaveCount(1);
@@ -35,7 +35,7 @@ test.describe('admin inventory flow', () => {
     await page.getByLabel('Tipo').selectOption('consumo');
     await page.getByLabel('Cantidad del movimiento').fill('4');
     await page.getByLabel('Motivo').fill('Uso de tratamiento');
-    await page.getByRole('button', { name: /registrar movimiento/i }).click();
+    await page.getByRole('button', { name: /registrar entrada\/salida/i }).click();
 
     await expect(page.getByText('Movimiento registrado correctamente.')).toBeVisible();
   });

@@ -50,6 +50,52 @@ export function prepareConfirmationMessage(input: PrepareConfirmationInput) {
   });
 }
 
+export type PrepareRescheduleNoticeInput = {
+  appointmentId: string;
+  clientName: string;
+  phone: string;
+  serviceName: string;
+  previousStart: Date;
+  nextStart: Date;
+  consent: boolean;
+};
+
+/**
+ * Aviso de cambio de horario (spec 004, FR-010): misma validacion de
+ * consentimiento y telefono que la confirmacion, pero con redaccion de
+ * reprogramacion ("pasa a") para no mandar "confirmamos tu cita" tras un cambio.
+ */
+export function prepareRescheduleNoticeMessage(input: PrepareRescheduleNoticeInput) {
+  if (!input.consent) {
+    throw new Error('Se requiere el consentimiento del cliente para preparar el aviso por WhatsApp.');
+  }
+
+  const contactPhone = normalizePhone(input.phone);
+
+  if (!contactPhone || contactPhone.length < 10) {
+    throw new Error('El telefono del cliente no es valido para preparar el aviso por WhatsApp.');
+  }
+
+  const formatter = new Intl.DateTimeFormat('es-ES', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+  const previousText = formatter.format(input.previousStart);
+  const nextText = formatter.format(input.nextStart);
+
+  const messageText = `Hola ${input.clientName}, tu cita de ${input.serviceName} del ${previousText} pasa a ${nextText}. Responde este mensaje si no puedes asistir o necesitas cambiar algo.`;
+
+  return confirmationMessageSchema.parse({
+    id: createId(),
+    appointmentId: input.appointmentId,
+    messageText,
+    contactPhone,
+    preparedAt: new Date(),
+    outcome: 'prepared',
+    outcomeNote: 'Aviso de reprogramacion listo para enviar',
+  });
+}
+
 export function recordManualConfirmationOutcome({
   appointmentId,
   outcomeNote,

@@ -539,6 +539,47 @@ export async function saveServiceToSupabase(service: {
   };
 }
 
+/**
+ * Cuenta las citas que referencian un servicio: el catalogo no permite
+ * eliminar servicios con historial, solo desactivarlos.
+ */
+export async function countAppointmentsByServiceFromSupabase(
+  serviceId: string,
+): Promise<number> {
+  const supabase = getSupabaseAdminClient();
+
+  if (!supabase) {
+    throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para consultar las citas.');
+  }
+
+  const { count, error } = await supabase
+    .from('appointments')
+    .select('id', { count: 'exact', head: true })
+    .eq('service_id', serviceId);
+
+  if (error) {
+    console.error('Supabase appointment count failed:', error.message);
+    throw new Error('No se pudieron consultar las citas del servicio.');
+  }
+
+  return count ?? 0;
+}
+
+export async function deleteServiceFromSupabase(serviceId: string): Promise<void> {
+  const supabase = getSupabaseAdminClient();
+
+  if (!supabase) {
+    throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para eliminar el servicio.');
+  }
+
+  const { error } = await supabase.from('services').delete().eq('id', serviceId);
+
+  if (error) {
+    console.error('Supabase service delete failed:', error.message);
+    throw new Error('No se pudo eliminar el servicio en Supabase.');
+  }
+}
+
 export async function saveAppointmentToSupabase(appointment: {
   id: string;
   clientId: string;
@@ -756,4 +797,29 @@ export async function getAdminUserByCodeFromSupabase(code: string) {
   }
 
   return data;
+}
+
+/**
+ * Nombres de administradores para mostrar en la auditoria de la interfaz.
+ * Ante cualquier fallo se devuelve lista vacia: la vista degrada al rotulo
+ * generico "Administrador" sin romper el detalle de la cita.
+ */
+export async function listAdminUsersByIdsFromSupabase(ids: string[]) {
+  const uniqueIds = [...new Set(ids)].filter(Boolean);
+  if (uniqueIds.length === 0) return [];
+
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from('admin_users')
+    .select('id, name')
+    .in('id', uniqueIds);
+
+  if (error) {
+    console.error('Supabase admin users fetch failed:', error.message);
+    return [];
+  }
+
+  return data ?? [];
 }

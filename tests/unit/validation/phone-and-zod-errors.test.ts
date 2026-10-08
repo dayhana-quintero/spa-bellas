@@ -7,8 +7,9 @@ import { formatZodErrors } from '../../../src/shared/validation/formatZodErrors'
 describe('validation helpers', () => {
   it('normalizes common phone inputs', () => {
     expect(normalizePhone('+52 55 1234 5678')).toBe('+525512345678');
-    expect(normalizePhone('(55) 1234-5678')).toBe('+525512345678');
-    expect(normalizePhone('5512345678')).toBe('+525512345678');
+    // Los 10 digitos locales se normalizan al codigo de Colombia (+57).
+    expect(normalizePhone('(55) 1234-5678')).toBe('+575512345678');
+    expect(normalizePhone('5512345678')).toBe('+575512345678');
     expect(normalizePhone('')).toBe('');
   });
 
