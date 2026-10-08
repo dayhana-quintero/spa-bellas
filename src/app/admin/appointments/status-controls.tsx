@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { getAvailableStatusTransitions } from '../../../domain/appointments/admin-appointment-service';
-import { createWhatsAppCommunicationRecord } from '../../../integrations/whatsapp/whatsapp-communication';
+import type { WhatsAppCommunicationRecord } from '../../../shared/types/whatsapp-communication';
 import {
   openWhatsAppConfirmation,
 } from '../../../integrations/whatsapp/whatsapp-adapter';
@@ -53,7 +53,25 @@ export function StatusControls({
     }
   };
 
-  const handleWhatsApp = () => {
+  // Persiste el evento en el servidor para que quede en la trazabilidad real
+  // (Supabase) atribuido al administrador en sesion.
+  const postCommunication = async (
+    messageText: string,
+    outcome: WhatsAppCommunicationRecord['outcome'],
+    outcomeNote: string,
+  ) => {
+    const response = await fetch(`/api/admin/appointments/${appointmentId}/communications`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messageText, outcome, outcomeNote }),
+    });
+    const result = (await response.json()) as { error?: string };
+    if (!response.ok) {
+      throw new Error(result.error ?? 'No se pudo registrar la comunicacion de WhatsApp.');
+    }
+  };
+
+  const handleWhatsApp = async () => {
     try {
       const prepared = prepareConfirmationMessage({
         appointmentId,
@@ -64,14 +82,14 @@ export function StatusControls({
         consent: Boolean(phone),
       });
 
+      // Se abre primero la pestana de WhatsApp (si no, el navegador la bloquea)
+      // y enseguida se registra el evento en el servidor.
       const url = openWhatsAppConfirmation(prepared.contactPhone, prepared.messageText);
-      createWhatsAppCommunicationRecord({
-        appointmentId,
-        messageText: prepared.messageText,
-        outcome: 'sent-by-admin',
-        outcomeNote: 'Mensaje preparado y abierto para envío por WhatsApp.',
-        adminId: 'admin-1',
-      });
+      await postCommunication(
+        prepared.messageText,
+        'sent-by-admin',
+        'Mensaje preparado y abierto para envio por WhatsApp.',
+      );
       setStatusMessage('Mensaje de WhatsApp preparado y listo para enviar.');
       setManualFormOpen(false);
       void url;
@@ -96,13 +114,11 @@ export function StatusControls({
         await patchStatus(manualResult, manualNote.trim());
       }
 
-      createWhatsAppCommunicationRecord({
-        appointmentId,
-        messageText: resultText,
-        outcome: 'manually-recorded',
-        outcomeNote: `${resultText} ${manualNote.trim()}`,
-        adminId: 'admin-1',
-      });
+      await postCommunication(
+        resultText,
+        'manually-recorded',
+        `${resultText} ${manualNote.trim()}`,
+      );
 
       setManualFormOpen(false);
       setManualNote('');
@@ -119,7 +135,7 @@ export function StatusControls({
         <button
           type="button"
           onClick={handleWhatsApp}
-          className="rounded-lg bg-[#0d9f5d] px-3 py-2 text-sm font-medium text-white"
+          className="rounded-lg bg-[#0a7d49] px-3 py-2 text-sm font-medium text-white"
         >
           Confirmar por WhatsApp
         </button>

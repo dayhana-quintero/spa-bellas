@@ -80,4 +80,37 @@ describe('whatsapp confirmation', () => {
     expect(url).toContain('wa.me');
     expect(opened).toHaveLength(1);
   });
+
+  it('severa el enlace con la ventana abierta para no exponer el opener', () => {
+    const popup: { opener?: unknown } = {};
+
+    Object.defineProperty(globalThis, 'window', {
+      value: {
+        open: () => popup,
+      },
+      configurable: true,
+    });
+
+    createWhatsAppAdapter(new BrowserWhatsAppChannel()).openConfirmation(
+      '+34600123456',
+      'Hola María, confirmamos tu cita.',
+    );
+
+    expect(popup.opener).toBeNull();
+  });
+
+  it('reporta el error solo cuando el navegador bloquea la ventana', () => {
+    Object.defineProperty(globalThis, 'window', {
+      value: {
+        open: () => null,
+      },
+      configurable: true,
+    });
+
+    const channel = createWhatsAppAdapter(new BrowserWhatsAppChannel());
+
+    expect(() => channel.openConfirmation('+34600123456', 'Hola María, confirmamos tu cita.')).toThrow(
+      /bloqueó la ventana de WhatsApp/,
+    );
+  });
 });

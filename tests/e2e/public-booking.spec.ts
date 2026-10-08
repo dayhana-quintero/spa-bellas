@@ -34,7 +34,14 @@ test("el cliente puede consultar servicios, elegir un horario y registrar una so
   expect(booking, "Debe existir al menos un servicio y horario disponible").toBeDefined();
   await page.getByRole("button", { name: booking!.service.name, exact: true }).click();
   await page.getByLabel("Fecha de la cita").fill(booking!.date);
-  await page.getByRole("button", { name: new RegExp(booking!.time) }).click();
+
+  // El listado de horarios es en vivo: se toma el primero que muestre la
+  // interfaz y se lee su hora para las aserciones siguientes.
+  const slotButton = page.getByRole("button", { name: /^hora\s+\d{2}:\d{2}/i }).first();
+  await expect(slotButton).toBeVisible();
+  const slotText = await slotButton.innerText();
+  const bookedTime = /(\d{2}:\d{2})/.exec(slotText)?.[1] ?? booking!.time;
+  await slotButton.click();
 
   await page.getByLabel("Nombre completo").fill("Ana García");
   await page.getByLabel("Teléfono WhatsApp").fill("5512345678");
@@ -49,7 +56,7 @@ test("el cliente puede consultar servicios, elegir un horario y registrar una so
 
   await page.getByRole("button", { name: /enviar solicitud/i }).click();
 
-  await expect(page.getByRole("status")).toHaveText(`Solicitud pendiente para Ana García el ${booking!.date} a las ${booking!.time}.`);
+  await expect(page.getByRole("status")).toHaveText(`Solicitud pendiente para Ana García el ${booking!.date} a las ${bookedTime}.`);
 
   const created = (await (await createdResponse).json()) as { id: string };
   expect(created.id).toBeTruthy();
