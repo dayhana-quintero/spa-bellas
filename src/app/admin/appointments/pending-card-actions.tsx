@@ -47,7 +47,7 @@ export function PendingConfirmAction({ appointmentId }: PendingActionProps) {
         type="button"
         onClick={handleConfirm}
         disabled={saving}
-        className="flex items-center gap-2 rounded-xl bg-[#bf4a55] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#a83e48] disabled:cursor-wait disabled:opacity-60"
+        className="flex items-center gap-2 rounded-xl bg-[#e5b7b9] px-4 py-2.5 text-sm font-semibold text-[#2b1e1c] shadow-sm hover:bg-[#ddb0b2] disabled:cursor-wait disabled:opacity-60"
       >
         <Check size={15} aria-hidden="true" />
         {saving ? 'Confirmando...' : 'Confirmar cita'}
@@ -94,7 +94,7 @@ export function PendingCancelAction({ appointmentId }: PendingActionProps) {
         type="button"
         onClick={handleCancel}
         disabled={saving}
-        className="rounded-xl border border-[#d8a0a0] bg-white px-4 py-2.5 text-sm font-semibold text-[#b3261e] hover:bg-[#fdf3f3] disabled:cursor-wait disabled:opacity-60"
+        className="rounded-xl px-4 py-2.5 text-sm font-semibold text-[#b3261e] hover:bg-[#fdf3f3] disabled:cursor-wait disabled:opacity-60"
       >
         {saving ? 'Cancelando...' : 'Cancelar'}
       </button>
