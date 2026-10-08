@@ -7,23 +7,23 @@ export function normalizePhone(rawPhone: string): string {
     return '';
   }
 
-  // Si el número ya incluye el código de país de México, se mantiene en formato internacional.
-  if (digits.startsWith('52')) {
+  // Si el número ya incluye el código de país de Colombia, se mantiene.
+  if (digits.startsWith('57')) {
     return `+${digits}`;
   }
 
-  // Los números locales de 10 dígitos se convierten a +52 + número local.
+  // Los números locales colombianos (10 dígitos, celular inicia en 3) se convierten a +57.
   if (digits.length === 10) {
-    return `+52${digits}`;
+    return `+57${digits}`;
   }
 
-  // Los números de 11 dígitos que empiezan con 1 suelen incluir el prefijo local ya incorporado.
-  if (digits.length === 11 && digits.startsWith('1')) {
-    return `+52${digits.slice(1)}`;
+  // Números de 7-8 dígitos (local sin código de área) también asumen +57.
+  if (digits.length >= 7 && digits.length < 10) {
+    return `+57${digits}`;
   }
 
-  // Cualquier otro número de longitud media se deja en formato internacional para mantener consistencia.
-  if (digits.length >= 8) {
+  // Cualquier otro número con indicativo (p. ej. 52..., 1..., 34...) se respeta como internacional.
+  if (digits.length >= 10) {
     return `+${digits}`;
   }
 

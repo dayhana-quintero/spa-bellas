@@ -16,6 +16,12 @@ type AppointmentSlotPickerProps = {
   selectedSlot: string;
   onDateChange: (value: string) => void;
   onSlotChange: (value: string) => void;
+  /**
+   * Endpoint personalizado para cargar los horarios. Por defecto se usa la
+   * reserva publica; el panel de reprogramacion pasa el endpoint administrativo,
+   * que excluye la propia cita del calculo de ocupacion.
+   */
+  slotsEndpoint?: string;
 };
 
 export function buildSlotPickerState({
@@ -61,16 +67,20 @@ export default function AppointmentSlotPicker({
   selectedSlot,
   onDateChange,
   onSlotChange,
+  slotsEndpoint,
 }: AppointmentSlotPickerProps) {
   const [slotData, setSlotData] = useState<{ key: string; slots: Array<{ time: string }> }>({ key: '', slots: [] });
-  const requestKey = `${serviceId}:${date}`;
+  const requestKey = slotsEndpoint ?? `${serviceId}:${date}`;
   const slots = slotData.key === requestKey ? slotData.slots : [];
 
   useEffect(() => {
     if (!serviceId || !date) return;
 
+    const endpoint =
+      slotsEndpoint ??
+      `/api/public/slots?serviceId=${encodeURIComponent(serviceId)}&date=${encodeURIComponent(date)}`;
     const controller = new AbortController();
-    fetch(`/api/public/slots?serviceId=${encodeURIComponent(serviceId)}&date=${encodeURIComponent(date)}`, { signal: controller.signal })
+    fetch(endpoint, { signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error('No se pudieron cargar los horarios.');
         return (await response.json()) as Array<{ time: string }>;
@@ -82,7 +92,7 @@ export default function AppointmentSlotPicker({
       });
 
     return () => controller.abort();
-  }, [date, requestKey, serviceId]);
+  }, [date, requestKey, serviceId, slotsEndpoint]);
 
   const state = buildSlotPickerState({
     service,

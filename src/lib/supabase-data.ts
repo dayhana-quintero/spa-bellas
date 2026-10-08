@@ -247,6 +247,79 @@ export async function updateAppointmentStatusInSupabase(input: {
   };
 }
 
+/**
+ * Mueve la cita a un nuevo horario solo si sigue con la fecha y el estado que el
+ * administrador vio (actualizacion condicional). Devuelve `null` si otra escritura
+ * gano la carrera, y registra el cambio en el historial con rollback si falla.
+ */
+export async function rescheduleAppointmentInSupabase(input: {
+  appointmentId: string;
+  expectedScheduledStart: Date;
+  expectedScheduledEnd: Date;
+  expectedStatus: string;
+  nextStart: Date;
+  nextEnd: Date;
+  nextStatus: string;
+  adminId: string;
+  note: string;
+}) {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para reprogramar citas.');
+
+  const { data: updatedAppointment, error: updateError } = await supabase
+    .from('appointments')
+    .update({
+      scheduled_start: input.nextStart.toISOString(),
+      scheduled_end: input.nextEnd.toISOString(),
+      status: input.nextStatus,
+      hold_expires_at: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', input.appointmentId)
+    .eq('status', input.expectedStatus)
+    .eq('scheduled_start', input.expectedScheduledStart.toISOString())
+    .select('id, status, scheduled_start, scheduled_end, updated_at')
+    .maybeSingle();
+
+  if (updateError || !updatedAppointment) return null;
+
+  const { data: historyRecord, error: historyError } = await supabase
+    .from('appointment_status_history')
+    .insert({
+      appointment_id: input.appointmentId,
+      previous_status: input.expectedStatus,
+      new_status: input.nextStatus,
+      changed_by_admin_id: input.adminId,
+      note: input.note,
+    })
+    .select('id')
+    .single();
+
+  if (historyError) {
+    const { error: rollbackError } = await supabase
+      .from('appointments')
+      .update({
+        scheduled_start: input.expectedScheduledStart.toISOString(),
+        scheduled_end: input.expectedScheduledEnd.toISOString(),
+        status: input.expectedStatus,
+      })
+      .eq('id', input.appointmentId)
+      .eq('scheduled_start', input.nextStart.toISOString());
+    if (rollbackError) console.error('Supabase appointment reschedule rollback failed:', rollbackError.message);
+    console.error('Supabase appointment reschedule history save failed:', historyError.message);
+    throw new Error('No se pudo guardar el historial de la reprogramacion en Supabase.');
+  }
+
+  return {
+    id: updatedAppointment.id,
+    status: updatedAppointment.status,
+    scheduledStart: new Date(updatedAppointment.scheduled_start),
+    scheduledEnd: new Date(updatedAppointment.scheduled_end),
+    updatedAt: new Date(updatedAppointment.updated_at),
+    historyId: historyRecord.id,
+  };
+}
+
 export async function expireAppointmentHoldsInSupabase(now = new Date()) {
   const supabase = getSupabaseAdminClient();
   if (!supabase) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para actualizar citas vencidas.');
@@ -387,25 +460,30 @@ export async function findClientByPhoneFromSupabase(phone: string) {
   const supabase = getSupabaseAdminClient();
   if (!supabase) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para consultar clientes.');
 
+  // Se toma la fila mas antigua en lugar de maybeSingle(): un telefono puede
+  // haber quedado con mas de un registro por creaciones simultaneas y una
+  // lectura no debe romperse por eso.
   const { data, error } = await supabase
     .from('clients')
     .select('id, name, phone, email, notes, whatsapp_consent, created_at')
     .eq('phone', phone)
-    .maybeSingle();
+    .order('created_at', { ascending: true })
+    .limit(1);
 
   if (error) {
     console.error('Supabase client lookup failed:', error.message);
     throw new Error('No se pudo consultar el cliente en Supabase.');
   }
 
-  return data ? {
-    id: data.id,
-    name: data.name,
-    phone: data.phone ?? '',
-    email: data.email ?? undefined,
-    notes: data.notes ?? undefined,
-    whatsappConsent: Boolean(data.whatsapp_consent),
-    createdAt: new Date(data.created_at),
+  const client = data?.[0];
+  return client ? {
+    id: client.id,
+    name: client.name,
+    phone: client.phone ?? '',
+    email: client.email ?? undefined,
+    notes: client.notes ?? undefined,
+    whatsappConsent: Boolean(client.whatsapp_consent),
+    createdAt: new Date(client.created_at),
   } : null;
 }
 

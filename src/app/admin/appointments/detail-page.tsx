@@ -34,6 +34,7 @@ export function AppointmentDetailPage({
           phone="+0000000000"
           serviceName="Servicio"
           scheduledStart={appointment.scheduledStart}
+          serviceId={appointment.serviceId}
         />
       </div>
     </article>

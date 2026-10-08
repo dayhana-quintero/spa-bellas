@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { createAdminSessionCookie } from "../../src/shared/auth/server";
+import { uniqueClientPhone } from "./fixtures/appointments";
 
 test("el cliente puede consultar servicios, elegir un horario y registrar una solicitud pendiente", async ({ page }) => {
   await page.context().addCookies([{
@@ -44,7 +45,7 @@ test("el cliente puede consultar servicios, elegir un horario y registrar una so
   await slotButton.click();
 
   await page.getByLabel("Nombre completo").fill("Ana García");
-  await page.getByLabel("Teléfono WhatsApp").fill("5512345678");
+  await page.getByLabel("Teléfono WhatsApp").fill(uniqueClientPhone());
   await page.getByLabel("Notas opcionales").fill("Necesito relajación profunda.");
   await page.getByLabel("Acepto que el spa confirme por WhatsApp").check();
 

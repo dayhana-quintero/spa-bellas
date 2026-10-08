@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import InstallAppButton from '../install-app-button';
 import { getPublicCatalog } from '@/domain/services/public-catalog';
 import { formatDuration } from '@/shared/format-duration';
 
@@ -120,6 +121,7 @@ export default async function PublicPage() {
             <button type="button" className="rounded-full border border-[#e0d2cf] bg-[#f5eeec] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[#2f2a2a] shadow-sm">
               Exportar
             </button>
+            <InstallAppButton />
             <Link
               href="/admin"
               className="rounded-full bg-[#202021] px-4 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-white shadow-sm"

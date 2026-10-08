@@ -39,7 +39,7 @@ export default async function AppointmentHistoryDetailPage({
   const { appointment, clientName, serviceName, timeline } = detail;
 
   return (
-    <main className="min-h-screen bg-[#f3f0ef] p-8">
+    <main className="flex-1 overflow-auto bg-[#f3f0ef] p-8">
       <div className="mx-auto max-w-3xl rounded-[24px] bg-[#f7f2ef] p-8 shadow-sm">
         <Link href="/admin/appointments/history" className="mb-6 inline-block text-sm text-[#5a4541] underline">
           ← Volver

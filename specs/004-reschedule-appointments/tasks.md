@@ -22,7 +22,7 @@ description: "Tasks for 004-reschedule-appointments (Reprogramar citas)"
 
 **Purpose**: Base compartida de pruebas para las historias
 
-- [ ] T001 [P] Crear helper de contexto administrativo para e2e en `tests/e2e/fixtures/admin-session.ts` que añada la cookie `admin-session` con `createAdminSessionCookie()` y cierre el contexto, reutilizable por `admin-reschedule.spec.ts`
+- [x] T001 [P] Crear helper de contexto administrativo para e2e en `tests/e2e/fixtures/admin-session.ts` que añada la cookie `admin-session` con `createAdminSessionCookie()` y cierre el contexto, reutilizable por `admin-reschedule.spec.ts`
 
 ---
 
@@ -32,10 +32,10 @@ description: "Tasks for 004-reschedule-appointments (Reprogramar citas)"
 
 **CRITICAL**: No puede empezar ninguna historia hasta completar esta fase
 
-- [ ] T002 [P] Ampliar las transiciones hacia "reprogramada" en `src/domain/appointments/appointment-state-machine.ts` (`pendiente`, `confirmada`) y en el mapa paralelo de `src/domain/appointments/admin-appointment-service.ts`, conservando el resto de transiciones
-- [ ] T003 [P] Añadir el parámetro opcional `excludeAppointmentId` a `getAvailableSlots` en `src/domain/spa-service.ts` para que la cita propia no cuente como ocupación (research R1)
-- [ ] T004 [P] Añadir la actualización condicional de la cita en `src/lib/supabase-data.ts` (`updateAppointmentScheduleIfUnchanged`: escribe fechas/estado solo si siguen `scheduledStart` y `status` esperados, y devuelve la fila actualizada o `null`)
-- [ ] T005 Escribir los tests unitarios de los fundamentos en `tests/unit/admin/reschedule-foundation.test.ts`: transiciones nuevas, estados terminales vetados, exclusión de la propia cita en la ocupación y actualización condicional que falla ante escritura concurrente (depende de T002, T003, T004)
+- [x] T002 [P] Ampliar las transiciones hacia "reprogramada" en `src/domain/appointments/appointment-state-machine.ts` (`pendiente`, `confirmada`) y en el mapa paralelo de `src/domain/appointments/admin-appointment-service.ts`, conservando el resto de transiciones
+- [x] T003 [P] Añadir el parámetro opcional `excludeAppointmentId` a `getAvailableSlots` en `src/domain/spa-service.ts` para que la cita propia no cuente como ocupación (research R1)
+- [x] T004 [P] Añadir la actualización condicional de la cita en `src/lib/supabase-data.ts` (`updateAppointmentScheduleIfUnchanged`: escribe fechas/estado solo si siguen `scheduledStart` y `status` esperados, y devuelve la fila actualizada o `null`)
+- [x] T005 Escribir los tests unitarios de los fundamentos en `tests/unit/admin/reschedule-foundation.test.ts`: transiciones nuevas, estados terminales vetados, exclusión de la propia cita en la ocupación y actualización condicional que falla ante escritura concurrente (depende de T002, T003, T004)
 
 **Checkpoint**: Fundamentos listos; las tres historias pueden avanzar
 
@@ -49,17 +49,17 @@ description: "Tasks for 004-reschedule-appointments (Reprogramar citas)"
 
 ### Tests for User Story 1
 
-- [ ] T006 [P] [US1] Tests unitarios del servicio de reprogramación en `tests/unit/admin/admin-reschedule-service.test.ts`: recálculo de fechas desde `date`+`slot`, rechazo por horario ocupado, solape con otra cita de la misma clienta, estado no elegible, fecha pasada y cita desactualizada (depende de T002, T003, T004)
+- [x] T006 [P] [US1] Tests unitarios del servicio de reprogramación en `tests/unit/admin/admin-reschedule-service.test.ts`: recálculo de fechas desde `date`+`slot`, rechazo por horario ocupado, solape con otra cita de la misma clienta, estado no elegible, fecha pasada y cita desactualizada (depende de T002, T003, T004)
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Implementar `rescheduleAppointmentForAdmin` en `src/domain/appointments/admin-reschedule-service.ts`: revalidar con exclusión de la propia cita, comprobar solape de la clienta, aplicar la escritura condicional de T004 y registrar el historial con identidad de sesión y nota automática (depende de T002, T003, T004)
-- [ ] T008 [P] [US1] Crear `GET /api/admin/slots` en `src/app/api/admin/slots/route.ts` con `requireAdmin`, validación de `serviceId`/`date`/`appointmentId` y respuesta `Slot[]` según [contracts/api.md](./contracts/api.md) (depende de T003)
-- [ ] T009 [US1] Crear `POST /api/admin/appointments/[id]/reschedule` en `src/app/api/admin/appointments/[id]/reschedule/route.ts` con sesión obligatoria, códigos 400/401/409 y mapeo de `reason` según [contracts/api.md](./contracts/api.md) (depende de T007)
-- [ ] T010 [P] [US1] Pasar `serviceId` y rango actual al control de estados: actualizar `src/app/admin/appointments/[appointmentId]/page.tsx` y `src/app/admin/appointments/detail-page.tsx` para que `StatusControls` reciba `serviceId` (depende de T002)
-- [ ] T011 [P] [US1] Crear el panel `src/app/admin/appointments/reschedule-panel.tsx` reutilizando `AppointmentSlotPicker` y `buildSlotPickerState` de `src/app/public/appointments/slot-picker.tsx`: muestra fecha actual, selector, nota opcional, confirmar/cancelar, estados de envío y mensajes de error según [contracts/ui-flows.md](./contracts/ui-flows.md) (depende de T008)
-- [ ] T012 [US1] Añadir el botón "Reprogramar" en `src/app/admin/appointments/status-controls.tsx`, visible solo en estados elegibles (pendiente, confirmada, reprogramacion solicitada, reprogramada), que despliega `reschedule-panel` y recarga el detalle tras el éxito (depende de T010, T011)
-- [ ] T013 [US1] E2E del flujo completo en `tests/e2e/admin-reschedule.spec.ts` usando el helper de T001: reprogramación exitosa (fecha nueva + estado + historial), 409 por horario ocupado, 409 por cita cambiada en otra vista, rechazo en estado terminal y 401 sin sesión (depende de T012)
+- [x] T007 [US1] Implementar `rescheduleAppointmentForAdmin` en `src/domain/appointments/admin-reschedule-service.ts`: revalidar con exclusión de la propia cita, comprobar solape de la clienta, aplicar la escritura condicional de T004 y registrar el historial con identidad de sesión y nota automática (depende de T002, T003, T004)
+- [x] T008 [P] [US1] Crear `GET /api/admin/slots` en `src/app/api/admin/slots/route.ts` con `requireAdmin`, validación de `serviceId`/`date`/`appointmentId` y respuesta `Slot[]` según [contracts/api.md](./contracts/api.md) (depende de T003)
+- [x] T009 [US1] Crear `POST /api/admin/appointments/[id]/reschedule` en `src/app/api/admin/appointments/[id]/reschedule/route.ts` con sesión obligatoria, códigos 400/401/409 y mapeo de `reason` según [contracts/api.md](./contracts/api.md) (depende de T007)
+- [x] T010 [P] [US1] Pasar `serviceId` y rango actual al control de estados: actualizar `src/app/admin/appointments/[appointmentId]/page.tsx` y `src/app/admin/appointments/detail-page.tsx` para que `StatusControls` reciba `serviceId` (depende de T002)
+- [x] T011 [P] [US1] Crear el panel `src/app/admin/appointments/reschedule-panel.tsx` reutilizando `AppointmentSlotPicker` y `buildSlotPickerState` de `src/app/public/appointments/slot-picker.tsx`: muestra fecha actual, selector, nota opcional, confirmar/cancelar, estados de envío y mensajes de error según [contracts/ui-flows.md](./contracts/ui-flows.md) (depende de T008)
+- [x] T012 [US1] Añadir el botón "Reprogramar" en `src/app/admin/appointments/status-controls.tsx`, visible solo en estados elegibles (pendiente, confirmada, reprogramacion solicitada, reprogramada), que despliega `reschedule-panel` y recarga el detalle tras el éxito (depende de T010, T011)
+- [x] T013 [US1] E2E del flujo completo en `tests/e2e/admin-reschedule.spec.ts` usando el helper de T001: reprogramación exitosa (fecha nueva + estado + historial), 409 por horario ocupado, 409 por cita cambiada en otra vista, rechazo en estado terminal y 401 sin sesión (depende de T012)
 
 **Checkpoint**: La US1 queda funcional y verificable de forma independiente (MVP)
 

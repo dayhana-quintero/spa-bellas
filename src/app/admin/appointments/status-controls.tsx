@@ -3,12 +3,15 @@
 import { useState } from 'react';
 
 import { getAvailableStatusTransitions } from '../../../domain/appointments/admin-appointment-service';
+import { RESCHEDULABLE_STATUSES } from '../../../domain/appointments/appointment-state-machine';
 import type { WhatsAppCommunicationRecord } from '../../../shared/types/whatsapp-communication';
 import {
   openWhatsAppConfirmation,
 } from '../../../integrations/whatsapp/whatsapp-adapter';
 import { prepareConfirmationMessage } from '../../../integrations/whatsapp/whatsapp-confirmation';
 import type { Appointment } from '../../../shared/types/appointment';
+import type { Service } from '../../../shared/types/service';
+import { ReschedulePanel } from './reschedule-panel';
 
 export function StatusControls({
   appointmentId,
@@ -17,6 +20,8 @@ export function StatusControls({
   phone,
   serviceName,
   scheduledStart,
+  serviceId,
+  service,
 }: {
   appointmentId: string;
   status: Appointment['status'];
@@ -24,12 +29,16 @@ export function StatusControls({
   phone?: string;
   serviceName?: string;
   scheduledStart?: Date;
+  serviceId?: string;
+  service?: Service;
 }) {
   const transitions = getAvailableStatusTransitions(status);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [manualResult, setManualResult] = useState<Appointment['status'] | 'sin respuesta'>('sin respuesta');
   const [manualNote, setManualNote] = useState('');
   const [manualFormOpen, setManualFormOpen] = useState(false);
+  const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const canReschedule = RESCHEDULABLE_STATUSES.includes(status);
 
   const patchStatus = async (nextStatus: Appointment['status'], note: string) => {
     const response = await fetch(`/api/admin/appointments/${appointmentId}`, {
@@ -87,7 +96,7 @@ export function StatusControls({
       const url = openWhatsAppConfirmation(prepared.contactPhone, prepared.messageText);
       await postCommunication(
         prepared.messageText,
-        'sent-by-admin',
+        'prepared',
         'Mensaje preparado y abierto para envio por WhatsApp.',
       );
       setStatusMessage('Mensaje de WhatsApp preparado y listo para enviar.');
@@ -96,6 +105,22 @@ export function StatusControls({
     } catch (error) {
       setStatusMessage(
         error instanceof Error ? error.message : 'No se pudo preparar el mensaje de WhatsApp.',
+      );
+    }
+  };
+
+  const handleMarkSent = async () => {
+    try {
+      await postCommunication(
+        'Mensaje de confirmación enviado por el administrador.',
+        'sent-by-admin',
+        'El administrador confirmó el envío del mensaje por WhatsApp.',
+      );
+      setStatusMessage('Marcado como enviado en la trazabilidad de la cita.');
+      window.location.reload();
+    } catch (error) {
+      setStatusMessage(
+        error instanceof Error ? error.message : 'No se pudo marcar como enviado.',
       );
     }
   };
@@ -141,12 +166,40 @@ export function StatusControls({
         </button>
         <button
           type="button"
+          onClick={handleMarkSent}
+          className="rounded-lg border border-[#0a7d49] bg-white px-3 py-2 text-sm font-medium text-[#0a7d49]"
+        >
+          Marcar como enviado
+        </button>
+        <button
+          type="button"
           onClick={() => setManualFormOpen((value) => !value)}
           className="rounded-lg border border-[#d8c7c2] bg-[#f4ece9] px-3 py-2 text-sm text-[#2d2828]"
         >
           Registrar resultado manual
         </button>
+        {canReschedule && serviceId ? (
+          <button
+            type="button"
+            aria-expanded={rescheduleOpen}
+            onClick={() => setRescheduleOpen((value) => !value)}
+            className="rounded-lg border border-[#d8c7c2] bg-[#f4ece9] px-3 py-2 text-sm text-[#2d2828]"
+          >
+            Reprogramar
+          </button>
+        ) : null}
       </div>
+
+      {rescheduleOpen && serviceId && scheduledStart ? (
+        <ReschedulePanel
+          appointmentId={appointmentId}
+          serviceId={serviceId}
+          service={service}
+          currentStart={scheduledStart}
+          expectedStatus={status}
+          onClose={() => setRescheduleOpen(false)}
+        />
+      ) : null}
 
       {manualFormOpen ? (
         <div className="mb-4 space-y-3 rounded-2xl border border-[#e7d8d3] bg-[#f9f4f2] p-4">

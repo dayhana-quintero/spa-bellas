@@ -50,7 +50,11 @@ export async function getPublicServices(): Promise<Service[]> {
   return listServicesFromSupabase({ publicOnly: true });
 }
 
-export async function getAvailableSlots(serviceId: string, date: string): Promise<Slot[]> {
+export async function getAvailableSlots(
+  serviceId: string,
+  date: string,
+  options: { excludeAppointmentId?: string; excludePast?: boolean } = {},
+): Promise<Slot[]> {
   const [availability, service, appointments] = await Promise.all([
     getAvailabilitySettingsFromSupabase(),
     getServiceFromSupabase(serviceId),
@@ -68,16 +72,26 @@ export async function getAvailableSlots(serviceId: string, date: string): Promis
   const slots: Slot[] = [];
   const step = 15;
   const duration = service.estimatedDuration + availability.bufferBetweenAppointments;
+  const now = Date.now();
 
   for (let start = hours.opensAt; start + duration <= hours.closesAt; start += step) {
     const startsAt = dateAt(date, start);
     const endsAt = new Date(startsAt.getTime() + duration * 60000);
 
+    // La reprogramacion no ofrece horas que ya pasaron (FR-003); la reserva
+    // publica conserva su comportamiento actual.
+    if (options.excludePast && startsAt.getTime() <= now) continue;
+
     const blocked = availability.adminBlocks.some(
       (block) => startsAt < new Date(block.endsAt) && endsAt > new Date(block.startsAt),
     );
     const concurrent = appointments.filter(
-      (appointment) => isBlocking(appointment) && startsAt < appointment.scheduledEnd && endsAt > appointment.scheduledStart,
+      (appointment) =>
+        // La cita que se esta reprogramando no debe contarse a si misma como ocupacion.
+        appointment.id !== options.excludeAppointmentId &&
+        isBlocking(appointment) &&
+        startsAt < appointment.scheduledEnd &&
+        endsAt > appointment.scheduledStart,
     ).length;
 
     if (!blocked && concurrent < availability.spaCapacity) {

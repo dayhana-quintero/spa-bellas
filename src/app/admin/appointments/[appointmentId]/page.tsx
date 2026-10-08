@@ -25,7 +25,7 @@ export default async function AdminAppointmentDetailRoute({
   }
 
   return (
-    <main className="min-h-screen bg-[#f5f0ee] px-6 py-10 text-[#1f1b1b]">
+    <main className="flex-1 overflow-auto bg-[#f5f0ee] px-6 py-10 text-[#1f1b1b]">
       <div className="mx-auto max-w-3xl rounded-[28px] border border-[#e7d8d3] bg-white p-8 shadow-sm">
         <Link href="/admin/appointments/pending" className="text-sm font-medium text-[#6d5a56] underline-offset-4 hover:underline">
           ← Volver a pendientes
@@ -50,6 +50,8 @@ export default async function AdminAppointmentDetailRoute({
             phone={detail.client?.phone}
             serviceName={detail.service?.name}
             scheduledStart={detail.appointment.scheduledStart}
+            serviceId={detail.appointment.serviceId}
+            service={detail.service ?? undefined}
           />
         </div>
 

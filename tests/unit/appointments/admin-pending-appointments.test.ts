@@ -41,8 +41,8 @@ describe('admin pending appointments', () => {
   });
 
   it('exposes the valid next actions for each appointment status', () => {
-    expect(getAvailableStatusTransitions('pendiente')).toEqual(['confirmada', 'cancelada', 'vencida']);
-    expect(getAvailableStatusTransitions('confirmada')).toEqual(['completada', 'cancelada', 'reprogramacion solicitada', 'vencida']);
+    expect(getAvailableStatusTransitions('pendiente')).toEqual(['confirmada', 'cancelada', 'vencida', 'reprogramada']);
+    expect(getAvailableStatusTransitions('confirmada')).toEqual(['completada', 'cancelada', 'reprogramacion solicitada', 'vencida', 'reprogramada']);
     expect(getAvailableStatusTransitions('cancelada')).toEqual([]);
   });
 });

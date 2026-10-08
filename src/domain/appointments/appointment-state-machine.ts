@@ -6,8 +6,8 @@ import type { AppointmentStatusRecord } from '../../shared/types/appointment-sta
 export type AppointmentStatus = Appointment['status'];
 
 const allowedTransitions: Record<AppointmentStatus, AppointmentStatus[]> = {
-  pendiente: ['confirmada', 'cancelada', 'vencida'],
-  confirmada: ['completada', 'no asistio', 'cancelada', 'reprogramacion solicitada'],
+  pendiente: ['confirmada', 'cancelada', 'vencida', 'reprogramada'],
+  confirmada: ['completada', 'no asistio', 'cancelada', 'reprogramacion solicitada', 'reprogramada'],
   cancelada: [],
   vencida: [],
   completada: [],
@@ -15,6 +15,14 @@ const allowedTransitions: Record<AppointmentStatus, AppointmentStatus[]> = {
   'reprogramacion solicitada': ['reprogramada', 'cancelada'],
   reprogramada: ['confirmada'],
 };
+
+// Estados desde los cuales una cita puede moverse a otro horario (FR-001/FR-012).
+export const RESCHEDULABLE_STATUSES: AppointmentStatus[] = [
+  'pendiente',
+  'confirmada',
+  'reprogramacion solicitada',
+  'reprogramada',
+];
 
 export function canTransitionStatus(from: AppointmentStatus, to: AppointmentStatus): boolean {
   return allowedTransitions[from]?.includes(to) ?? false;

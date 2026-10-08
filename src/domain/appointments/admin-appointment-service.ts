@@ -9,8 +9,8 @@ export type AdminAppointmentAction = {
 };
 
 const allowedTransitions: Record<Appointment['status'], Appointment['status'][]> = {
-  pendiente: ['confirmada', 'cancelada', 'vencida'],
-  confirmada: ['completada', 'cancelada', 'reprogramacion solicitada', 'vencida'],
+  pendiente: ['confirmada', 'cancelada', 'vencida', 'reprogramada'],
+  confirmada: ['completada', 'cancelada', 'reprogramacion solicitada', 'vencida', 'reprogramada'],
   cancelada: [],
   vencida: [],
   completada: [],
