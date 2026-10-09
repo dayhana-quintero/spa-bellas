@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import type { APIRequestContext, Page } from '@playwright/test';
 
+import { formatDayLabel, splitTime } from '../../src/app/admin/appointments/format';
 import { createPendingAppointment } from './fixtures/appointments';
 import { ADMIN_SESSION_ID, createAdminContext } from './fixtures/admin-session';
 import { supabaseAdminFromEnv } from './fixtures/supabase-admin';
@@ -53,9 +54,20 @@ function formatShort(value: Date): string {
   return value.toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
 }
 
-/** Formato del detalle administrativo (fecha completa del servidor). */
-function formatLong(value: Date): string {
-  return value.toLocaleString('es-ES');
+/** Fila de datos de la tarjeta de detalle (la tarjeta identifica su ID). */
+function detailRow(page: Page, label: string) {
+  return page
+    .locator('article')
+    .filter({ hasText: 'ID de la cita' })
+    .locator('li')
+    .filter({ hasText: label });
+}
+
+/** El detalle muestra la fecha y la hora visibles de la cita (formato de tarjeta). */
+async function expectDetailShowsStart(page: Page, start: Date) {
+  const { time, period } = splitTime(start);
+  await expect(detailRow(page, 'Fecha:')).toContainText(formatDayLabel(start));
+  await expect(detailRow(page, 'Hora:')).toContainText(`${time} ${period}`);
 }
 
 async function fetchDetail(
@@ -160,10 +172,8 @@ test.describe('Reprogramar citas desde el panel', () => {
     const expectedStart = await rescheduleViaUi(page, initialStart, targetDay);
 
     // El detalle de atras queda con la fecha nueva sin pasos extra (US3/Flow 1).
-    await expect(page.locator('p').filter({ hasText: 'Fecha:' }).first()).toContainText(
-      formatLong(expectedStart),
-    );
-    await expect(page.getByText(/Estado:\s*reprogramada/)).toBeVisible();
+    await expectDetailShowsStart(page, expectedStart);
+    await expect(page.getByText(/Estado:\s*reprogramada/i)).toBeVisible();
 
     const after = await fetchDetail(page.request, appointmentId);
     expect(after.appointment.status).toBe('reprogramada');
@@ -195,9 +205,7 @@ test.describe('Reprogramar citas desde el panel', () => {
     // Primera reprogramacion.
     const firstDay = await findTargetDay(page.request, initial.appointment.serviceId, 50);
     const firstStart = await rescheduleViaUi(page, initialStart, firstDay);
-    await expect(page.locator('p').filter({ hasText: 'Fecha:' }).first()).toContainText(
-      formatLong(firstStart),
-    );
+    await expectDetailShowsStart(page, firstStart);
 
     // Se cierra y se reabre el panel para un segundo cambio.
     const panel = page.getByRole('region', { name: 'Reprogramar cita' });
@@ -207,9 +215,7 @@ test.describe('Reprogramar citas desde el panel', () => {
     const secondDay = await findTargetDay(page.request, initial.appointment.serviceId, 60);
     const secondStart = await rescheduleViaUi(page, firstStart, secondDay);
     // La fecha final queda a la vista sin pasos extra (US3, Flow 3.1).
-    await expect(page.locator('p').filter({ hasText: 'Fecha:' }).first()).toContainText(
-      formatLong(secondStart),
-    );
+    await expectDetailShowsStart(page, secondStart);
 
     // El historial encadena los dos registros con sus propias notas.
     const after = await fetchDetail(page.request, appointmentId);
@@ -231,7 +237,7 @@ test.describe('Reprogramar citas desde el panel', () => {
     await expect(
       page.getByText(`Reprogramada de ${formatShort(firstStart)} a ${formatShort(secondStart)}.`),
     ).toBeVisible();
-    await expect(page.getByText(/Estado:\s*reprogramada/)).toBeVisible();
+    await expect(page.getByText(/Estado:\s*reprogramada/i)).toBeVisible();
 
     await context.close();
   });
@@ -301,10 +307,8 @@ test.describe('Reprogramar citas desde el panel', () => {
       panel.getByRole('button', { name: 'Preparar aviso por WhatsApp' }),
     ).toHaveCount(0);
     // ...pero la reprogramacion se completa y el detalle queda actualizado.
-    await expect(page.locator('p').filter({ hasText: 'Fecha:' }).first()).toContainText(
-      formatLong(expectedStart),
-    );
-    await expect(page.getByText(/Estado:\s*reprogramada/)).toBeVisible();
+    await expectDetailShowsStart(page, expectedStart);
+    await expect(page.getByText(/Estado:\s*reprogramada/i)).toBeVisible();
 
     const after = await fetchDetail(page.request, appointmentId);
     expect(after.appointment.status).toBe('reprogramada');
