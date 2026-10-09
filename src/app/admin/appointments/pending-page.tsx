@@ -5,7 +5,7 @@ import { Calendar, CalendarDays, Clock, Phone, Sparkles } from 'lucide-react';
 
 import { listPendingAppointments } from '../../../domain/appointments/admin-appointment-service';
 import type { Appointment } from '../../../shared/types/appointment';
-import { PendingCancelAction, PendingConfirmAction } from './pending-card-actions';
+import { PendingCancelAction, PendingConfirmAction, PendingWhatsAppActions } from './pending-card-actions';
 
 /** "vie 7 ago 2026" sin comas. */
 function formatDayLabel(value: Date): string {
@@ -132,6 +132,15 @@ export function PendingAppointmentsPage({ appointments }: { appointments: Appoin
                 </Link>
                 <PendingCancelAction appointmentId={appointment.id} />
               </div>
+
+              {/* Trazabilidad de WhatsApp */}
+              <PendingWhatsAppActions
+                appointmentId={appointment.id}
+                clientName={enriched.client?.name}
+                phone={enriched.client?.phone}
+                serviceName={enriched.service?.name}
+                scheduledStart={start}
+              />
             </li>
           );
         })}

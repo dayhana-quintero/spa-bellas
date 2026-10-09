@@ -21,6 +21,17 @@ export function uniqueClientPhone(): string {
  * entre la consulta de horarios y el envio de la solicitud.
  */
 export async function createPendingAppointment(page: Page): Promise<string> {
+  const { id } = await createPendingAppointmentDetails(page);
+  return id;
+}
+
+/**
+ * Igual que createPendingAppointment pero tambien devuelve el telefono del
+ * cliente (unico por creacion) para localizar su tarjeta en la interfaz.
+ */
+export async function createPendingAppointmentDetails(
+  page: Page,
+): Promise<{ id: string; phone: string }> {
   const servicesResponse = await page.request.get('/api/public/services');
   const services = (await servicesResponse.json()) as Array<{ id: string }>;
 
@@ -28,6 +39,7 @@ export async function createPendingAppointment(page: Page): Promise<string> {
 
   for (let attempt = 0; attempt < 8; attempt += 1) {
     let booking: { serviceId: string; date: string; slot: string } | undefined;
+    let phone = '';
 
     for (let offset = 10 + attempt; offset <= 40 && !booking; offset += 1) {
       const date = new Date();
@@ -55,10 +67,12 @@ export async function createPendingAppointment(page: Page): Promise<string> {
       break;
     }
 
+    phone = uniqueClientPhone();
+
     const createdResponse = await page.request.post('/api/public/appointments', {
       data: {
         clientName: 'Trazabilidad WhatsApp',
-        clientPhone: uniqueClientPhone(),
+        clientPhone: phone,
         serviceId: booking.serviceId,
         date: booking.date,
         slot: booking.slot,
@@ -67,7 +81,7 @@ export async function createPendingAppointment(page: Page): Promise<string> {
     });
     const created = (await createdResponse.json()) as { id?: string; error?: string };
 
-    if (createdResponse.ok() && created.id) return created.id;
+    if (createdResponse.ok() && created.id) return { id: created.id, phone };
 
     lastError = created.error ?? '';
     // Solo conviene reintentar si el problema fue el horario ocupado por otra
