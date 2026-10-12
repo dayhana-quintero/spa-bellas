@@ -1,7 +1,12 @@
 // Limpia en Supabase las citas que acumula la suite e2e y barre todo dato
 // huerfano del dominio de citas (comunicaciones, historial y clientes sin cita).
 //
-// Uso: node scripts/limpiar-citas-de-prueba.mjs
+// Uso:
+//   node scripts/limpiar-citas-de-prueba.mjs          -> solo datos de prueba
+//   node scripts/limpiar-citas-de-prueba.mjs --virgen -> TODO: deja la app como
+//       recien estrenada (borra todas las citas, clientes, insumos, movimientos
+//       de inventario y servicios; conserva el horario del spa y los
+//       administradores).
 //
 // Borra en orden seguro:
 //   1. Comunicaciones e historial de las citas de prueba (y de las rotas).
@@ -46,6 +51,10 @@ function must({ data, error }, context) {
 const TEST_CLIENT_NAME = 'Trazabilidad WhatsApp';
 const TEST_BOOKING_NOTE = 'relajación profunda';
 const TEST_FIXTURE_PHONE = '5512345678';
+
+// --virgen: borra TODO el uso de la app (citas y clientes) conservando solo la
+// configuracion (servicios, horarios, inventario) y los administradores.
+const wipeAll = process.argv.includes('--virgen');
 
 async function allIds(table) {
   return must(await supabase.from(table).select('id'), `al consultar ${table}`).map(
@@ -110,13 +119,15 @@ const brokenAppointmentIds = appointmentRows
   )
   .map((row) => row.id);
 
-const doomedAppointmentIds = [
+const patternAppointmentIds = [
   ...new Set([
     ...appointmentsByNote.map((item) => item.id),
     ...appointmentsByClient.map((item) => item.id),
     ...brokenAppointmentIds,
   ]),
 ].filter((id) => appointmentIdSet.has(id));
+
+const doomedAppointmentIds = wipeAll ? appointmentIds : patternAppointmentIds;
 
 // ---------------------------------------------------------------------------
 // 2) Barrido de huerfanos: registros cuya cita ya no existe
@@ -154,11 +165,17 @@ const remainingClientIds = new Set(
 );
 const orphanClientIds = clientRows.filter((row) => !remainingClientIds.has(row.id)).map((row) => row.id);
 
+// En modo virgen el inventario y el catalogo tambien se vacian (son cosas que
+// el administrador cargaria de cero en un estreno).
+const movementIds = wipeAll ? await allIds('inventory_movements') : [];
+const itemIds = wipeAll ? await allIds('inventory_items') : [];
+
 const nothingToDo =
   doomedAppointmentIds.length === 0 &&
   orphanCommunicationIds.length === 0 &&
   orphanHistoryIds.length === 0 &&
-  orphanClientIds.length === 0;
+  orphanClientIds.length === 0 &&
+  (!wipeAll || (movementIds.length === 0 && itemIds.length === 0 && serviceIds.length === 0));
 
 if (nothingToDo) {
   console.log('La base esta limpia: no hay citas de prueba ni datos huerfanos.');
@@ -215,8 +232,39 @@ if (orphanClientIds.length > 0) {
   ).length;
 }
 
+// Inventario y servicios: solo en modo virgen, y en orden (movimientos antes
+// que insumos por la referencia entre tablas).
+let movementsDeleted = 0;
+let itemsDeleted = 0;
+let servicesDeleted = 0;
+if (wipeAll) {
+  if (movementIds.length > 0) {
+    movementsDeleted = must(
+      await supabase.from('inventory_movements').delete().in('id', movementIds).select('id'),
+      'al borrar movimientos de inventario',
+    ).length;
+  }
+  if (itemIds.length > 0) {
+    itemsDeleted = must(
+      await supabase.from('inventory_items').delete().in('id', itemIds).select('id'),
+      'al borrar insumos',
+    ).length;
+  }
+  if (serviceIds.length > 0) {
+    servicesDeleted = must(
+      await supabase.from('services').delete().in('id', serviceIds).select('id'),
+      'al borrar servicios',
+    ).length;
+  }
+}
+
 console.log('Limpieza completada:');
 console.log(`  - ${communicationsDeleted} comunicaciones de WhatsApp`);
 console.log(`  - ${historyDeleted} registros de historial de estados`);
 console.log(`  - ${appointmentsDeleted} citas (${brokenAppointmentIds.length} rotas incluidas)`);
 console.log(`  - ${clientsDeleted} clientes sin citas`);
+if (wipeAll) {
+  console.log(`  - ${movementsDeleted} movimientos de inventario`);
+  console.log(`  - ${itemsDeleted} insumos`);
+  console.log(`  - ${servicesDeleted} servicios`);
+}
