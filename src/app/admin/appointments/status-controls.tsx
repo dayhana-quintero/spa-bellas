@@ -163,21 +163,21 @@ export function StatusControls({
         <button
           type="button"
           onClick={handleWhatsApp}
-          className="rounded-lg bg-[#0a7d49] px-3 py-2 text-sm font-medium text-white"
+          className="rounded-lg bg-success px-3 py-2 text-sm font-medium text-white"
         >
           Confirmar por WhatsApp
         </button>
         <button
           type="button"
           onClick={handleMarkSent}
-          className="rounded-lg border border-[#0a7d49] bg-white px-3 py-2 text-sm font-medium text-[#0a7d49]"
+          className="rounded-lg border border-success bg-surface px-3 py-2 text-sm font-medium text-success-text"
         >
           Marcar como enviado
         </button>
         <button
           type="button"
           onClick={() => setManualFormOpen((value) => !value)}
-          className="rounded-lg border border-[#d8c7c2] bg-[#f4ece9] px-3 py-2 text-sm text-[#2d2828]"
+          className="rounded-lg border border-line bg-surface-soft px-3 py-2 text-sm text-foreground"
         >
           Registrar resultado manual
         </button>
@@ -186,7 +186,7 @@ export function StatusControls({
             type="button"
             aria-expanded={rescheduleOpen}
             onClick={() => setRescheduleOpen((value) => !value)}
-            className="rounded-lg border border-[#d8c7c2] bg-[#f4ece9] px-3 py-2 text-sm text-[#2d2828]"
+            className="rounded-lg border border-line bg-surface-soft px-3 py-2 text-sm text-foreground"
           >
             Reprogramar
           </button>
@@ -206,13 +206,13 @@ export function StatusControls({
       ) : null}
 
       {manualFormOpen ? (
-        <div className="mb-4 space-y-3 rounded-2xl border border-[#e7d8d3] bg-[#f9f4f2] p-4">
-          <label className="block text-sm font-medium text-[#2d2828]">
+        <div className="mb-4 space-y-3 rounded-2xl border border-line bg-surface-warm p-4">
+          <label className="block text-sm font-medium text-foreground">
             Resultado manual
             <select
               value={manualResult}
               onChange={(event) => setManualResult(event.target.value as Appointment['status'] | 'sin respuesta')}
-              className="mt-1 w-full rounded-lg border border-[#d8c7c2] bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
             >
               <option value="sin respuesta">Sin respuesta</option>
               <option value="confirmada">Confirmada</option>
@@ -220,20 +220,20 @@ export function StatusControls({
               <option value="reprogramacion solicitada">Reprogramación solicitada</option>
             </select>
           </label>
-          <label className="block text-sm font-medium text-[#2d2828]">
+          <label className="block text-sm font-medium text-foreground">
             Nota
             <textarea
               value={manualNote}
               onChange={(event) => setManualNote(event.target.value)}
               rows={3}
-              className="mt-1 w-full rounded-lg border border-[#d8c7c2] bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
               placeholder="Describe la respuesta, reprogramación o motivo de la ausencia."
             />
           </label>
           <button
             type="button"
             onClick={handleManualResult}
-            className="rounded-lg bg-[#1f1f21] px-3 py-2 text-sm font-medium text-white"
+            className="rounded-lg bg-strong px-3 py-2 text-sm font-medium text-strong-fg"
           >
             Guardar resultado
           </button>
@@ -248,14 +248,14 @@ export function StatusControls({
               type="button"
               aria-label={`Cambiar estado a ${transition}`}
               onClick={() => handleTransition(transition)}
-              className="mt-2 rounded-lg border border-[#d8c7c2] bg-[#f4ece9] px-3 py-2 text-sm text-[#2d2828]"
+              className="mt-2 rounded-lg border border-line bg-surface-soft px-3 py-2 text-sm text-foreground"
             >
               {transition}
             </button>
           </li>
         ))}
       </ul>
-      {statusMessage ? <p className="mt-3 text-sm text-[#3d3b3b]">{statusMessage}</p> : null}
+      {statusMessage ? <p className="mt-3 text-sm text-foreground">{statusMessage}</p> : null}
     </div>
   );
 }

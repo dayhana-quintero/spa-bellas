@@ -31,7 +31,7 @@ export default function AppointmentRequestConfirmation({
     <div
       aria-live="polite"
       role="status"
-      className="mt-6 rounded-2xl bg-[#edf9ee] px-4 py-3 text-sm text-[#264b2d]"
+      className="mt-6 rounded-2xl bg-success-soft px-4 py-3 text-sm text-success-text"
     >
       {summary}
     </div>

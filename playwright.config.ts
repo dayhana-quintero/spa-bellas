@@ -6,6 +6,9 @@ export default defineConfig({
   // Solo specs de Playwright: los archivos *.test.ts pertenecen a Vitest.
   testMatch: "**/*.spec.ts",
 
+  // Siembra el catalogo minimo en bases virgenes (ver el archivo).
+  globalSetup: "./tests/e2e/global-setup.ts",
+
   fullyParallel: true,
 
   forbidOnly: !!process.env.CI,

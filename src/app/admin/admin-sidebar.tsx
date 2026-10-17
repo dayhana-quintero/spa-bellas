@@ -29,19 +29,19 @@ function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
   };
 
   const linkClass = (path: string) =>
-    `flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] font-medium text-[#f5f0ef] transition ${
+    `flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] font-medium text-sidebar-text transition ${
       isActive(path)
-        ? 'bg-[#2b2b2f] border-l-[3px] border-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]'
-        : 'border-l-[3px] border-transparent opacity-80 hover:bg-[#2b2b2f]'
+        ? 'bg-sidebar-accent border-l-[3px] border-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]'
+        : 'border-l-[3px] border-transparent opacity-80 hover:bg-sidebar-accent'
     }`;
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col bg-[#17171a] px-4 py-5 text-[#f9f2f1]">
+    <aside className="flex w-64 shrink-0 flex-col bg-sidebar px-4 py-5 text-sidebar-foreground">
       <div className="mb-6 px-2">
-        <div className="font-serif text-[44px] font-bold leading-[0.72] tracking-[0.02em] text-[#f5f0ef]">
+        <div className="font-serif text-[44px] font-bold leading-[0.72] tracking-[0.02em] text-sidebar-text">
           BELLAS
         </div>
-        <div className="mt-1 text-[14px] text-[#d7d2d0]">Panel del spa</div>
+        <div className="mt-1 text-[14px] text-sidebar-muted">Panel del spa</div>
       </div>
 
       <nav className="space-y-2">
@@ -54,7 +54,7 @@ function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
           <span className="text-lg">📅</span>
           <span>Citas pendientes</span>
           {pendingCount !== undefined && (
-            <span className="ml-auto rounded-full bg-[#f5d9d5] px-2 text-[11px] font-bold text-[#1d1a1a]">
+            <span className="ml-auto rounded-full bg-sidebar-badge px-2 text-[11px] font-bold text-on-pastel">
               {pendingCount}
             </span>
           )}
@@ -80,7 +80,7 @@ function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
         <LogoutButton />
         <Link
           href="/"
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 py-3 text-[15px] font-medium text-[#f5f0ef] transition hover:bg-white/5"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 py-3 text-[15px] font-medium text-sidebar-text transition hover:bg-white/5"
         >
           <span>◐</span>
           <span>Ver como cliente</span>
@@ -92,7 +92,7 @@ function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
 
 export default function AdminSidebar({ pendingCount }: AdminSidebarProps) {
   return (
-    <Suspense fallback={<aside className="flex w-64 shrink-0 bg-[#17171a]" />}>
+    <Suspense fallback={<aside className="flex w-64 shrink-0 bg-sidebar" />}>
       <AdminSidebarInner pendingCount={pendingCount} />
     </Suspense>
   );

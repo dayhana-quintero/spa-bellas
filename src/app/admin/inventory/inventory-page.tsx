@@ -48,43 +48,43 @@ export default function InventoryPage() {
   return (
       <main className="flex-1 overflow-hidden px-8 py-7">
         <div className="mb-6 flex items-center justify-between">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d6966]">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Bellas · Panel del spa
           </div>
 
           <div className="flex items-center gap-2.5">
-            <a href="/admin" className="rounded-xl border border-[#d9c9c4] bg-[#f7f3f2] px-3 py-2 text-sm font-medium text-[#4f4744] hover:bg-[#efe7e4]">
+            <a href="/admin" className="rounded-xl border border-line bg-surface-warm px-3 py-2 text-sm font-medium text-body hover:bg-surface-soft">
               Volver al panel
             </a>
           </div>
         </div>
 
-        <div className="h-[calc(100vh-120px)] overflow-y-auto rounded-[28px] bg-[#f7f2ef] p-5 shadow-[0_0_0_1px_rgba(104,76,72,0.03)]">
+        <div className="h-[calc(100vh-120px)] overflow-y-auto rounded-[28px] bg-background p-5 shadow-[0_0_0_1px_rgba(104,76,72,0.03)]">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d6966]">Inventario</p>
-              <h1 className="mt-2 font-serif text-[40px] leading-[0.96] tracking-[-0.04em] text-[#d56572] sm:text-[44px] lg:text-[48px]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Inventario</p>
+              <h1 className="mt-2 font-serif text-[40px] leading-[0.96] tracking-[-0.04em] text-brand sm:text-[44px] lg:text-[48px]">
                 Insumos del spa
               </h1>
             </div>
 
-            <div className="rounded-xl bg-[#efe8e3] px-4 py-2 text-sm font-medium text-[#433d3b]">
+            <div className="rounded-xl bg-surface-soft px-4 py-2 text-sm font-medium text-body">
               {lowStockCount} bajo stock
             </div>
           </div>
 
           <div className="mb-6 grid gap-4 md:grid-cols-3">
-            <div className="rounded-2xl border border-[#e8d8d1] bg-white p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d6966]">Insumos</p>
-              <p className="mt-3 text-3xl font-bold text-[#2a2323]">{supplies.length}</p>
+            <div className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Insumos</p>
+              <p className="mt-3 text-3xl font-bold text-foreground">{supplies.length}</p>
             </div>
-            <div className="rounded-2xl border border-[#e8d8d1] bg-white p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d6966]">Stock total</p>
-              <p className="mt-3 text-3xl font-bold text-[#2a2323]">{formatNumber(totalAvailable)}</p>
+            <div className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Stock total</p>
+              <p className="mt-3 text-3xl font-bold text-foreground">{formatNumber(totalAvailable)}</p>
             </div>
-            <div className="rounded-2xl border border-[#f0d0cd] bg-[#fff5f3] p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d6966]">Revisión</p>
-              <p className="mt-3 text-3xl font-bold text-[#8a5757]">{lowStockCount}</p>
+            <div className="rounded-2xl border border-line bg-brand-soft p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Revisión</p>
+              <p className="mt-3 text-3xl font-bold text-danger">{lowStockCount}</p>
             </div>
           </div>
 
@@ -94,40 +94,40 @@ export default function InventoryPage() {
           </div>
 
           {loadError ? (
-            <p role="alert" className="mb-4 rounded-xl border border-[#e3aaa3] bg-[#fff5f3] px-4 py-3 text-sm text-[#8a3f3a]">
+            <p role="alert" className="mb-4 rounded-xl border border-line bg-brand-soft px-4 py-3 text-sm text-danger">
               {loadError}
             </p>
           ) : null}
 
-          <section className="overflow-hidden rounded-2xl border border-[#d9c8c3] bg-[#f7f2ef] shadow-sm">
+          <section className="overflow-hidden rounded-2xl border border-line bg-background shadow-sm">
             <table className="w-full border-separate border-spacing-0">
-              <thead className="bg-[#efe8e3]">
+              <thead className="bg-surface-soft">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-bold text-[#4a423f]">Insumo</th>
-                  <th className="px-4 py-3 text-left text-sm font-bold text-[#4a423f]">Unidad</th>
-                  <th className="px-4 py-3 text-left text-sm font-bold text-[#4a423f]">Cantidad</th>
-                  <th className="px-4 py-3 text-left text-sm font-bold text-[#4a423f]">Stock mínimo</th>
-                  <th className="px-4 py-3 text-left text-sm font-bold text-[#4a423f]">Estado</th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-body">Insumo</th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-body">Unidad</th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-body">Cantidad</th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-body">Stock mínimo</th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-body">Estado</th>
                 </tr>
               </thead>
               <tbody>
                 {supplies.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-6 text-center text-[#544a48]">No hay insumos registrados.</td>
+                    <td colSpan={5} className="px-4 py-6 text-center text-body">No hay insumos registrados.</td>
                   </tr>
                 ) : (
                   supplies.map((supply, index) => (
-                    <tr key={supply.id} className={index % 2 === 0 ? 'bg-[#f9f5f3]' : 'bg-[#f6f2ef]'}>
-                      <td className="px-4 py-4 text-[#2b2b2b]">{supply.name}</td>
-                      <td className="px-4 py-4 text-[#2b2b2b]">{supply.unit}</td>
-                      <td className="px-4 py-4 text-[#2b2b2b]">{formatNumber(supply.quantityAvailable)}</td>
-                      <td className="px-4 py-4 text-[#2b2b2b]">{formatNumber(supply.minimumThreshold)}</td>
+                    <tr key={supply.id} className={index % 2 === 0 ? 'bg-surface-warm' : 'bg-surface-warm'}>
+                      <td className="px-4 py-4 text-foreground">{supply.name}</td>
+                      <td className="px-4 py-4 text-foreground">{supply.unit}</td>
+                      <td className="px-4 py-4 text-foreground">{formatNumber(supply.quantityAvailable)}</td>
+                      <td className="px-4 py-4 text-foreground">{formatNumber(supply.minimumThreshold)}</td>
                       <td className="px-4 py-4">
                         <span
                           className="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
                           style={{
-                            backgroundColor: supply.isLowStock ? '#f8d8d2' : '#dff5ea',
-                            color: supply.isLowStock ? '#8a5757' : '#2e7d5e',
+                            backgroundColor: supply.isLowStock ? 'var(--danger-soft)' : 'var(--success-soft)',
+                            color: supply.isLowStock ? 'var(--danger)' : 'var(--success-text)',
                           }}
                         >
                           {supply.isLowStock ? 'Bajo stock' : 'En stock'}

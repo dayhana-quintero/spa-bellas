@@ -213,7 +213,7 @@ export default function AppointmentRequestForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="grid gap-5 md:grid-cols-2">
-        <label className="text-sm font-medium text-[#2f2b2b]">
+        <label className="text-sm font-medium text-foreground">
           Nombre completo
           <input
             aria-label="Nombre completo"
@@ -222,11 +222,11 @@ export default function AppointmentRequestForm({
               setName(event.target.value);
               handleFieldChange({ name: event.target.value });
             }}
-            className="mt-2 w-full rounded-xl border border-[#d7c6c2] bg-[#fffaf9] px-3 py-2.5 text-[#1f1b1b] outline-none focus:border-[#d56572]"
+            className="mt-2 w-full rounded-xl border border-line bg-surface-inset px-3 py-2.5 text-foreground outline-none focus:border-brand"
           />
         </label>
 
-        <label className="text-sm font-medium text-[#2f2b2b]">
+        <label className="text-sm font-medium text-foreground">
           Teléfono WhatsApp
           <input
             aria-label="Teléfono WhatsApp"
@@ -235,12 +235,12 @@ export default function AppointmentRequestForm({
               setPhone(event.target.value);
               handleFieldChange({ phone: event.target.value });
             }}
-            className="mt-2 w-full rounded-xl border border-[#d7c6c2] bg-[#fffaf9] px-3 py-2.5 text-[#1f1b1b] outline-none focus:border-[#d56572]"
+            className="mt-2 w-full rounded-xl border border-line bg-surface-inset px-3 py-2.5 text-foreground outline-none focus:border-brand"
           />
         </label>
       </div>
 
-      <label className="block text-sm font-medium text-[#2f2b2b]">
+      <label className="block text-sm font-medium text-foreground">
         Notas opcionales
         <textarea
           aria-label="Notas opcionales"
@@ -249,11 +249,11 @@ export default function AppointmentRequestForm({
             setNotes(event.target.value);
             handleFieldChange({ notes: event.target.value });
           }}
-          className="mt-2 min-h-28 w-full rounded-xl border border-[#d7c6c2] bg-[#fffaf9] px-3 py-2.5 text-[#1f1b1b] outline-none focus:border-[#d56572]"
+          className="mt-2 min-h-28 w-full rounded-xl border border-line bg-surface-inset px-3 py-2.5 text-foreground outline-none focus:border-brand"
         />
       </label>
 
-      <label className="flex items-center gap-3 text-sm text-[#403b3b]">
+      <label className="flex items-center gap-3 text-sm text-foreground">
         <input
           aria-label="Acepto que el spa confirme por WhatsApp"
           type="checkbox"
@@ -262,20 +262,20 @@ export default function AppointmentRequestForm({
             setConsent(event.target.checked);
             handleFieldChange({ consent: event.target.checked });
           }}
-          className="h-4 w-4 rounded border-[#d7c6c2] text-[#d56572] focus:ring-[#d56572]"
+          className="h-4 w-4 rounded border-line text-brand focus:ring-brand"
         />
         Acepto que el spa confirme por WhatsApp
       </label>
 
       {errorMessage ? (
-        <p role="alert" className="rounded-2xl border border-[#f2d0d0] bg-[#fff6f6] px-4 py-3 text-sm text-[#7f2d2d]">
+        <p role="alert" className="rounded-2xl border border-line bg-brand-soft px-4 py-3 text-sm text-danger">
           {errorMessage}
         </p>
       ) : null}
 
       <button
         type="submit"
-        className="rounded-xl bg-[#1f1f21] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#2a2a2d] disabled:cursor-not-allowed disabled:opacity-60"
+        className="rounded-xl bg-strong px-5 py-3 text-sm font-medium text-strong-fg transition hover:bg-strong-hover disabled:cursor-not-allowed disabled:opacity-60"
       >
         Enviar solicitud
       </button>

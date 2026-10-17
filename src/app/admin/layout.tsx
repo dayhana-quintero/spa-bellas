@@ -5,6 +5,7 @@ import { evaluateRouteAccess } from '@/shared/auth/access';
 import { readAdminSessionFromCookie } from '@/shared/auth';
 import AdminSidebar from './admin-sidebar';
 import { AdminSessionGuard } from './admin-session-guard';
+import { AdminThemeToggle } from './admin-theme-toggle';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
@@ -26,18 +27,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f3f0ef] text-[#2a2423]">
+    <div className="flex h-screen overflow-hidden bg-background text-foreground">
       {accessResult.isAllowed ? (
         <AdminSidebar pendingCount={pendingCount} />
       ) : (
-        <aside className="flex w-64 shrink-0 flex-col bg-[#17171a] px-4 py-5 text-[#f9f2f1]">
-          <div className="font-serif text-[44px] font-bold leading-[0.72] tracking-[0.02em] text-[#f5f0ef]">
+        <aside className="flex w-64 shrink-0 flex-col bg-sidebar px-4 py-5 text-sidebar-foreground">
+          <div className="font-serif text-[44px] font-bold leading-[0.72] tracking-[0.02em] text-sidebar-text">
             BELLAS
           </div>
-          <div className="mt-1 text-[14px] text-[#d7d2d0]">Panel del spa</div>
+          <div className="mt-1 text-[14px] text-sidebar-muted">Panel del spa</div>
         </aside>
       )}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="relative flex flex-1 flex-col overflow-hidden">
+        <AdminThemeToggle />
         <AdminSessionGuard accessResult={accessResult}>
           {children}
         </AdminSessionGuard>

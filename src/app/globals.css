@@ -18,6 +18,9 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-sidebar-text: var(--sidebar-text);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-badge: var(--sidebar-badge);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -46,75 +49,288 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* ===== Tokens del spa (utilidades) ===== */
+  --color-surface: var(--surface);
+  --color-surface-warm: var(--surface-warm);
+  --color-surface-soft: var(--surface-soft);
+  --color-surface-inset: var(--surface-inset);
+  --color-surface-hover: var(--surface-hover);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-body: var(--body);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-btn: var(--brand-btn);
+  --color-brand-btn-hover: var(--brand-btn-hover);
+  --color-strong: var(--strong);
+  --color-strong-hover: var(--strong-hover);
+  --color-strong-fg: var(--strong-fg);
+  --color-success: var(--success);
+  --color-success-hover: var(--success-hover);
+  --color-success-text: var(--success-text);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-amber: var(--amber);
+  --color-amber-text: var(--amber-text);
+  --color-amber-soft: var(--amber-soft);
+  --color-on-pastel: var(--on-pastel);
+
+  /* Píldoras de estado de cita */
+  --color-st-pend: var(--st-pend-bg);
+  --color-st-pend-ink: var(--st-pend-fg);
+  --color-st-pend-dot: var(--st-pend-dot);
+  --color-st-conf: var(--st-conf-bg);
+  --color-st-conf-ink: var(--st-conf-fg);
+  --color-st-conf-dot: var(--st-conf-dot);
+  --color-st-reprog: var(--st-reprog-bg);
+  --color-st-reprog-ink: var(--st-reprog-fg);
+  --color-st-reprog-dot: var(--st-reprog-dot);
+  --color-st-cancel: var(--st-cancel-bg);
+  --color-st-cancel-ink: var(--st-cancel-fg);
+  --color-st-cancel-dot: var(--st-cancel-dot);
+  --color-st-neutral: var(--st-neutral-bg);
+  --color-st-neutral-ink: var(--st-neutral-fg);
+  --color-st-neutral-dot: var(--st-neutral-dot);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  color-scheme: light;
+
+  /* --- Shadcn (componentes ui/*) con la paleta del spa --- */
+  --background: #f5f0ee;
+  --foreground: #2b2b2b;
+  --card: #ffffff;
+  --card-foreground: #2b2b2b;
+  --popover: #ffffff;
+  --popover-foreground: #2b2b2b;
+  --primary: #1f1f21;
+  --primary-foreground: #ffffff;
+  --secondary: #efe8e3;
+  --secondary-foreground: #2b2b2b;
+  --muted: #efe8e3;
+  --muted-foreground: #6a5d5a;
+  --accent: #f5f0ef;
+  --accent-foreground: #2b2b2b;
+  --destructive: #b3261e;
+  --border: #d9c8c3;
+  --input: #d9c8c3;
+  --ring: #d56572;
+  --chart-1: #d56572;
+  --chart-2: #0a7d49;
+  --chart-3: #b8861d;
+  --chart-4: #214f63;
+  --chart-5: #5f3d69;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Sidebar: siempre oscuro, en ambos temas */
+  --sidebar: #17171a;
+  --sidebar-foreground: #f9f2f1;
+  --sidebar-primary: #d56572;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2b2b2f;
+  --sidebar-accent-foreground: #f9f2f1;
+  --sidebar-border: rgb(255 255 255 / 0.1);
+  --sidebar-ring: #d56572;
+  --sidebar-text: #f5f0ef;
+  --sidebar-muted: #d7d2d0;
+  --sidebar-badge: #f5d9d5;
+
+  /* --- Superficies --- */
+  --surface: #ffffff;
+  --surface-warm: #f9f4f2;
+  --surface-soft: #efe8e3;
+  --surface-inset: #fffaf9;
+  --surface-hover: #f5f0ef;
+
+  /* --- Bordes --- */
+  --line: #d9c8c3;
+  --line-soft: #e8d8d1;
+
+  /* --- Texto --- */
+  --body: #473e3d;
+
+  /* --- Marca (rosa) --- */
+  --brand: #d56572;
+  --brand-strong: #bf4a55;
+  --brand-soft: #f8efee;
+  --brand-btn: #e5b7b9;
+  --brand-btn-hover: #ddb0b2;
+
+  /* --- Fuerte (CTA primario; se invierte en oscuro) --- */
+  --strong: #1f1f21;
+  --strong-hover: #2a2a2d;
+  --strong-fg: #ffffff;
+
+  /* --- Estados --- */
+  --success: #0a7d49;
+  --success-hover: #096b3f;
+  --success-text: #0a6b3d;
+  --success-soft: #dff5ea;
+  --danger: #b3261e;
+  --danger-soft: #f4d5d5;
+  --amber: #b8861d;
+  --amber-text: #7c4a31;
+  --amber-soft: #fbf1de;
+
+  /* Pasteles constantes (insignias) */
+  --on-pastel: #1d1a1a;
+
+  /* --- Píldoras de estado (bandeja y controles) --- */
+  --st-pend-bg: #f5eddc;
+  --st-pend-fg: #7a6444;
+  --st-pend-dot: #b08d4f;
+  --st-conf-bg: #e3f2e9;
+  --st-conf-fg: #0a6b3d;
+  --st-conf-dot: #0a7d49;
+  --st-reprog-bg: #f8e1e3;
+  --st-reprog-fg: #8a4955;
+  --st-reprog-dot: #d56572;
+  --st-cancel-bg: #fbe4e2;
+  --st-cancel-fg: #b3261e;
+  --st-cancel-dot: #b3261e;
+  --st-neutral-bg: #efece8;
+  --st-neutral-fg: #5a5350;
+  --st-neutral-dot: #8a827e;
+
+  /* --- Meta de estados (historial/detalle) --- */
+  --meta-pend-fg: #7a2a2a;
+  --meta-pend-bg: #f8e1e3;
+  --meta-conf-fg: #1d6a4d;
+  --meta-conf-bg: #dff5ea;
+  --meta-cancel-fg: #8b2d2d;
+  --meta-cancel-bg: #f4d5d5;
+  --meta-venc-fg: #5f4b41;
+  --meta-venc-bg: #f0e2d8;
+  --meta-comp-fg: #9f2d46;
+  --meta-comp-bg: #f7dfe4;
+  --meta-noinf-fg: #6e4d35;
+  --meta-noinf-bg: #f6e8d8;
+  --meta-repsol-fg: #5f3d69;
+  --meta-repsol-bg: #f0e4f4;
+  --meta-reprog-fg: #214f63;
+  --meta-reprog-bg: #dfeff4;
+  --meta-neutral-fg: #47413f;
+  --meta-neutral-bg: #ece2dd;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  color-scheme: dark;
+
+  /* --- Shadcn en tema oscuro --- */
+  --background: #151213;
+  --foreground: #f3eeec;
+  --card: #201c1d;
+  --card-foreground: #f3eeec;
+  --popover: #241f20;
+  --popover-foreground: #f3eeec;
+  --primary: #f4efec;
+  --primary-foreground: #1f1b1b;
+  --secondary: #2a2426;
+  --secondary-foreground: #f3eeec;
+  --muted: #2a2426;
+  --muted-foreground: #9c8d89;
+  --accent: #2a2526;
+  --accent-foreground: #f3eeec;
+  --destructive: #c9483f;
+  --border: #3b3334;
+  --input: #3b3334;
+  --ring: #e69aa2;
+  --chart-1: #e69aa2;
+  --chart-2: #3fc489;
+  --chart-3: #d9a75c;
+  --chart-4: #7fb3cc;
+  --chart-5: #b595c4;
+
+  --sidebar: #121214;
+  --sidebar-foreground: #f9f2f1;
+  --sidebar-primary: #e69aa2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #26262b;
+  --sidebar-accent-foreground: #f9f2f1;
+  --sidebar-border: rgb(255 255 255 / 0.1);
+  --sidebar-ring: #e69aa2;
+  --sidebar-text: #f5f0ef;
+  --sidebar-muted: #d7d2d0;
+  --sidebar-badge: #f5d9d5;
+
+  /* --- Superficies --- */
+  --surface: #201c1d;
+  --surface-warm: #231f20;
+  --surface-soft: #2a2426;
+  --surface-inset: #262021;
+  --surface-hover: #2a2526;
+
+  /* --- Bordes --- */
+  --line: #3b3334;
+  --line-soft: #312a2b;
+
+  /* --- Texto --- */
+  --body: #cfc4c1;
+
+  /* --- Marca (rosa aclarada para contraste) --- */
+  --brand: #e69aa2;
+  --brand-strong: #eb929b;
+  --brand-soft: #33262a;
+  --brand-btn: #7e4249;
+  --brand-btn-hover: #8e4b54;
+
+  /* --- Fuerte: CTA invertido (crema con tinta) --- */
+  --strong: #f4efec;
+  --strong-hover: #ffffff;
+  --strong-fg: #1f1b1b;
+
+  /* --- Estados --- */
+  --success: #108553;
+  --success-hover: #0c6e45;
+  --success-text: #7fdcae;
+  --success-soft: #14281f;
+  --danger: #e5857f;
+  --danger-soft: #352426;
+  --amber: #d9a75c;
+  --amber-text: #d9a75c;
+  --amber-soft: #2c2519;
+
+  --on-pastel: #1d1a1a;
+
+  /* --- Píldoras de estado --- */
+  --st-pend-bg: #332c1b;
+  --st-pend-fg: #e0c48c;
+  --st-pend-dot: #c9a05e;
+  --st-conf-bg: #16281f;
+  --st-conf-fg: #7fdcae;
+  --st-conf-dot: #2fb87d;
+  --st-reprog-bg: #35262a;
+  --st-reprog-fg: #e9a9b1;
+  --st-reprog-dot: #e28d96;
+  --st-cancel-bg: #3a2422;
+  --st-cancel-fg: #f0a09b;
+  --st-cancel-dot: #e07a76;
+  --st-neutral-bg: #2b2627;
+  --st-neutral-fg: #b3a7a4;
+  --st-neutral-dot: #8f8280;
+
+  /* --- Meta de estados (fondos profundos, tintas claras) --- */
+  --meta-pend-fg: #f0b9c1;
+  --meta-pend-bg: #35262a;
+  --meta-conf-fg: #7fd6ac;
+  --meta-conf-bg: #14281f;
+  --meta-cancel-fg: #f1a8a8;
+  --meta-cancel-bg: #352426;
+  --meta-venc-fg: #cbb3a2;
+  --meta-venc-bg: #2e2622;
+  --meta-comp-fg: #f2b0c0;
+  --meta-comp-bg: #36242a;
+  --meta-noinf-fg: #d6b393;
+  --meta-noinf-bg: #2f271f;
+  --meta-repsol-fg: #cfaedf;
+  --meta-repsol-bg: #2d2433;
+  --meta-reprog-fg: #9fcfe4;
+  --meta-reprog-bg: #1e2b31;
+  --meta-neutral-fg: #c4b8b5;
+  --meta-neutral-bg: #2b2526;
 }
 
 @layer base {
@@ -126,5 +342,26 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* Flotacion suave para el icono del estado vacio de citas pendientes. */
+@keyframes spa-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.spa-float {
+  animation: spa-float 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spa-float {
+    animation: none;
   }
 }

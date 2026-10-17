@@ -1,13 +1,16 @@
 import { capitalize } from './format';
 
 const STATUS_STYLES: Record<string, { pill: string; dot: string }> = {
-  pendiente: { pill: 'bg-[#f5eddc] text-[#7a6444]', dot: 'bg-[#b08d4f]' },
-  confirmada: { pill: 'bg-[#e3f2e9] text-[#0a6b3d]', dot: 'bg-[#0a7d49]' },
-  reprogramada: { pill: 'bg-[#f8e1e3] text-[#8a4955]', dot: 'bg-[#d56572]' },
-  cancelada: { pill: 'bg-[#fbe4e2] text-[#b3261e]', dot: 'bg-[#b3261e]' },
+  pendiente: { pill: 'bg-st-pend text-st-pend-ink', dot: 'bg-st-pend-dot' },
+  confirmada: { pill: 'bg-st-conf text-st-conf-ink', dot: 'bg-st-conf-dot' },
+  reprogramada: { pill: 'bg-st-reprog text-st-reprog-ink', dot: 'bg-st-reprog-dot' },
+  cancelada: { pill: 'bg-st-cancel text-st-cancel-ink', dot: 'bg-st-cancel-dot' },
 };
 
-const NEUTRAL_STYLE = { pill: 'bg-[#efece8] text-[#5a5350]', dot: 'bg-[#8a827e]' };
+const NEUTRAL_STYLE = {
+  pill: 'bg-st-neutral text-st-neutral-ink',
+  dot: 'bg-st-neutral-dot',
+};
 
 /** Etiqueta redondeada con punto de color para el estado de una cita. */
 export function StatusPill({ status }: { status: string }) {

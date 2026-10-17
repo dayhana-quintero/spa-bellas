@@ -61,7 +61,7 @@ export default function AppointmentRequestFlow() {
 
   if (services.length === 0) {
     return (
-      <div className="mt-8 rounded-2xl border border-dashed border-[#d7c6c2] bg-white/50 p-6 text-[#564d4c]">
+      <div className="mt-8 rounded-2xl border border-dashed border-line bg-surface/50 p-6 text-body">
         {catalogLoaded ? 'No hay servicios disponibles en este momento.' : 'Cargando servicios...'}
       </div>
     );
@@ -82,8 +82,8 @@ export default function AppointmentRequestFlow() {
               }}
               className={`rounded-full border px-4 py-2 text-sm font-medium ${
                 selectedServiceId === service.id
-                  ? 'border-[#d56572] bg-[#fcecf0] text-[#2d2828]'
-                  : 'border-[#e7d8d3] bg-white text-[#4a4342]'
+                  ? 'border-brand bg-brand-soft text-foreground'
+                  : 'border-line bg-surface text-body'
               }`}
             >
               {service.name}

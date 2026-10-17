@@ -140,17 +140,17 @@ export function ReschedulePanel({
   return (
     <section
       aria-label="Reprogramar cita"
-      className="mt-4 rounded-2xl border border-[#e7d8d3] bg-[#f9f4f2] p-4"
+      className="mt-4 rounded-2xl border border-line bg-surface-warm p-4"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="font-serif text-2xl text-[#d56572]">Reprogramar cita</h3>
-        <p className="text-sm text-[#5a4541]">
+        <h3 className="font-serif text-2xl text-brand">Reprogramar cita</h3>
+        <p className="text-sm text-body">
           <strong>Actual:</strong>{' '}
           {currentStart.toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}
         </p>
       </div>
 
-      <div className="mt-4 rounded-2xl bg-white p-4">
+      <div className="mt-4 rounded-2xl bg-surface p-4">
         <AppointmentSlotPicker
           service={service}
           serviceId={serviceId}
@@ -162,13 +162,13 @@ export function ReschedulePanel({
         />
       </div>
 
-      <label className="mt-4 block text-sm font-medium text-[#2f2b2b]">
+      <label className="mt-4 block text-sm font-medium text-foreground">
         Nota (opcional)
         <textarea
           value={note}
           onChange={(event) => setNote(event.target.value)}
           rows={2}
-          className="mt-1 w-full rounded-xl border border-[#d7c6c2] bg-white px-3 py-2.5 text-[#1f1b1b] outline-none transition focus:border-[#d56572]"
+          className="mt-1 w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-foreground outline-none transition focus:border-brand"
           placeholder="Motivo del cambio de horario."
         />
       </label>
@@ -180,7 +180,7 @@ export function ReschedulePanel({
               type="button"
               onClick={handleSendNotice}
               disabled={noticeSending}
-              className="rounded-lg bg-[#0a7d49] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+              className="rounded-lg bg-success px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
             >
               {noticeSending ? 'Preparando aviso...' : 'Preparar aviso por WhatsApp'}
             </button>
@@ -190,7 +190,7 @@ export function ReschedulePanel({
             type="button"
             onClick={handleConfirm}
             disabled={submitting}
-            className="rounded-lg bg-[#1f1f21] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+            className="rounded-lg bg-strong px-4 py-2 text-sm font-medium text-strong-fg disabled:opacity-60"
           >
             {submitting ? 'Confirmando...' : 'Confirmar reprogramacion'}
           </button>
@@ -199,7 +199,7 @@ export function ReschedulePanel({
           type="button"
           onClick={onClose}
           disabled={submitting && !rescheduled}
-          className="rounded-lg border border-[#d8c7c2] bg-white px-4 py-2 text-sm text-[#2d2828]"
+          className="rounded-lg border border-line bg-surface px-4 py-2 text-sm text-foreground"
         >
           {rescheduled ? 'Cerrar' : 'Cancelar'}
         </button>
@@ -209,7 +209,7 @@ export function ReschedulePanel({
         <p
           role="status"
           aria-live="polite"
-          className={`mt-3 text-sm ${message.tone === 'success' ? 'text-[#0a7d49]' : 'text-[#b3261e]'}`}
+          className={`mt-3 text-sm ${message.tone === 'success' ? 'text-success-text' : 'text-danger'}`}
         >
           {message.text}
         </p>

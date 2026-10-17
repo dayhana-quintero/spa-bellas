@@ -34,7 +34,7 @@ export function AppointmentConfirmAction({ appointmentId }: { appointmentId: str
         type="button"
         onClick={confirmAppointment}
         disabled={isSaving}
-        className="rounded-xl bg-[#e5b7b9] px-4 py-2.5 text-[13px] font-semibold text-[#2b1e1c] shadow-sm hover:bg-[#ddb0b2] disabled:cursor-wait disabled:opacity-60"
+        className="rounded-xl bg-brand-btn px-4 py-2.5 text-[13px] font-semibold text-foreground shadow-sm hover:bg-brand-btn-hover disabled:cursor-wait disabled:opacity-60"
       >
         {isSaving ? 'Confirmando...' : 'Confirmar cita'}
       </button>

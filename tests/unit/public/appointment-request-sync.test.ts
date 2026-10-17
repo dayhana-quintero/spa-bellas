@@ -93,8 +93,13 @@ describe('public appointment request sync', () => {
   });
 
   it('syncs the appointment to Supabase when the project is configured', async () => {
-    const date = '2026-10-05';
-    const slots = await getAvailableSlots('service-1', date);
+    // Fecha futura (en ~30 dias) para que el slot siga siendo valido tras la
+    // validacion de horas pasadas en requestAppointment.
+    const future = new Date();
+    future.setDate(future.getDate() + 30);
+    while (future.getDay() === 0) future.setDate(future.getDate() + 1);
+    const date = `${future.getFullYear()}-${String(future.getMonth() + 1).padStart(2, '0')}-${String(future.getDate()).padStart(2, '0')}`;
+    const slots = await getAvailableSlots('service-1', date, { excludePast: true });
     const slot = slots[0];
     expect(slot).toBeDefined();
 

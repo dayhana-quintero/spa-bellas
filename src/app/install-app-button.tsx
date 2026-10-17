@@ -40,7 +40,7 @@ export default function InstallAppButton() {
           setDeferredPrompt(null);
         }
       }}
-      className="rounded-full border border-[#e0d2cf] bg-[#202021] px-4 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-white shadow-sm"
+      className="rounded-full border border-line bg-strong px-4 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-strong-fg shadow-sm"
     >
       Descargar app
     </button>

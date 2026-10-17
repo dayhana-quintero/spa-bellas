@@ -51,13 +51,13 @@ export function PendingConfirmAction({ appointmentId }: PendingActionProps) {
         type="button"
         onClick={handleConfirm}
         disabled={saving}
-        className="flex items-center gap-2 rounded-xl bg-[#e5b7b9] px-4 py-2.5 text-sm font-semibold text-[#2b1e1c] shadow-sm hover:bg-[#ddb0b2] disabled:cursor-wait disabled:opacity-60"
+        className="flex items-center gap-2 rounded-xl bg-brand-btn px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm hover:bg-brand-btn-hover disabled:cursor-wait disabled:opacity-60"
       >
         <Check size={15} aria-hidden="true" />
         {saving ? 'Confirmando...' : 'Confirmar cita'}
       </button>
       {error ? (
-        <p role="alert" className="mt-2 text-sm text-[#b3261e]">
+        <p role="alert" className="mt-2 text-sm text-danger">
           {error}
         </p>
       ) : null}
@@ -98,12 +98,12 @@ export function PendingCancelAction({ appointmentId }: PendingActionProps) {
         type="button"
         onClick={handleCancel}
         disabled={saving}
-        className="rounded-xl px-4 py-2.5 text-sm font-semibold text-[#b3261e] hover:bg-[#fdf3f3] disabled:cursor-wait disabled:opacity-60"
+        className="rounded-xl px-4 py-2.5 text-sm font-semibold text-danger hover:bg-brand-soft disabled:cursor-wait disabled:opacity-60"
       >
         {saving ? 'Cancelando...' : 'Cancelar'}
       </button>
       {error ? (
-        <p role="alert" className="mt-2 text-sm text-[#b3261e]">
+        <p role="alert" className="mt-2 text-sm text-danger">
           {error}
         </p>
       ) : null}
@@ -204,7 +204,7 @@ export function PendingWhatsAppActions({
           type="button"
           onClick={handlePrepare}
           disabled={busy}
-          className="rounded-xl bg-[#0a7d49] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#096b3f] disabled:cursor-wait disabled:opacity-60"
+          className="rounded-xl bg-success px-4 py-2.5 text-sm font-semibold text-white hover:bg-success-hover disabled:cursor-wait disabled:opacity-60"
         >
           Confirmar por WhatsApp
         </button>
@@ -212,13 +212,13 @@ export function PendingWhatsAppActions({
           type="button"
           onClick={handleMarkSent}
           disabled={busy}
-          className="rounded-xl border border-[#0a7d49] bg-white px-4 py-2.5 text-sm font-semibold text-[#0a7d49] hover:bg-[#f0f9f4] disabled:cursor-wait disabled:opacity-60"
+          className="rounded-xl border border-success bg-surface px-4 py-2.5 text-sm font-semibold text-success-text hover:bg-success-soft disabled:cursor-wait disabled:opacity-60"
         >
           Marcar como enviado
         </button>
       </div>
       {message ? (
-        <p role="status" className="mt-2 text-xs text-[#3f5049]">
+        <p role="status" className="mt-2 text-xs text-body">
           {message}
         </p>
       ) : null}

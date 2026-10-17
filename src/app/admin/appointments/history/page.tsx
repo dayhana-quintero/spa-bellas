@@ -81,51 +81,51 @@ export default async function HistoryPage({
   return (
       <main className="flex-1 overflow-auto px-7 py-6">
         <div className="mb-4 flex items-center justify-between">
-          <div className="text-[11px] font-semibold tracking-[0.08em] text-[#7d6966] uppercase">
+          <div className="text-[11px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
             Bellas · Panel del spa
           </div>
         </div>
 
-        <div className="rounded-[22px] bg-[#f7f2ef] p-6">
-          <h1 className="font-serif text-[52px] font-bold leading-[1.1] text-[#d56572]">Historial de citas</h1>
-          <p className="mt-4 mb-6 text-lg text-[#4a4a4a]">Todas las citas realizadas, con su estado.</p>
+        <div className="rounded-[22px] bg-background p-6">
+          <h1 className="font-serif text-[52px] font-bold leading-[1.1] text-brand">Historial de citas</h1>
+          <p className="mt-4 mb-6 text-lg text-body">Todas las citas realizadas, con su estado.</p>
 
-          <div className="mb-5 flex items-center gap-3 rounded-xl bg-[#efe6e0] px-5 py-4">
-            <span className="text-[38px] font-bold text-[#2b2b2b]">{total}</span>
-            <span className="text-lg text-[#373737]">Total de citas: {total}</span>
+          <div className="mb-5 flex items-center gap-3 rounded-xl bg-surface-soft px-5 py-4">
+            <span className="text-[38px] font-bold text-foreground">{total}</span>
+            <span className="text-lg text-foreground">Total de citas: {total}</span>
           </div>
 
           <form
             action="/admin/appointments/history"
             method="get"
-            className="mb-5 grid gap-3 rounded-xl bg-[#efe8e3] p-4 md:grid-cols-[1.2fr_1.2fr_1fr_auto]"
+            className="mb-5 grid gap-3 rounded-xl bg-surface-soft p-4 md:grid-cols-[1.2fr_1.2fr_1fr_auto]"
           >
-            <label className="flex flex-col gap-2 text-sm text-[#473e3d]">
+            <label className="flex flex-col gap-2 text-sm text-body">
               <span>Fecha desde</span>
               <input
                 type="date"
                 name="from"
                 defaultValue={dateFrom}
-                className="h-11 rounded-xl border border-[#d9c8c3] bg-[#f5f2f0] px-3 text-[#333] outline-none"
+                className="h-11 rounded-xl border border-line bg-background px-3 text-[#333] outline-none"
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-sm text-[#473e3d]">
+            <label className="flex flex-col gap-2 text-sm text-body">
               <span>Fecha hasta</span>
               <input
                 type="date"
                 name="to"
                 defaultValue={dateTo}
-                className="h-11 rounded-xl border border-[#d9c8c3] bg-[#f5f2f0] px-3 text-[#333] outline-none"
+                className="h-11 rounded-xl border border-line bg-background px-3 text-[#333] outline-none"
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-sm text-[#473e3d]">
+            <label className="flex flex-col gap-2 text-sm text-body">
               <span>Estado</span>
               <select
                 name="status"
                 defaultValue={status}
-                className="h-11 rounded-xl border border-[#d9c8c3] bg-[#f5f2f0] px-3 text-sm text-[#333] outline-none"
+                className="h-11 rounded-xl border border-line bg-background px-3 text-sm text-[#333] outline-none"
               >
                 <option value="">Todos</option>
                 <option value="completada">Completada</option>
@@ -142,7 +142,7 @@ export default async function HistoryPage({
             <div className="flex flex-col gap-2 mt-auto">
               <button
                 type="submit"
-                className="h-11 rounded-xl border border-[#d9c8c3] bg-[#f5f2f0] px-4 text-[#3c3332]"
+                className="h-11 rounded-xl border border-line bg-background px-4 text-foreground"
               >
                 Filtrar
               </button>
@@ -153,30 +153,30 @@ export default async function HistoryPage({
             <div className="mb-4">
               <Link
                 href="/admin/appointments/history"
-                className="text-sm text-[#5a4541] underline"
+                className="text-sm text-body underline"
               >
                 Limpiar filtros
               </Link>
             </div>
           )}
 
-          <div className="overflow-hidden rounded-xl border border-[#d9c8c3] bg-[#f5f1ee]">
+          <div className="overflow-hidden rounded-xl border border-line bg-background">
             <Table className="w-full border-separate border-spacing-0">
-              <TableHeader className="bg-[#efe8e3]">
+              <TableHeader className="bg-surface-soft">
                 <TableRow>
-                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-[#4a423f]">Cliente</TableHead>
-                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-[#4a423f]">Servicio</TableHead>
-                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-[#4a423f]">Fecha</TableHead>
-                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-[#4a423f]">Hora</TableHead>
-                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-[#4a423f]">Estado</TableHead>
-                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-[#4a423f]">Profesional</TableHead>
+                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-body">Cliente</TableHead>
+                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-body">Servicio</TableHead>
+                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-body">Fecha</TableHead>
+                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-body">Hora</TableHead>
+                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-body">Estado</TableHead>
+                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-body">Profesional</TableHead>
                 </TableRow>
               </TableHeader>
 
               <TableBody>
                 {rows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="px-4 py-6 text-center text-[#4a423f]">
+                    <TableCell colSpan={6} className="px-4 py-6 text-center text-body">
                       No hay citas para los filtros actuales.
                     </TableCell>
                   </TableRow>
@@ -185,18 +185,18 @@ export default async function HistoryPage({
                     const meta = getAppointmentStatusMeta(row.status);
 
                     return (
-                      <TableRow key={row.id} className={index % 2 === 0 ? 'bg-[#f6f2ef]' : 'bg-[#f9f6f4]'}>
-                        <TableCell className="px-4 py-4 text-[15px] text-[#2b2b2b]">
+                      <TableRow key={row.id} className={index % 2 === 0 ? 'bg-surface-warm' : 'bg-surface-warm'}>
+                        <TableCell className="px-4 py-4 text-[15px] text-foreground">
                           <Link
                             href={`/admin/appointments/history/${row.id}`}
-                            className="underline decoration-dotted underline-offset-4 hover:text-[#d56572]"
+                            className="underline decoration-dotted underline-offset-4 hover:text-brand"
                           >
                             {row.clientName}
                           </Link>
                         </TableCell>
-                        <TableCell className="px-4 py-4 text-[15px] text-[#2b2b2b]">{row.serviceName}</TableCell>
-                        <TableCell className="px-4 py-4 text-[15px] text-[#2b2b2b]">{formatDate(row.scheduledStart)}</TableCell>
-                        <TableCell className="px-4 py-4 text-[15px] text-[#2b2b2b]">{formatHour(row.scheduledStart)}</TableCell>
+                        <TableCell className="px-4 py-4 text-[15px] text-foreground">{row.serviceName}</TableCell>
+                        <TableCell className="px-4 py-4 text-[15px] text-foreground">{formatDate(row.scheduledStart)}</TableCell>
+                        <TableCell className="px-4 py-4 text-[15px] text-foreground">{formatHour(row.scheduledStart)}</TableCell>
                         <TableCell className="px-4 py-4">
                           <span
                             className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[13px] font-semibold"
@@ -209,7 +209,7 @@ export default async function HistoryPage({
                             {meta.label}
                           </span>
                         </TableCell>
-                        <TableCell className="px-4 py-4 text-[15px] text-[#2b2b2b]">—</TableCell>
+                        <TableCell className="px-4 py-4 text-[15px] text-foreground">—</TableCell>
                       </TableRow>
                     );
                   })
@@ -223,27 +223,27 @@ export default async function HistoryPage({
               {page > 1 ? (
                 <Link
                   href={buildPageUrl(page - 1, status, dateFrom, dateTo)}
-                  className="rounded-lg border border-[#d9c8c3] bg-[#f5f2f0] px-4 py-2 text-sm text-[#3c3332]"
+                  className="rounded-lg border border-line bg-background px-4 py-2 text-sm text-foreground"
                 >
                   Anterior
                 </Link>
               ) : (
-                <span className="rounded-lg border border-[#d9c8c3] bg-[#f5f2f0] px-4 py-2 text-sm text-[#3c3332] opacity-50">
+                <span className="rounded-lg border border-line bg-background px-4 py-2 text-sm text-foreground opacity-50">
                   Anterior
                 </span>
               )}
-              <span className="text-sm text-[#4a423f]">
+              <span className="text-sm text-body">
                 Página {result.page} de {result.totalPages}
               </span>
               {page < result.totalPages ? (
                 <Link
                   href={buildPageUrl(page + 1, status, dateFrom, dateTo)}
-                  className="rounded-lg border border-[#d9c8c3] bg-[#f5f2f0] px-4 py-2 text-sm text-[#3c3332]"
+                  className="rounded-lg border border-line bg-background px-4 py-2 text-sm text-foreground"
                 >
                   Siguiente
                 </Link>
               ) : (
-                <span className="rounded-lg border border-[#d9c8c3] bg-[#f5f2f0] px-4 py-2 text-sm text-[#3c3332] opacity-50">
+                <span className="rounded-lg border border-line bg-background px-4 py-2 text-sm text-foreground opacity-50">
                   Siguiente
                 </span>
               )}

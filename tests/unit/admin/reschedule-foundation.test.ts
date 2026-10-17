@@ -218,7 +218,7 @@ describe('reschedule foundation: availability excludes the appointment itself', 
     expect(times).not.toContain('12:30');
   });
 
-  it('excluye horas de dias pasados solo cuando se pide, sin tocar la reserva publica (FR-003)', async () => {
+  it('excluye horas de dias pasados solo cuando se pide; la reserva publica ya no las ofrece', async () => {
     state.appointments = [];
 
     const yesterday = new Date();
@@ -230,7 +230,9 @@ describe('reschedule foundation: availability excludes the appointment itself', 
     const withoutFilter = await getAvailableSlots(SERVICE_ID, pastKey);
     const withFilter = await getAvailableSlots(SERVICE_ID, pastKey, { excludePast: true });
 
+    // La funcion base sigue sin filtrar por defecto (cada flujo lo decide).
     expect(withoutFilter.length).toBeGreaterThan(0);
+    // Tanto la reserva publica como la reprogramacion piden excludePast.
     expect(withFilter).toEqual([]);
   });
 });

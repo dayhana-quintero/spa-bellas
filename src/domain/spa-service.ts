@@ -79,8 +79,8 @@ export async function getAvailableSlots(
     const startsAt = dateAt(date, start);
     const endsAt = new Date(startsAt.getTime() + duration * 60000);
 
-    // La reprogramacion no ofrece horas que ya pasaron (FR-003); la reserva
-    // publica conserva su comportamiento actual.
+    // Ni la reprogramacion del admin ni la reserva publica ofrecen horas que
+    // ya pasaron (FR-003); la opcion existe para que cada flujo lo controle.
     if (options.excludePast && startsAt.getTime() <= now) continue;
 
     const blocked = availability.adminBlocks.some(
@@ -128,7 +128,12 @@ export async function requestAppointment(input: AppointmentRequestInput): Promis
   }
 
   const requestedStart = new Date(input.startsAt);
-  const slots = await getAvailableSlots(input.serviceId, input.date);
+  // El servidor nunca acepta una hora que ya paso, aunque el formulario la
+  // proponga (la lista publica ya las omite; aqui es defensa en profundidad).
+  if (requestedStart.getTime() <= Date.now()) {
+    throw new Error('Ese horario ya no esta disponible. Selecciona otro horario.');
+  }
+  const slots = await getAvailableSlots(input.serviceId, input.date, { excludePast: true });
   const slot = slots.find((item) => item.startsAt === requestedStart.toISOString());
   if (!slot) {
     throw new Error('Ese horario ya no esta disponible. Selecciona otro horario.');

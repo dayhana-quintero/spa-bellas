@@ -107,33 +107,34 @@ export default function AppointmentSlotPicker({
   }, [onSlotChange, requestKey, selectedSlot, slotData]);
 
   return (
-    <div className="rounded-3xl border border-[#e7d8d3] bg-white p-6 shadow-sm">
+    <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <label className="flex-1 text-sm font-medium text-[#2f2b2b]" htmlFor="slot-date">
+        <label className="flex-1 text-sm font-medium text-foreground" htmlFor="slot-date">
           Fecha de la cita
           <input
             id="slot-date"
             type="date"
             value={date}
             onChange={(event) => onDateChange(event.target.value)}
-            className="mt-2 w-full rounded-xl border border-[#d7c6c2] bg-[#fffaf9] px-3 py-2.5 text-[#1f1b1b] outline-none ring-0 transition focus:border-[#d56572]"
+            className="mt-2 w-full rounded-xl border border-line bg-surface-inset px-3 py-2.5 text-foreground outline-none ring-0 transition focus:border-brand"
           />
         </label>
 
         {service ? (
-          <div className="rounded-2xl bg-[#f8efee] px-4 py-3 text-sm text-[#4a4342]">
-            <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[#7d6966]">
+          <div className="rounded-2xl bg-brand-soft px-4 py-3 text-sm text-body">
+            <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Servicio
             </span>
-            <span className="mt-1 block font-medium text-[#2d2828]">{service.name}</span>
+            <span className="mt-1 block font-medium text-foreground">{service.name}</span>
           </div>
         ) : null}
       </div>
 
       <div className="mt-6">
         {state.statusMessage ? (
-          <p className="rounded-2xl border border-dashed border-[#d7c6c2] bg-[#f9f4f2] px-4 py-3 text-sm text-[#4a4342]">
-            {state.statusMessage}
+          <p className="flex items-start gap-3 rounded-2xl border border-amber/50 bg-amber-soft px-4 py-3.5 text-sm font-medium text-amber-text">
+            <span className="mt-0.5 shrink-0 text-base leading-none" aria-hidden="true">ⓘ</span>
+            <span>{state.statusMessage}</span>
           </p>
         ) : null}
 
@@ -147,11 +148,11 @@ export default function AppointmentSlotPicker({
                 onClick={() => onSlotChange(slot.time)}
                 className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
                   selectedSlot === slot.time
-                    ? 'border-[#d56572] bg-[#fcecf0] text-[#2d2828] shadow-sm'
-                    : 'border-[#e3d5d1] bg-[#fffaf9] text-[#2d2828] hover:border-[#d56572]'
+                    ? 'border-brand bg-brand-soft text-foreground shadow-sm'
+                    : 'border-line bg-surface-inset text-foreground hover:border-brand'
                 }`}
               >
-                <span className="block text-xs uppercase tracking-[0.18em] text-[#7d6966]">Hora</span>
+                <span className="block text-xs uppercase tracking-[0.18em] text-muted-foreground">Hora</span>
                 <span className="mt-2 block text-lg font-semibold">{slot.time}</span>
               </button>
             ))}

@@ -57,22 +57,22 @@ export function InventoryMovementForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl bg-[#efe8e3] p-4">
+    <form onSubmit={handleSubmit} className="rounded-2xl bg-surface-soft p-4">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-[#2b2b2b]">Entrada / salida de stock</h2>
-        <p className="mt-1 text-sm text-[#6a5d5a]">
+        <h2 className="text-lg font-semibold text-foreground">Entrada / salida de stock</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
           Úsalo para sumar o restar unidades de un insumo ya registrado (compra, consumo o corrección).
         </p>
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
-        <label className="flex flex-col gap-2 text-sm text-[#473e3d]">
+        <label className="flex flex-col gap-2 text-sm text-body">
           <span>Insumo</span>
           <select
             required
             value={selectedSupplyId}
             onChange={(event) => setForm((current) => ({ ...current, supplyId: event.target.value }))}
-            className="h-10 rounded-xl border border-[#d9c8c3] bg-[#f9f4f2] px-3"
+            className="h-10 rounded-xl border border-line bg-surface-warm px-3"
           >
             {supplies.length === 0 ? (
               <option value="">Sin insumos</option>
@@ -86,12 +86,12 @@ export function InventoryMovementForm({
           </select>
         </label>
 
-        <label className="flex flex-col gap-2 text-sm text-[#473e3d]">
+        <label className="flex flex-col gap-2 text-sm text-body">
           <span>Tipo</span>
           <select
             value={form.type}
             onChange={(event) => setForm((current) => ({ ...current, type: event.target.value as 'entrada' | 'consumo' | 'correccion' }))}
-            className="h-10 rounded-xl border border-[#d9c8c3] bg-[#f9f4f2] px-3"
+            className="h-10 rounded-xl border border-line bg-surface-warm px-3"
           >
             <option value="entrada">Entrada</option>
             <option value="consumo">Consumo</option>
@@ -99,7 +99,7 @@ export function InventoryMovementForm({
           </select>
         </label>
 
-        <label className="flex flex-col gap-2 text-sm text-[#473e3d]">
+        <label className="flex flex-col gap-2 text-sm text-body">
           <span>Cantidad del movimiento</span>
           <input
             type="number"
@@ -108,16 +108,16 @@ export function InventoryMovementForm({
             aria-label="Cantidad del movimiento"
             value={form.quantity}
             onChange={(event) => setForm((current) => ({ ...current, quantity: Number(event.target.value) }))}
-            className="h-10 rounded-xl border border-[#d9c8c3] bg-[#f9f4f2] px-3"
+            className="h-10 rounded-xl border border-line bg-surface-warm px-3"
           />
         </label>
 
-        <label className="flex flex-col gap-2 text-sm text-[#473e3d]">
+        <label className="flex flex-col gap-2 text-sm text-body">
           <span>Excepción de stock negativo</span>
           <select
             value={form.allowsNegativeStock ? 'si' : 'no'}
             onChange={(event) => setForm((current) => ({ ...current, allowsNegativeStock: event.target.value === 'si' }))}
-            className="h-10 rounded-xl border border-[#d9c8c3] bg-[#f9f4f2] px-3"
+            className="h-10 rounded-xl border border-line bg-surface-warm px-3"
           >
             <option value="no">No</option>
             <option value="si">Sí</option>
@@ -125,14 +125,14 @@ export function InventoryMovementForm({
         </label>
       </div>
 
-      <label className="mt-3 flex flex-col gap-2 text-sm text-[#473e3d]">
+      <label className="mt-3 flex flex-col gap-2 text-sm text-body">
         <span>Motivo</span>
         <textarea
           required
           minLength={3}
           value={form.reason}
           onChange={(event) => setForm((current) => ({ ...current, reason: event.target.value }))}
-          className="min-h-24 rounded-xl border border-[#d9c8c3] bg-[#f9f4f2] p-3"
+          className="min-h-24 rounded-xl border border-line bg-surface-warm p-3"
           placeholder="Compra semanal, uso de tratamiento, ajuste por corte..."
         />
       </label>
@@ -141,11 +141,11 @@ export function InventoryMovementForm({
         <button
           type="submit"
           disabled={isSaving || supplies.length === 0}
-          className="rounded-xl bg-[#1f1f21] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+          className="rounded-xl bg-strong px-4 py-2 text-sm font-semibold text-strong-fg disabled:opacity-50"
         >
           {isSaving ? 'Guardando…' : 'Registrar entrada/salida'}
         </button>
-        {message ? <span className="text-sm text-[#4a423f]">{message}</span> : null}
+        {message ? <span className="text-sm text-body">{message}</span> : null}
       </div>
     </form>
   );

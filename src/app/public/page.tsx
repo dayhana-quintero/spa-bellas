@@ -3,6 +3,7 @@ import Link from 'next/link';
 import InstallAppButton from '../install-app-button';
 import { getPublicCatalog } from '@/domain/services/public-catalog';
 import { formatDuration } from '@/shared/format-duration';
+import { ThemeToggle } from '@/shared/theme/theme-toggle';
 
 const fallbackServices = [
   {
@@ -39,7 +40,7 @@ const fallbackServices = [
   },
 ] as const;
 
-const cardStyles = ['bg-[#f6dfe4]', 'bg-[#f2ebdf]', 'bg-[#f4dfe6]', 'bg-[#f3e8e4]'];
+const cardStyles = ['bg-brand-soft', 'bg-surface-soft', 'bg-brand-soft', 'bg-surface-soft'];
 
 function ServiceIcon({ variant }: { variant: 'leaf' | 'spark' | 'wave' | 'hand' }) {
   const common = {
@@ -96,48 +97,31 @@ export default async function PublicPage() {
   const displayServices = services.length > 0 ? services : fallbackServices;
 
   return (
-    <main className="min-h-screen bg-[#f6f1ef] text-[#2b2b2b]">
-      <header className="border-b border-[#e5d8d5] bg-[#f5f2f1]">
+    <main className="min-h-screen bg-background text-foreground">
+      <header className="border-b border-line bg-background">
         <nav aria-label="Navegación principal" className="mx-auto flex max-w-[1600px] items-center justify-between px-5 py-3 sm:px-6">
-          <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.26em] text-[#332d2d]">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#d7c8c4] bg-[#f8f3f1] text-[10px] text-[#af7b7d]">
+          <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.26em] text-foreground">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-line bg-surface-warm text-[10px] text-brand">
               ✦
             </span>
             <span>BELLAS</span>
-            <span className="text-[#b9a6a0]">•</span>
-            <span className="normal-case tracking-[0.08em] text-[#6a5e5b]">Panel del spa</span>
+            <span className="text-muted-foreground">•</span>
+            <span className="normal-case tracking-[0.08em] text-muted-foreground">Panel del spa</span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <button type="button" className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e0d2cf] bg-white text-[#2f2a2a] shadow-sm">
-              ◔
-            </button>
-            <button type="button" className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e0d2cf] bg-white text-[#2f2a2a] shadow-sm">
-              ☾
-            </button>
-            <button type="button" className="rounded-full border border-[#e0d2cf] bg-white px-3 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[#2f2a2a] shadow-sm">
-              Chat
-            </button>
-            <button type="button" className="rounded-full border border-[#e0d2cf] bg-[#f5eeec] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[#2f2a2a] shadow-sm">
-              Exportar
-            </button>
+            <ThemeToggle className="h-9 w-9 rounded-full border border-line-soft bg-surface text-foreground shadow-sm hover:bg-surface-hover" />
             <InstallAppButton />
-            <Link
-              href="/admin"
-              className="rounded-full bg-[#202021] px-4 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-white shadow-sm"
-            >
-              Volver al panel
-            </Link>
           </div>
         </nav>
       </header>
 
-      <section className="flex min-h-[400px] items-center justify-center bg-[#141414] px-6 py-14 text-white">
+      <section className="flex min-h-[360px] items-center justify-center bg-strong px-6 py-14 text-strong-fg">
         <div className="text-center">
-          <h1 className="font-serif text-[4.5rem] leading-[0.9] tracking-[-0.09em] text-[#f0efed] sm:text-[6.5rem] md:text-[9rem]">
+          <h1 className="font-serif text-[3.5rem] leading-[0.95] tracking-[0.16em] [text-indent:0.16em] text-strong-fg sm:text-[5rem] md:text-[7rem]">
             BELLAS
           </h1>
-          <p className="mt-4 text-xl font-light tracking-[0.02em] text-[#eee8e5] md:text-2xl">
+          <p className="mt-5 text-lg font-light tracking-[0.02em] text-strong-fg/80 md:text-xl">
             Un momento solo para ti.
           </p>
         </div>
@@ -145,39 +129,39 @@ export default async function PublicPage() {
 
       <section className="mx-auto max-w-[1280px] px-6 py-14 md:py-20">
         <div className="mb-8 flex flex-col gap-2">
-          <h2 className="font-serif text-[3rem] leading-none text-[#7d3042] md:text-[4rem]">
+          <h2 className="font-serif text-[3rem] leading-none text-danger md:text-[4rem]">
             Nuestros servicios
           </h2>
-          <p className="text-lg text-[#4a3f3d]">Elige el que prefieras y reserva tu horario.</p>
+          <p className="text-lg text-body">Elige el que prefieras y reserva tu horario.</p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {displayServices.map((service, index) => (
             <article
               key={service.id}
-              className={`rounded-[24px] border border-[#e7d7d1] p-5 shadow-sm ${cardStyles[index % cardStyles.length]}`}
+              className={`rounded-[24px] border border-line p-5 shadow-sm ${cardStyles[index % cardStyles.length]}`}
             >
-              <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full border border-[#dcb7bc] bg-[#f8f1f2]">
+              <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full border border-line bg-surface-warm">
                 <ServiceIcon variant={index === 0 ? 'leaf' : index === 1 ? 'spark' : index === 2 ? 'wave' : 'hand'} />
               </div>
 
-              <h3 className="mt-6 text-[1.75rem] font-medium leading-tight text-[#2d2a2a]">
+              <h3 className="mt-6 text-[1.75rem] font-medium leading-tight text-foreground">
                 {service.name}
               </h3>
 
-              <p className="mt-3 text-[1.02rem] leading-7 text-[#4a4140]">
+              <p className="mt-3 text-[1.02rem] leading-7 text-body">
                 {service.description}
               </p>
 
-              <div className="mt-6 flex items-end justify-between gap-2 border-t border-[#d9c8c3] pt-4 text-[#383232]">
+              <div className="mt-6 flex items-end justify-between gap-2 border-t border-line pt-4 text-foreground">
                 <span className="text-[1.08rem] font-semibold">{service.priceDisplay}</span>
-                <span className="text-[0.96rem] text-[#514947]">{formatDuration(service.estimatedDuration ?? 60)}</span>
+                <span className="text-[0.96rem] text-body">{formatDuration(service.estimatedDuration ?? 60)}</span>
               </div>
 
               <div className="mt-6 flex justify-center">
                 <Link
                   href={`/public/appointments?serviceId=${service.id}`}
-                  className="inline-flex rounded-full bg-[#e6b6c0] px-6 py-2.5 text-sm font-medium text-[#2e2929] transition hover:bg-[#e0a7b3]"
+                  className="inline-flex rounded-full bg-brand-btn px-6 py-2.5 text-sm font-medium text-foreground transition hover:bg-brand-btn-hover"
                 >
                   Solicitar cita
                 </Link>
@@ -186,6 +170,15 @@ export default async function PublicPage() {
           ))}
         </div>
       </section>
+
+      <footer className="border-t border-line bg-background">
+        <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-3 px-6 py-6 text-[11px] uppercase tracking-[0.18em] text-muted-foreground sm:flex-row">
+          <span>Bellas spa</span>
+          <Link href="/admin" className="transition hover:text-foreground">
+            Administrador
+          </Link>
+        </div>
+      </footer>
     </main>
   );
 }

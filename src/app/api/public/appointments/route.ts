@@ -4,7 +4,7 @@ export async function POST(request: Request) {
   try {
     const input = await request.json();
     if (!input.startsAt && input.date && input.slot) {
-      const slots = await getAvailableSlots(input.serviceId, input.date);
+      const slots = await getAvailableSlots(input.serviceId, input.date, { excludePast: true });
       const availableSlot = slots.find((slot) => slot.time === input.slot);
       if (!availableSlot) throw new Error('Ese horario ya no está disponible. Selecciona otro horario.');
       input.startsAt = availableSlot.startsAt;
