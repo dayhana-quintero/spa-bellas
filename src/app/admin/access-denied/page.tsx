@@ -45,12 +45,6 @@ export default async function AccessDeniedPage({
           >
             Iniciar sesión
           </Link>
-          <Link
-            href="/"
-            className="inline-flex rounded-xl border border-line bg-surface px-4 py-3 font-semibold text-foreground transition hover:bg-background"
-          >
-            Volver al inicio
-          </Link>
         </div>
       </div>
     </main>

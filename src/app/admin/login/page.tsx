@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -102,13 +101,6 @@ export default function AdminLoginPage() {
             {isSubmitting ? 'Validando...' : 'Entrar al panel'}
           </button>
         </form>
-
-        <div className="mt-6 text-center text-sm text-body">
-          ¿No tienes acceso?{' '}
-          <Link href="/" className="font-semibold text-brand underline-offset-4 hover:underline">
-            Volver al sitio público
-          </Link>
-        </div>
       </div>
     </main>
   );

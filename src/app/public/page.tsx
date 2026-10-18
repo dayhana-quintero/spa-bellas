@@ -172,11 +172,8 @@ export default async function PublicPage() {
       </section>
 
       <footer className="border-t border-line bg-background">
-        <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-3 px-6 py-6 text-[11px] uppercase tracking-[0.18em] text-muted-foreground sm:flex-row">
+        <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-6 py-6 text-[11px] uppercase tracking-[0.18em] text-muted-foreground sm:flex-row">
           <span>Bellas spa</span>
-          <Link href="/admin" className="transition hover:text-foreground">
-            Administrador
-          </Link>
         </div>
       </footer>
     </main>

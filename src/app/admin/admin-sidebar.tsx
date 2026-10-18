@@ -78,13 +78,6 @@ function AdminSidebarInner({ pendingCount }: AdminSidebarProps) {
 
       <div className="mt-auto border-t border-white/10 pt-4 flex flex-col gap-2">
         <LogoutButton />
-        <Link
-          href="/"
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 py-3 text-[15px] font-medium text-sidebar-text transition hover:bg-white/5"
-        >
-          <span>◐</span>
-          <span>Ver como cliente</span>
-        </Link>
       </div>
     </aside>
   );
