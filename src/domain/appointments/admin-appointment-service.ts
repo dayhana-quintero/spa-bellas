@@ -16,7 +16,7 @@ const allowedTransitions: Record<Appointment['status'], Appointment['status'][]>
   completada: [],
   'no asistio': [],
   'reprogramacion solicitada': ['reprogramada', 'cancelada'],
-  reprogramada: [],
+  reprogramada: ['confirmada', 'vencida'],
 };
 
 export function updateAppointmentStatus(input: AdminAppointmentAction): Appointment['status'] {

@@ -30,7 +30,7 @@ export default async function AdminAppointmentDetailRoute({
     return (
       <main className="flex min-h-screen items-center justify-center bg-background px-6 py-10">
         <div className="rounded-3xl border border-line bg-surface p-8 text-center shadow-sm">
-          <h1 className="font-serif text-4xl text-brand">Cita no encontrada</h1>
+          <h1 className="font-serif text-4xl text-foreground">Cita no encontrada</h1>
           <Link href="/admin/appointments/pending" className="mt-6 inline-block rounded-xl bg-strong px-4 py-2.5 text-strong-fg">
             Volver a pendientes
           </Link>
@@ -50,7 +50,7 @@ export default async function AdminAppointmentDetailRoute({
           ← Volver a pendientes
         </Link>
 
-        <h1 className="mt-6 font-serif text-5xl text-brand">Detalle de cita</h1>
+        <h1 className="mt-6 font-serif text-5xl text-foreground">Detalle de cita</h1>
 
         {/* Cita destacada */}
         <article className="mt-6 rounded-2xl border border-line bg-surface p-5 shadow-sm">
@@ -133,7 +133,7 @@ export default async function AdminAppointmentDetailRoute({
         </div>
 
         <div className="mt-8 rounded-2xl border border-line bg-surface-warm p-5">
-          <h2 className="font-serif text-2xl text-brand">Historial de estados</h2>
+          <h2 className="font-serif text-2xl text-foreground">Historial de estados</h2>
           {detail.history.length === 0 ? (
             <p className="mt-3 text-sm text-body">Todavía no hay cambios de estado registrados.</p>
           ) : (
@@ -153,7 +153,7 @@ export default async function AdminAppointmentDetailRoute({
         </div>
 
         <div className="mt-8 rounded-2xl border border-line bg-surface-warm p-5">
-          <h2 className="font-serif text-2xl text-brand">Historial de WhatsApp</h2>
+          <h2 className="font-serif text-2xl text-foreground">Historial de WhatsApp</h2>
           {detail.communicationRecords.length === 0 ? (
             <p className="mt-3 text-sm text-body">Todavía no hay registros de contacto por WhatsApp para esta cita.</p>
           ) : (

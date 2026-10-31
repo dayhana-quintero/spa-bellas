@@ -51,19 +51,13 @@ export default function InventoryPage() {
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Bellas · Panel del spa
           </div>
-
-          <div className="flex items-center gap-2.5">
-            <a href="/admin" className="rounded-xl border border-line bg-surface-warm px-3 py-2 text-sm font-medium text-body hover:bg-surface-soft">
-              Volver al panel
-            </a>
-          </div>
         </div>
 
         <div className="h-[calc(100vh-120px)] overflow-y-auto rounded-[28px] bg-background p-5 shadow-[0_0_0_1px_rgba(104,76,72,0.03)]">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div className="min-w-0 flex-1">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Inventario</p>
-              <h1 className="mt-2 font-serif text-[40px] leading-[0.96] tracking-[-0.04em] text-brand sm:text-[44px] lg:text-[48px]">
+              <h1 className="mt-2 font-serif text-[40px] leading-[0.96] tracking-[-0.04em] text-foreground sm:text-[44px] lg:text-[48px]">
                 Insumos del spa
               </h1>
             </div>
@@ -83,7 +77,7 @@ export default function InventoryPage() {
               <p className="mt-3 text-3xl font-bold text-foreground">{formatNumber(totalAvailable)}</p>
             </div>
             <div className="rounded-2xl border border-line bg-brand-soft p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Revisión</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Por reponer</p>
               <p className="mt-3 text-3xl font-bold text-danger">{lowStockCount}</p>
             </div>
           </div>

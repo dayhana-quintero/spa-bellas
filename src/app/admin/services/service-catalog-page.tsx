@@ -156,7 +156,7 @@ export default function AdminServicesCatalogPage() {
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Catálogo</p>
-            <h1 className="mt-2 font-serif text-[48px] leading-[0.96] text-brand">Servicios del spa</h1>
+            <h1 className="mt-2 font-serif text-[48px] leading-[0.96] text-foreground">Servicios del spa</h1>
             <p className="mt-2 text-[16px] text-body">Crea, edita y gestiona los servicios disponibles.</p>
           </div>
           <div className="rounded-xl bg-surface-soft px-4 py-2 text-sm text-body">

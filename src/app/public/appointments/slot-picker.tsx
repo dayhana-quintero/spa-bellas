@@ -22,6 +22,11 @@ type AppointmentSlotPickerProps = {
    * que excluye la propia cita del calculo de ocupacion.
    */
   slotsEndpoint?: string;
+  /**
+   * Presentacion: `card` (panel administrativo) o `steps` (reserva publica,
+   * bloques numerados 2-Dia y 3-Hora al estilo del flujo guiado).
+   */
+  variant?: 'card' | 'steps';
 };
 
 export function buildSlotPickerState({
@@ -60,6 +65,10 @@ export function buildSlotPickerState({
   };
 }
 
+const stepCircleClass =
+  'grid h-[34px] w-[34px] shrink-0 place-items-center rounded-full bg-pink text-sm font-bold text-on-pink';
+const stepTitleClass = 'self-center text-base font-bold text-foreground';
+
 export default function AppointmentSlotPicker({
   service,
   serviceId,
@@ -68,6 +77,7 @@ export default function AppointmentSlotPicker({
   onDateChange,
   onSlotChange,
   slotsEndpoint,
+  variant = 'card',
 }: AppointmentSlotPickerProps) {
   const [slotData, setSlotData] = useState<{ key: string; slots: Array<{ time: string }> }>({ key: '', slots: [] });
   const requestKey = slotsEndpoint ?? `${serviceId}:${date}`;
@@ -106,6 +116,89 @@ export default function AppointmentSlotPicker({
     }
   }, [onSlotChange, requestKey, selectedSlot, slotData]);
 
+  const statusMessageElement = state.statusMessage ? (
+    <p className="flex items-start gap-3 rounded-2xl border border-amber/50 bg-amber-soft px-4 py-3.5 text-sm font-medium text-amber-text">
+      <span className="mt-0.5 shrink-0 text-base leading-none" aria-hidden="true">ⓘ</span>
+      <span>{state.statusMessage}</span>
+    </p>
+  ) : null;
+
+  const slotsGrid = state.hasAvailableSlots ? (
+    <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {slots.map((slot) => (
+        <button
+          key={slot.time}
+          type="button"
+          aria-pressed={selectedSlot === slot.time}
+          onClick={() => onSlotChange(slot.time)}
+          className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
+            selectedSlot === slot.time
+              ? 'border-brand bg-brand-soft text-foreground shadow-sm'
+              : 'border-line bg-surface-inset text-foreground hover:border-brand'
+          }`}
+        >
+          <span className="block text-xs uppercase tracking-[0.18em] text-muted-foreground">Hora</span>
+          <span className="mt-2 block text-lg font-semibold">{slot.time}</span>
+        </button>
+      ))}
+    </div>
+  ) : null;
+
+  const stepsSlotsGrid = state.hasAvailableSlots ? (
+    <div className="mt-4 grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
+      {slots.map((slot) => (
+        <button
+          key={slot.time}
+          type="button"
+          aria-pressed={selectedSlot === slot.time}
+          onClick={() => onSlotChange(slot.time)}
+          className={`min-h-11 rounded-xl border px-4 py-2.5 text-left transition ${
+            selectedSlot === slot.time
+              ? 'border-pink-deep bg-pink text-on-pink'
+              : 'border-line bg-surface text-foreground hover:border-pink-deep hover:bg-pink-soft'
+          }`}
+        >
+          <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] opacity-70">
+            Hora
+          </span>
+          <span className="mt-0.5 block text-base font-semibold">{slot.time}</span>
+        </button>
+      ))}
+    </div>
+  ) : null;
+
+  if (variant === 'steps') {
+    return (
+      <div className="mt-7 space-y-7">
+        <section aria-label="Paso 2: día" className="grid grid-cols-[34px_minmax(0,1fr)] gap-x-4 gap-y-2">
+          <span aria-hidden className={stepCircleClass}>2</span>
+          <h2 className={stepTitleClass}>Día</h2>
+          <div className="col-start-2">
+            <label className="block text-sm font-medium text-foreground" htmlFor="slot-date">
+              Fecha de la cita
+              <input
+                id="slot-date"
+                type="date"
+                value={date}
+                onChange={(event) => onDateChange(event.target.value)}
+                className="mt-2 min-h-11 w-full rounded-xl border border-line bg-surface px-3 text-foreground outline-none transition focus:border-pink-deep"
+              />
+            </label>
+          </div>
+        </section>
+
+        <section aria-label="Paso 3: hora" className="grid grid-cols-[34px_minmax(0,1fr)] gap-x-4 gap-y-2">
+          <span aria-hidden className={stepCircleClass}>3</span>
+          <h2 className={stepTitleClass}>Hora</h2>
+          <div className="col-start-2">
+            {statusMessageElement}
+            {stepsSlotsGrid}
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -131,33 +224,8 @@ export default function AppointmentSlotPicker({
       </div>
 
       <div className="mt-6">
-        {state.statusMessage ? (
-          <p className="flex items-start gap-3 rounded-2xl border border-amber/50 bg-amber-soft px-4 py-3.5 text-sm font-medium text-amber-text">
-            <span className="mt-0.5 shrink-0 text-base leading-none" aria-hidden="true">ⓘ</span>
-            <span>{state.statusMessage}</span>
-          </p>
-        ) : null}
-
-        {state.hasAvailableSlots ? (
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {slots.map((slot) => (
-              <button
-                key={slot.time}
-                type="button"
-                aria-pressed={selectedSlot === slot.time}
-                onClick={() => onSlotChange(slot.time)}
-                className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
-                  selectedSlot === slot.time
-                    ? 'border-brand bg-brand-soft text-foreground shadow-sm'
-                    : 'border-line bg-surface-inset text-foreground hover:border-brand'
-                }`}
-              >
-                <span className="block text-xs uppercase tracking-[0.18em] text-muted-foreground">Hora</span>
-                <span className="mt-2 block text-lg font-semibold">{slot.time}</span>
-              </button>
-            ))}
-          </div>
-        ) : null}
+        {statusMessageElement}
+        {slotsGrid}
       </div>
     </div>
   );

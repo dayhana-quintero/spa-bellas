@@ -13,7 +13,7 @@ const allowedTransitions: Record<AppointmentStatus, AppointmentStatus[]> = {
   completada: [],
   'no asistio': [],
   'reprogramacion solicitada': ['reprogramada', 'cancelada'],
-  reprogramada: ['confirmada'],
+  reprogramada: ['confirmada', 'vencida'],
 };
 
 // Estados desde los cuales una cita puede moverse a otro horario (FR-001/FR-012).

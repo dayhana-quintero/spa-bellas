@@ -7,6 +7,7 @@ import { createId } from '@/shared/id';
 import { canTransitionStatus } from '@/domain/appointments/appointment-state-machine';
 import { validateServiceCatalog } from '@/domain/services/service-catalog-rules';
 import {
+  expireStaleAppointmentsInSupabase,
   findClientByPhoneFromSupabase,
   getAvailabilitySettingsFromSupabase,
   getServiceFromSupabase,
@@ -196,6 +197,17 @@ export async function requestAppointment(input: AppointmentRequestInput): Promis
 export async function listAppointmentsForAdmin(
   filters: { status?: string; from?: string; to?: string; client?: string; service?: string } = {},
 ) {
+  // Antes de listar se resuelven las citas caducadas: pendientes sin
+  // confirmar cuyo hold vencio y reprogramadas cuya nueva hora ya paso
+  // (pasan a "vencida"), para que pendientes, dashboard, historial y badge
+  // del sidebar nunca las muestren activas. Un fallo aquí no debe impedir
+  // leer el listado.
+  try {
+    await expireStaleAppointmentsInSupabase(new Date());
+  } catch (error) {
+    console.error('No se pudieron vencer las citas caducadas:', error instanceof Error ? error.message : error);
+  }
+
   return listAppointmentsFromSupabase(filters);
 }
 

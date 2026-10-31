@@ -87,7 +87,7 @@ export default async function HistoryPage({
         </div>
 
         <div className="rounded-[22px] bg-background p-6">
-          <h1 className="font-serif text-[52px] font-bold leading-[1.1] text-brand">Historial de citas</h1>
+          <h1 className="font-serif text-[40px] leading-[0.96] tracking-[-0.04em] text-foreground sm:text-[44px] lg:text-[48px]">Historial de citas</h1>
           <p className="mt-4 mb-6 text-lg text-body">Todas las citas realizadas, con su estado.</p>
 
           <div className="mb-5 flex items-center gap-3 rounded-xl bg-surface-soft px-5 py-4">
@@ -169,14 +169,13 @@ export default async function HistoryPage({
                   <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-body">Fecha</TableHead>
                   <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-body">Hora</TableHead>
                   <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-body">Estado</TableHead>
-                  <TableHead className="px-4 py-3.5 text-left text-sm font-bold text-body">Profesional</TableHead>
                 </TableRow>
               </TableHeader>
 
               <TableBody>
                 {rows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="px-4 py-6 text-center text-body">
+                    <TableCell colSpan={5} className="px-4 py-6 text-center text-body">
                       No hay citas para los filtros actuales.
                     </TableCell>
                   </TableRow>
@@ -209,7 +208,6 @@ export default async function HistoryPage({
                             {meta.label}
                           </span>
                         </TableCell>
-                        <TableCell className="px-4 py-4 text-[15px] text-foreground">—</TableCell>
                       </TableRow>
                     );
                   })

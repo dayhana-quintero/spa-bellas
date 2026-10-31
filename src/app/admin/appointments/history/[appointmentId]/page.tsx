@@ -29,7 +29,7 @@ export default async function AppointmentHistoryDetailPage({
   if (!detail) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-8">
-        <h1 className="font-serif text-4xl text-brand">Cita no encontrada</h1>
+        <h1 className="font-serif text-4xl text-foreground">Cita no encontrada</h1>
         <Link href="/admin/appointments/history" className="rounded-xl bg-strong px-4 py-2 text-strong-fg">
           Volver al historial
         </Link>
@@ -50,7 +50,7 @@ export default async function AppointmentHistoryDetailPage({
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Detalle de cita</p>
-            <h1 className="mt-2 font-serif text-4xl text-brand">#{appointment.id.slice(0, 8)}</h1>
+            <h1 className="mt-2 font-serif text-4xl text-foreground">#{appointment.id.slice(0, 8)}</h1>
           </div>
           <span
             className="inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold"

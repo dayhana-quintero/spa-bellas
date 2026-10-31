@@ -117,7 +117,7 @@ export default async function AdminDashboardPage() {
 
       <div className="grid gap-5 xl:grid-cols-2">
         <nav className="rounded-[22px] border border-line bg-surface-warm p-5">
-          <h2 className="font-serif text-[28px] text-brand">Acceso rápido</h2>
+          <h2 className="font-serif text-[28px] text-foreground">Acceso rápido</h2>
           <div className="mt-4 grid gap-3">
             <Link
               href="/admin/appointments/pending"
@@ -155,7 +155,7 @@ export default async function AdminDashboardPage() {
 
         <div className="rounded-[22px] border border-line bg-surface-warm p-5">
           <div className="flex items-baseline justify-between gap-3">
-            <h2 className="font-serif text-[28px] text-brand">Citas de hoy</h2>
+            <h2 className="font-serif text-[28px] text-foreground">Citas de hoy</h2>
             <p className="text-sm text-muted-foreground">
               {todayAppointments.length === 0
                 ? 'Sin reservas'

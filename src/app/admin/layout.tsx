@@ -6,6 +6,7 @@ import { readAdminSessionFromCookie } from '@/shared/auth';
 import AdminSidebar from './admin-sidebar';
 import { AdminSessionGuard } from './admin-session-guard';
 import { AdminThemeToggle } from './admin-theme-toggle';
+import AdminAutoRefresh from './auto-refresh';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
@@ -28,18 +29,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="flex h-screen overflow-hidden bg-background text-foreground">
-      {accessResult.isAllowed ? (
-        <AdminSidebar pendingCount={pendingCount} />
-      ) : (
-        <aside className="flex w-64 shrink-0 flex-col bg-sidebar px-4 py-5 text-sidebar-foreground">
-          <div className="font-serif text-[44px] font-bold leading-[0.72] tracking-[0.02em] text-sidebar-text">
-            BELLAS
-          </div>
-          <div className="mt-1 text-[14px] text-sidebar-muted">Panel del spa</div>
-        </aside>
-      )}
+      {/* El sidebar solo aparece con sesión iniciada; login y access-denied van a pantalla completa. */}
+      {accessResult.isAllowed ? <AdminSidebar pendingCount={pendingCount} /> : null}
       <div className="relative flex flex-1 flex-col overflow-hidden">
         <AdminThemeToggle />
+        {/* El panel se refresca solo para reflejar altas hechas desde el area publica. */}
+        {accessResult.isAllowed ? <AdminAutoRefresh /> : null}
         <AdminSessionGuard accessResult={accessResult}>
           {children}
         </AdminSessionGuard>

@@ -28,6 +28,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* Captura beforeinstallprompt antes de que React hidrate: el
+            navegador lo dispara una sola vez por navegación y, si nadie lo
+            escucha a tiempo, el botón de descarga nunca se muestra. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__bellasInstallPrompt=e;});",
+          }}
+        />
         <ThemeProvider>
           {children}
           <RegisterSW />

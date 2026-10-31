@@ -78,6 +78,16 @@
   --color-amber-soft: var(--amber-soft);
   --color-on-pastel: var(--on-pastel);
 
+  /* ===== Vista cliente (showcase) ===== */
+  --font-display: var(--font-display);
+  --color-night: #151515;
+  --color-night-soft: #bdb6b9;
+  --color-pink: var(--pink);
+  --color-pink-deep: var(--pink-deep);
+  --color-pink-soft: var(--pink-soft);
+  --color-on-pink: var(--on-pink);
+  --color-cherry: var(--cherry);
+
   /* Píldoras de estado de cita */
   --color-st-pend: var(--st-pend-bg);
   --color-st-pend-ink: var(--st-pend-fg);
@@ -177,6 +187,13 @@
 
   /* Pasteles constantes (insignias) */
   --on-pastel: #1d1a1a;
+
+  /* --- Showcase (vista cliente) --- */
+  --pink: #f4c6d0;
+  --pink-deep: #e9a9b9;
+  --pink-soft: #fbe6eb;
+  --on-pink: #2a1418;
+  --cherry: #a61b2b;
 
   /* --- Píldoras de estado (bandeja y controles) --- */
   --st-pend-bg: #f5eddc;
@@ -295,6 +312,9 @@
 
   --on-pastel: #1d1a1a;
 
+  /* --- Showcase: solo el rojo de titulos se aclara; los pasteles son constantes --- */
+  --cherry: #ff8390;
+
   /* --- Píldoras de estado --- */
   --st-pend-bg: #332c1b;
   --st-pend-fg: #e0c48c;
@@ -358,6 +378,24 @@
 
 .spa-float {
   animation: spa-float 3s ease-in-out infinite;
+}
+
+/* Logo BELLAS de la vista cliente: serif display con relleno plateado. */
+.logo-silver {
+  font-family: var(--font-display, Georgia, 'Times New Roman', serif);
+  background: linear-gradient(100deg, #8c919a 0%, #f6f7f9 26%, #a3a8b1 50%, #eef0f3 74%, #8a8f98 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+
+@supports not (background-clip: text) {
+  .logo-silver {
+    color: #cfd2d8;
+    -webkit-text-fill-color: #cfd2d8;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

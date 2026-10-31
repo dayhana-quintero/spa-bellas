@@ -33,7 +33,7 @@ export function PendingAppointmentsPage({ appointments }: { appointments: Appoin
 
   return (
     <section className="rounded-2xl border border-line bg-surface p-6 shadow-sm">
-      <h2 className="font-serif text-3xl text-brand">Citas pendientes</h2>
+      <h2 className="font-serif text-3xl text-foreground">Citas pendientes</h2>
       <ul className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
         {pending.map((appointment) => {
           const enriched = appointment as Appointment & {

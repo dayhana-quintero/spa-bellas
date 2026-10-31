@@ -320,23 +320,38 @@ export async function rescheduleAppointmentInSupabase(input: {
   };
 }
 
-export async function expireAppointmentHoldsInSupabase(now = new Date()) {
+// Resuelve las citas caducadas: pendientes cuyo hold vencio sin confirmacion
+// y reprogramadas cuya nueva hora ya paso. Devuelve el total de citas
+// actualizadas a "vencida".
+export async function expireStaleAppointmentsInSupabase(now = new Date()) {
   const supabase = getSupabaseAdminClient();
   if (!supabase) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY para actualizar citas vencidas.');
 
-  const { data, error } = await supabase
+  const { data: expiredHolds, error: holdError } = await supabase
     .from('appointments')
     .update({ status: 'vencida', updated_at: now.toISOString() })
     .eq('status', 'pendiente')
     .lte('hold_expires_at', now.toISOString())
     .select('id');
 
-  if (error) {
-    console.error('Supabase appointment hold expiration failed:', error.message);
+  if (holdError) {
+    console.error('Supabase appointment hold expiration failed:', holdError.message);
     throw new Error('No se pudieron actualizar las citas vencidas en Supabase.');
   }
 
-  return data?.length ?? 0;
+  const { data: expiredReschedules, error: rescheduleError } = await supabase
+    .from('appointments')
+    .update({ status: 'vencida', updated_at: now.toISOString() })
+    .eq('status', 'reprogramada')
+    .lte('scheduled_start', now.toISOString())
+    .select('id');
+
+  if (rescheduleError) {
+    console.error('Supabase reprogramada expiration failed:', rescheduleError.message);
+    throw new Error('No se pudieron actualizar las citas reprogramadas vencidas en Supabase.');
+  }
+
+  return (expiredHolds?.length ?? 0) + (expiredReschedules?.length ?? 0);
 }
 
 export async function saveWhatsAppCommunicationToSupabase(input: {

@@ -1,6 +1,8 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 import InstallAppButton from '../install-app-button';
+import { serviceImageSrc } from '@/shared/services/service-images';
 import { getPublicCatalog } from '@/domain/services/public-catalog';
 import { formatDuration } from '@/shared/format-duration';
 import { ThemeToggle } from '@/shared/theme/theme-toggle';
@@ -40,18 +42,24 @@ const fallbackServices = [
   },
 ] as const;
 
-const cardStyles = ['bg-brand-soft', 'bg-surface-soft', 'bg-brand-soft', 'bg-surface-soft'];
+const thumbnailGradients = [
+  'linear-gradient(140deg,#FBE6EB,#F4C6D0)',
+  'linear-gradient(140deg,#FBF5EE,#F5EBDD)',
+  'linear-gradient(140deg,#F4C6D0,#FBF5EE)',
+  'linear-gradient(140deg,#F5EBDD,#FBE6EB)',
+];
 
-function ServiceIcon({ variant }: { variant: 'leaf' | 'spark' | 'wave' | 'hand' }) {
+function ServiceIcon({ variant, size = 40 }: { variant: 'leaf' | 'spark' | 'wave' | 'hand'; size?: number }) {
   const common = {
-    width: 58,
-    height: 58,
+    width: size,
+    height: size,
     viewBox: '0 0 80 80',
     fill: 'none',
-    stroke: '#a85d6c',
+    stroke: 'currentColor',
     strokeWidth: 2.5,
     strokeLinecap: 'round' as const,
     strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
   };
 
   if (variant === 'leaf') {
@@ -91,6 +99,7 @@ function ServiceIcon({ variant }: { variant: 'leaf' | 'spark' | 'wave' | 'hand' 
   );
 }
 
+const iconVariants = ['leaf', 'spark', 'wave', 'hand'] as const;
 
 export default async function PublicPage() {
   const services = await getPublicCatalog();
@@ -98,82 +107,176 @@ export default async function PublicPage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-line bg-background">
-        <nav aria-label="Navegación principal" className="mx-auto flex max-w-[1600px] items-center justify-between px-5 py-3 sm:px-6">
-          <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.26em] text-foreground">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-line bg-surface-warm text-[10px] text-brand">
-              ✦
-            </span>
-            <span>BELLAS</span>
-            <span className="text-muted-foreground">•</span>
-            <span className="normal-case tracking-[0.08em] text-muted-foreground">Panel del spa</span>
-          </div>
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-night/95 backdrop-blur">
+        <nav
+          aria-label="Navegación principal"
+          className="mx-auto flex max-w-[1120px] items-center justify-between gap-3 px-5 py-3 sm:px-6"
+        >
+          <Link
+            href="/public"
+            className="logo-silver text-[28px] font-semibold tracking-[0.2em]"
+          >
+            BELLAS
+          </Link>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            <ThemeToggle className="h-9 w-9 rounded-full border border-line-soft bg-surface text-foreground shadow-sm hover:bg-surface-hover" />
+          <div className="flex items-center gap-1 sm:gap-2">
+            <a
+              href="#servicios"
+              className="hidden rounded-lg px-3 py-2 text-sm text-night-soft transition hover:text-pink sm:block"
+            >
+              Servicios
+            </a>
+            <Link
+              href="#horarios"
+              className="hidden rounded-lg px-3 py-2 text-sm text-night-soft transition hover:text-pink sm:block"
+            >
+              Horarios
+            </Link>
+            <Link
+              href="/public/appointments"
+              className="rounded-xl bg-pink px-4 py-2 text-sm font-semibold text-on-pink transition hover:bg-pink-deep"
+            >
+              Reservar
+            </Link>
+            <ThemeToggle className="ml-1 h-9 w-9 rounded-full border border-white/20 bg-transparent text-[#f4eef0] hover:bg-white/10" />
             <InstallAppButton />
           </div>
         </nav>
       </header>
 
-      <section className="flex min-h-[360px] items-center justify-center bg-strong px-6 py-14 text-strong-fg">
-        <div className="text-center">
-          <h1 className="font-serif text-[3.5rem] leading-[0.95] tracking-[0.16em] [text-indent:0.16em] text-strong-fg sm:text-[5rem] md:text-[7rem]">
+      <section className="relative overflow-hidden bg-night text-[#f4eef0]">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(800px_520px_at_82%_25%,rgba(244,198,208,0.24),transparent_62%)]"
+        />
+        <div className="relative mx-auto grid max-w-[1120px] items-center gap-12 px-5 py-14 sm:px-6 md:grid-cols-[1.15fr_0.85fr] md:py-20">
+          <div>
+            <h1 className="logo-silver text-[clamp(64px,12vw,132px)] font-semibold leading-none tracking-[0.14em]">
+              BELLAS<span className="sr-only">, spa y centro de estética</span>
+            </h1>
+            <p className="mt-8 font-display text-[clamp(26px,3.4vw,38px)] font-medium leading-tight">
+              Un momento solo para ti
+            </p>
+            <p className="mt-4 max-w-[44ch] text-base text-night-soft">
+              Masajes, faciales y cuidado del cabello en un espacio tranquilo. Reserva en línea y
+              te confirmamos por mensaje.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link
+                href="/public/appointments"
+                className="rounded-xl bg-pink px-5 py-3 text-sm font-semibold text-on-pink transition hover:bg-pink-deep"
+              >
+                Reservar cita
+              </Link>
+              <a
+                href="#servicios"
+                className="rounded-xl border border-white/25 px-5 py-3 text-sm font-semibold text-[#f4eef0] transition hover:border-pink hover:text-pink"
+              >
+                Ver servicios
+              </a>
+            </div>
+          </div>
+
+          <div className="relative mx-auto aspect-[3/4] w-full max-w-[340px]">
+            <Image
+              src="/images/hero-modelo.png"
+              alt=""
+              fill
+              priority
+              sizes="(min-width: 768px) 340px, 90vw"
+              className="object-contain object-bottom"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section id="servicios" className="mx-auto max-w-[1120px] scroll-mt-20 px-5 py-16 sm:px-6 md:py-24">
+        <h2 className="font-display text-[clamp(32px,4.4vw,46px)] font-semibold leading-none text-cherry">
+          Nuestros servicios
+        </h2>
+        <p className="mt-2 max-w-[56ch] text-lg text-body">
+          Elige el tratamiento que quieres y reserva tu horario en línea.
+        </p>
+
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
+          {displayServices.map((service, index) => {
+            const imageSrc = serviceImageSrc(service.name);
+
+            return (
+              <article
+                key={service.id}
+                className="grid grid-cols-[96px_minmax(0,1fr)] gap-4 rounded-[18px] border border-line bg-surface p-4 shadow-sm sm:grid-cols-[172px_minmax(0,1fr)] sm:gap-5"
+              >
+                {imageSrc ? (
+                  <div className="relative min-h-[150px] overflow-hidden rounded-[56px_56px_12px_12px] sm:min-h-[190px] sm:rounded-[70px_70px_14px_14px]">
+                    <Image
+                      src={imageSrc}
+                      alt=""
+                      fill
+                      sizes="(min-width: 640px) 172px, 96px"
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="grid min-h-[150px] place-items-center rounded-[56px_56px_12px_12px] text-cherry sm:min-h-[190px] sm:rounded-[70px_70px_14px_14px]"
+                    style={{ background: thumbnailGradients[index % thumbnailGradients.length] }}
+                  >
+                    <ServiceIcon variant={iconVariants[index % iconVariants.length]} size={40} />
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-1.5 p-1.5">
+                  <h3 className="text-[18px] font-bold leading-snug">{service.name}</h3>
+                  <p className="flex-1 text-sm leading-6 text-body">{service.description}</p>
+
+                  <div className="my-1 flex items-baseline gap-2.5">
+                    <b className="font-display text-[30px] font-semibold leading-none">
+                      {service.priceDisplay}
+                    </b>
+                    <span className="text-[13px] text-muted-foreground">
+                      {formatDuration(service.estimatedDuration ?? 60)}
+                    </span>
+                  </div>
+
+                  <Link
+                    href={`/public/appointments?serviceId=${service.id}`}
+                    className="mt-1 inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-pink px-5 text-sm font-semibold text-on-pink transition hover:bg-pink-deep"
+                  >
+                    Solicitar cita
+                  </Link>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section id="horarios" className="scroll-mt-20 border-t border-line bg-surface-soft">
+        <div className="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-6 px-5 py-14 sm:px-6">
+          <div>
+            <h2 className="font-display text-[clamp(30px,4vw,42px)] font-semibold leading-none text-cherry">
+              Reserva tu horario
+            </h2>
+            <p className="mt-2 max-w-[52ch] text-body">
+              Elige servicio, día y hora en pocos pasos. Los horarios ocupados aparecen tachados.
+            </p>
+          </div>
+          <Link
+            href="/public/appointments"
+            className="rounded-xl bg-pink px-6 py-3 text-sm font-semibold text-on-pink transition hover:bg-pink-deep"
+          >
+            Solicitar cita
+          </Link>
+        </div>
+      </section>
+
+      <footer className="bg-night text-night-soft">
+        <div className="mx-auto max-w-[1120px] px-5 py-11 text-center sm:px-6">
+          <span className="logo-silver inline-block text-[40px] font-semibold tracking-[0.2em]">
             BELLAS
-          </h1>
-          <p className="mt-5 text-lg font-light tracking-[0.02em] text-strong-fg/80 md:text-xl">
-            Un momento solo para ti.
-          </p>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1280px] px-6 py-14 md:py-20">
-        <div className="mb-8 flex flex-col gap-2">
-          <h2 className="font-serif text-[3rem] leading-none text-danger md:text-[4rem]">
-            Nuestros servicios
-          </h2>
-          <p className="text-lg text-body">Elige el que prefieras y reserva tu horario.</p>
-        </div>
-
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {displayServices.map((service, index) => (
-            <article
-              key={service.id}
-              className={`rounded-[24px] border border-line p-5 shadow-sm ${cardStyles[index % cardStyles.length]}`}
-            >
-              <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full border border-line bg-surface-warm">
-                <ServiceIcon variant={index === 0 ? 'leaf' : index === 1 ? 'spark' : index === 2 ? 'wave' : 'hand'} />
-              </div>
-
-              <h3 className="mt-6 text-[1.75rem] font-medium leading-tight text-foreground">
-                {service.name}
-              </h3>
-
-              <p className="mt-3 text-[1.02rem] leading-7 text-body">
-                {service.description}
-              </p>
-
-              <div className="mt-6 flex items-end justify-between gap-2 border-t border-line pt-4 text-foreground">
-                <span className="text-[1.08rem] font-semibold">{service.priceDisplay}</span>
-                <span className="text-[0.96rem] text-body">{formatDuration(service.estimatedDuration ?? 60)}</span>
-              </div>
-
-              <div className="mt-6 flex justify-center">
-                <Link
-                  href={`/public/appointments?serviceId=${service.id}`}
-                  className="inline-flex rounded-full bg-brand-btn px-6 py-2.5 text-sm font-medium text-foreground transition hover:bg-brand-btn-hover"
-                >
-                  Solicitar cita
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <footer className="border-t border-line bg-background">
-        <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-6 py-6 text-[11px] uppercase tracking-[0.18em] text-muted-foreground sm:flex-row">
-          <span>Bellas spa</span>
+          </span>
+          <p className="mt-3 text-sm">Lunes a sábado · 9:00 AM a 8:00 PM</p>
         </div>
       </footer>
     </main>

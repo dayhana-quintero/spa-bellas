@@ -143,7 +143,7 @@ export function ReschedulePanel({
       className="mt-4 rounded-2xl border border-line bg-surface-warm p-4"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="font-serif text-2xl text-brand">Reprogramar cita</h3>
+        <h3 className="font-serif text-2xl text-foreground">Reprogramar cita</h3>
         <p className="text-sm text-body">
           <strong>Actual:</strong>{' '}
           {currentStart.toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}

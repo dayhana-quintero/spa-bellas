@@ -8,6 +8,7 @@ import {
   type AppointmentRequest,
 } from '@/domain/appointments/create-appointment-request';
 import type { Service } from '@/shared/types/service';
+import { Input } from '@/components/ui/input';
 
 export function buildAppointmentRequestFormState({
   name,
@@ -213,29 +214,29 @@ export default function AppointmentRequestForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="grid gap-5 md:grid-cols-2">
-        <label className="text-sm font-medium text-foreground">
+        <label className="block text-sm font-medium text-foreground">
           Nombre completo
-          <input
+          <Input
             aria-label="Nombre completo"
             value={name}
             onChange={(event) => {
               setName(event.target.value);
               handleFieldChange({ name: event.target.value });
             }}
-            className="mt-2 w-full rounded-xl border border-line bg-surface-inset px-3 py-2.5 text-foreground outline-none focus:border-brand"
+            className="mt-2 h-11 rounded-xl px-4"
           />
         </label>
 
-        <label className="text-sm font-medium text-foreground">
+        <label className="block text-sm font-medium text-foreground">
           Teléfono WhatsApp
-          <input
+          <Input
             aria-label="Teléfono WhatsApp"
             value={phone}
             onChange={(event) => {
               setPhone(event.target.value);
               handleFieldChange({ phone: event.target.value });
             }}
-            className="mt-2 w-full rounded-xl border border-line bg-surface-inset px-3 py-2.5 text-foreground outline-none focus:border-brand"
+            className="mt-2 h-11 rounded-xl px-4"
           />
         </label>
       </div>
@@ -275,7 +276,7 @@ export default function AppointmentRequestForm({
 
       <button
         type="submit"
-        className="rounded-xl bg-strong px-5 py-3 text-sm font-medium text-strong-fg transition hover:bg-strong-hover disabled:cursor-not-allowed disabled:opacity-60"
+        className="min-h-11 rounded-xl bg-pink px-5 py-3 text-sm font-semibold text-on-pink transition hover:bg-pink-deep disabled:cursor-not-allowed disabled:opacity-60"
       >
         Enviar solicitud
       </button>
