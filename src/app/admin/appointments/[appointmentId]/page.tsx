@@ -44,7 +44,7 @@ export default async function AdminAppointmentDetailRoute({
   const dayLabel = formatDayLabel(start);
 
   return (
-    <main className="flex-1 overflow-auto bg-background px-6 py-10 text-foreground">
+    <main className="min-h-0 flex-1 overflow-auto bg-background px-4 pb-24 pt-14 text-foreground md:px-6 md:py-10 md:pb-10">
       <div className="mx-auto max-w-3xl rounded-[28px] border border-line bg-surface p-8 shadow-sm">
         <Link href="/admin/appointments/pending" className="text-sm font-medium text-muted-foreground underline-offset-4 hover:underline">
           ← Volver a pendientes

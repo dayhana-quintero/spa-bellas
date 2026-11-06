@@ -41,7 +41,7 @@ export default async function AppointmentHistoryDetailPage({
   const statusMeta = getAppointmentStatusMeta(appointment.status);
 
   return (
-    <main className="flex-1 overflow-auto bg-background p-8">
+    <main className="min-h-0 flex-1 overflow-auto bg-background px-4 pb-24 pt-14 md:p-8 md:pb-8">
       <div className="mx-auto max-w-3xl rounded-[24px] bg-background p-8 shadow-sm">
         <Link href="/admin/appointments/history" className="mb-6 inline-block text-sm text-body underline">
           ← Volver

@@ -15,9 +15,11 @@ export function LogoutButton() {
     <button
       type="button"
       onClick={handleLogout}
-      className="rounded-xl border border-line bg-surface px-3 py-2 text-sm font-semibold text-foreground transition hover:bg-background"
+      aria-label="Cerrar sesión"
+      className="rounded-xl border border-white/20 px-1 py-1.5 text-[10px] font-semibold text-sidebar-text transition hover:bg-sidebar-accent md:border-line md:bg-surface md:px-3 md:py-2 md:text-sm md:text-foreground"
     >
-      Cerrar sesión
+      <span className="md:hidden">Salir</span>
+      <span className="hidden md:inline">Cerrar sesión</span>
     </button>
   );
 }

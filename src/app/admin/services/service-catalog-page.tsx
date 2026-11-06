@@ -147,16 +147,16 @@ export default function AdminServicesCatalogPage() {
   };
 
   return (
-    <main className="flex-1 overflow-auto px-8 py-7">
+    <main className="min-h-0 flex-1 overflow-auto px-4 pb-24 pt-14 md:px-8 md:py-7 md:pb-7">
       <div className="mb-6 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
         Bellas · Panel del spa
       </div>
 
-      <div className="rounded-[28px] bg-background p-6">
-        <div className="mb-6 flex items-end justify-between gap-4">
+      <div className="rounded-[28px] bg-background p-3 sm:p-6">
+        <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end sm:gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Catálogo</p>
-            <h1 className="mt-2 font-serif text-[48px] leading-[0.96] text-foreground">Servicios del spa</h1>
+            <h1 className="mt-2 font-serif text-[36px] leading-[0.96] text-foreground sm:text-[48px]">Servicios del spa</h1>
             <p className="mt-2 text-[16px] text-body">Crea, edita y gestiona los servicios disponibles.</p>
           </div>
           <div className="rounded-xl bg-surface-soft px-4 py-2 text-sm text-body">

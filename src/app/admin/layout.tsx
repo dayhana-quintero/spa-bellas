@@ -28,10 +28,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background text-foreground">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground md:flex-row">
       {/* El sidebar solo aparece con sesión iniciada; login y access-denied van a pantalla completa. */}
       {accessResult.isAllowed ? <AdminSidebar pendingCount={pendingCount} /> : null}
-      <div className="relative flex flex-1 flex-col overflow-hidden">
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <AdminThemeToggle />
         {/* El panel se refresca solo para reflejar altas hechas desde el area publica. */}
         {accessResult.isAllowed ? <AdminAutoRefresh /> : null}

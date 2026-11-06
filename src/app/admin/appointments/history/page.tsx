@@ -79,7 +79,7 @@ export default async function HistoryPage({
   const total = result.total;
 
   return (
-      <main className="flex-1 overflow-auto px-7 py-6">
+      <main className="min-h-0 flex-1 overflow-auto px-4 pb-24 pt-14 md:px-7 md:py-6 md:pb-6">
         <div className="mb-4 flex items-center justify-between">
           <div className="text-[11px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
             Bellas · Panel del spa

@@ -2,7 +2,7 @@ const KPI_SKELETONS = [1, 2, 3, 4, 5];
 
 export default function AdminLoading() {
   return (
-    <main className="flex-1 overflow-auto px-8 py-7" aria-busy="true">
+    <main className="min-h-0 flex-1 overflow-auto px-4 pb-24 pt-14 md:px-8 md:py-7 md:pb-7" aria-busy="true">
       <p role="status" className="sr-only">
         Cargando el panel administrativo…
       </p>

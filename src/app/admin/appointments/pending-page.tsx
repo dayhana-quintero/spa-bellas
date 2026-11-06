@@ -32,7 +32,7 @@ export function PendingAppointmentsPage({ appointments }: { appointments: Appoin
   }
 
   return (
-    <section className="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+      <section className="rounded-2xl border border-line bg-surface p-4 shadow-sm sm:p-6">
       <h2 className="font-serif text-3xl text-foreground">Citas pendientes</h2>
       <ul className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
         {pending.map((appointment) => {
@@ -47,12 +47,12 @@ export function PendingAppointmentsPage({ appointments }: { appointments: Appoin
           return (
             <li
               key={appointment.id}
-              className="rounded-2xl border border-line bg-surface p-5 shadow-sm"
+              className="rounded-2xl border border-line bg-surface p-4 shadow-sm sm:p-5"
             >
               <div className="flex gap-4">
                 {/* Hora destacada */}
-                <div className="flex w-24 shrink-0 flex-col items-center border-r border-line pr-4">
-                  <p className="font-serif text-[40px] leading-none text-foreground">{time}</p>
+                <div className="flex w-[4.5rem] shrink-0 flex-col items-center border-r border-line pr-3 sm:w-24 sm:pr-4">
+                  <p className="font-serif text-3xl leading-none text-foreground sm:text-[40px]">{time}</p>
                   <p className="mt-1 text-sm font-bold text-brand-strong">{period}</p>
                   <p className="mt-3 text-center text-xs leading-4 text-muted-foreground">{dayLabel}</p>
                 </div>

@@ -33,13 +33,13 @@ export default async function AdminDashboardPage() {
   const todayAppointments = filterAppointmentsForLocalDay(upcomingAppointments);
 
   return (
-    <main className="flex-1 overflow-auto px-8 py-7">
+    <main className="min-h-0 flex-1 overflow-auto px-4 pb-24 pt-14 md:px-8 md:py-7 md:pb-7">
       <div className="mb-6 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
         Bellas · Panel del spa
       </div>
 
       <div className="mb-8">
-        <h1 className="font-serif text-[40px] leading-[0.96] tracking-[-0.04em] text-foreground">
+        <h1 className="font-serif text-[34px] leading-[0.96] tracking-[-0.04em] text-foreground sm:text-[40px]">
           Resumen operativo
         </h1>
         <p className="mt-2 text-[16px] leading-6 text-body">
@@ -47,7 +47,7 @@ export default async function AdminDashboardPage() {
         </p>
       </div>
 
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-5">
         <Link
           href="/admin/appointments/pending"
           className="group rounded-2xl border border-line bg-surface p-4 shadow-sm transition hover:shadow-md"
@@ -153,9 +153,9 @@ export default async function AdminDashboardPage() {
           </div>
         </nav>
 
-        <div className="rounded-[22px] border border-line bg-surface-warm p-5">
+        <div className="rounded-[22px] border border-line bg-surface-warm p-4 sm:p-5">
           <div className="flex items-baseline justify-between gap-3">
-            <h2 className="font-serif text-[28px] text-foreground">Citas de hoy</h2>
+            <h2 className="font-serif text-2xl text-foreground sm:text-[28px]">Citas de hoy</h2>
             <p className="text-sm text-muted-foreground">
               {todayAppointments.length === 0
                 ? 'Sin reservas'

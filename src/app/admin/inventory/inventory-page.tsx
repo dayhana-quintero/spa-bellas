@@ -46,18 +46,18 @@ export default function InventoryPage() {
   const totalAvailable = supplies.reduce((sum, supply) => sum + supply.quantityAvailable, 0);
 
   return (
-      <main className="flex-1 overflow-hidden px-8 py-7">
+      <main className="min-h-0 flex-1 overflow-auto px-4 pb-24 pt-14 md:overflow-hidden md:px-8 md:py-7 md:pb-7">
         <div className="mb-6 flex items-center justify-between">
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Bellas · Panel del spa
           </div>
         </div>
 
-        <div className="h-[calc(100vh-120px)] overflow-y-auto rounded-[28px] bg-background p-5 shadow-[0_0_0_1px_rgba(104,76,72,0.03)]">
-          <div className="mb-5 flex items-end justify-between gap-4">
+        <div className="rounded-[28px] bg-background p-3 shadow-[0_0_0_1px_rgba(104,76,72,0.03)] md:h-[calc(100%-3.5rem)] md:overflow-y-auto md:p-5">
+          <div className="mb-5 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end sm:gap-4">
             <div className="min-w-0 flex-1">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Inventario</p>
-              <h1 className="mt-2 font-serif text-[40px] leading-[0.96] tracking-[-0.04em] text-foreground sm:text-[44px] lg:text-[48px]">
+              <h1 className="mt-2 font-serif text-[34px] leading-[0.96] tracking-[-0.04em] text-foreground sm:text-[44px] lg:text-[48px]">
                 Insumos del spa
               </h1>
             </div>
@@ -93,8 +93,8 @@ export default function InventoryPage() {
             </p>
           ) : null}
 
-          <section className="overflow-hidden rounded-2xl border border-line bg-background shadow-sm">
-            <table className="w-full border-separate border-spacing-0">
+          <section className="overflow-x-auto rounded-2xl border border-line bg-background shadow-sm">
+            <table className="w-full min-w-[620px] border-separate border-spacing-0">
               <thead className="bg-surface-soft">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-bold text-body">Insumo</th>
